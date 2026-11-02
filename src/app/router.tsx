@@ -1,5 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import PlaceholderPage from './PlaceholderPage'
+import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage'
+import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage'
 
 /**
  * Application router.
@@ -25,6 +27,15 @@ import PlaceholderPage from './PlaceholderPage'
  */
 
 export const router = createBrowserRouter([
+  // ── Approval inbox ──────────────────────────────────────────────────────
+  // The canonical feature route is /approvals. The lead alias keeps the
+  // assigned workspace URL available while the shared shell is being built.
+  { path: '/approvals', element: <ApprovalInboxPage /> },
+  { path: '/approvals/:id', element: <ApprovalDetailPage /> },
+  { path: '/approvals/grants', element: <PlaceholderPage title="Approval Grants (Harsh Gupta)" /> },
+  { path: '/lead/approvals', element: <ApprovalInboxPage /> },
+  { path: '/lead/approvals/:id', element: <ApprovalDetailPage /> },
+
   // ── Public routes ──────────────────────────────────────────────────────
   {
     path: '/login',
@@ -70,29 +81,6 @@ export const router = createBrowserRouter([
           {
             path: 'my-devices',
             element: <PlaceholderPage title="My Devices (Aastha Singh)" />,
-          },
-        ],
-      },
-
-      // ── Approvals workspace ── owner: Harsh Gupta ───────────────────
-      {
-        path: 'approvals',
-        children: [
-          {
-            index: true,
-            element: (
-              <PlaceholderPage title="Approvals Inbox (Harsh Gupta)" />
-            ),
-          },
-          {
-            path: 'grants',
-            element: <PlaceholderPage title="Approval Grants (Harsh Gupta)" />,
-          },
-          {
-            path: ':id',
-            element: (
-              <PlaceholderPage title="Approval Detail (Harsh Gupta)" />
-            ),
           },
         ],
       },
