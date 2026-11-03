@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import PlaceholderPage from './PlaceholderPage'
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage'
 import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage'
+import LoginPage from '../features/auth/pages/LoginPage'
+import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage'
 
 /**
  * Application router.
@@ -39,7 +41,11 @@ export const router = createBrowserRouter([
   // ── Public routes ──────────────────────────────────────────────────────
   {
     path: '/login',
-    element: <PlaceholderPage title="Login — Auth (Shivam Kumar)" />,
+    element: <LoginPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
   },
 
   // ── Protected application shell ────────────────────────────────────────
