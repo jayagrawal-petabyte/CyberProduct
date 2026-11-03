@@ -1,0 +1,228 @@
+/* ============================================================
+   BrainMint Design System — Resource Management · Table
+   src/features/admin/components/ResourcesTable.css
+   Mirrors DevicesTable/UsersTable styling (scoped to resources-*).
+   ============================================================ */
+
+.resources-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.resources-table {
+  width: 100%;
+  min-width: 58rem;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 0.81rem;
+  text-align: left;
+}
+
+.resources-table th:nth-child(1) { width: 20%; } /* Resource   */
+.resources-table th:nth-child(2) { width: 11%; } /* Resource ID */
+.resources-table th:nth-child(3) { width: 11%; } /* Category   */
+.resources-table th:nth-child(4) { width: 12%; } /* Type       */
+.resources-table th:nth-child(5) { width: 11%; } /* Access     */
+.resources-table th:nth-child(6) { width: 12%; } /* Status     */
+.resources-table th:nth-child(7) { width: 11%; } /* Owner      */
+.resources-table th:nth-child(8) { width: 12%; } /* Actions    */
+
+.resources-table th {
+  height: 2.75rem;
+  padding: 0 1rem;
+  color: #4d526c;
+  background: #f8fafc;
+  font-size: 0.73rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.resources-table td {
+  height: 3.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f0edf1;
+  vertical-align: middle;
+}
+
+.resources-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Clickable rows */
+.resources-row {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.resources-row:hover { background: #f5edf5; }
+.resources-row:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: -2px;
+  background: #f5edf5;
+}
+
+/* Resource cell */
+.resources-resource-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.resources-category-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.55rem;
+}
+
+.resources-category-icon--websites     { background: #e0f2fe; color: #0369a1; }
+.resources-category-icon--applications { background: #ecfdf3; color: #187349; }
+.resources-category-icon--tools        { background: #ebddf3; color: #6b3d81; }
+.resources-category-icon--cloud        { background: #eff6ff; color: #2446be; }
+.resources-category-icon--databases    { background: #fffaeb; color: #b54708; }
+
+.resources-resource-meta {
+  min-width: 0;
+}
+
+.resources-resource-name {
+  display: block;
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: #2a104b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resources-resource-identifier {
+  display: block;
+  font-size: 0.65rem;
+  color: #6b5d70;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.1rem;
+}
+
+/* Monospace resource IDs */
+.resources-resource-id {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.71rem;
+  color: #32154f;
+}
+
+.resources-cell-text {
+  font-size: 0.78rem;
+  color: #2a1b38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resources-type-text {
+  font-size: 0.74rem;
+  color: #2a1b38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Access-level badges — visually distinct per classification */
+.resources-access-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.resources-access-badge--public       { color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; }
+.resources-access-badge--internal     { color: #553c9a; background: #ede9fe; border: 1px solid #ddd6fe; }
+.resources-access-badge--restricted   { color: #b54708; background: #fffaeb; border: 1px solid #fde68a; }
+.resources-access-badge--confidential { color: #b42318; background: #fef3f2; border: 1px solid #fecaca; }
+
+/* Status badges — Active green / Restricted red / Pending amber / Inactive grey */
+.resources-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.resources-status-badge--active    { color: #00834d; background: #ecfdf3; }
+.resources-status-badge--restricted { color: #b42318; background: #fef3f2; }
+.resources-status-badge--pending   { color: #b54708; background: #fffaeb; }
+.resources-status-badge--inactive  { color: #536075; background: #edf0f5; }
+
+.resources-status-dot {
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.resources-status-dot--active    { background: #10b981; }
+.resources-status-dot--restricted { background: #ef4444; }
+.resources-status-dot--pending   { background: #f59e0b; }
+.resources-status-dot--inactive  { background: #8a93a5; }
+
+/* Owner */
+.resources-owner {
+  font-size: 0.72rem;
+  color: #6b5d70;
+  white-space: nowrap;
+}
+
+/* View details action */
+.resources-view-button {
+  height: 1.9rem;
+  padding: 0 0.8rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: #2a104b;
+  font: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+
+.resources-view-button:hover {
+  background: #f7eeff;
+  border-color: #d7c3e6;
+}
+
+.resources-view-button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 2px;
+}
+
+/* Empty / loading states */
+.resources-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 13rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.resources-state h2 { margin: 0; font-size: 1.2rem; color: #2a104b; }
+.resources-state p  { margin: 0; font-size: 0.86rem; color: #6b5d70; }
+.resources-icon-muted { color: #72527f; }
+
+@media (max-width: 680px) {
+  .resources-table { min-width: 64rem; }
+  .resources-view-button { padding: 0 0.55rem; font-size: 0.66rem; }
+}
