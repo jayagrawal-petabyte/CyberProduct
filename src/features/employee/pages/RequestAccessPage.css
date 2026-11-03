@@ -1,0 +1,188 @@
+.request-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.8fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.request-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.request-form__heading {
+  margin-bottom: 1.25rem;
+}
+
+.request-form__heading h2 {
+  margin: 0;
+  color: #342747;
+  font-size: 1rem;
+}
+
+.request-form__heading p {
+  margin: 0.35rem 0 0;
+  color: #918496;
+  font-size: 0.72rem;
+}
+
+.request-form > label {
+  margin: 1rem 0 0.45rem;
+  color: #51445e;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.request-form > label span {
+  color: #c34d5a;
+}
+
+.request-form > label small {
+  color: #928697;
+  font-weight: 400;
+}
+
+.request-form select,
+.request-form textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e5dbe6;
+  border-radius: 0.55rem;
+  outline: none;
+  background: #fff;
+  color: #40334f;
+  font: inherit;
+  font-size: 0.78rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.request-form select:focus,
+.request-form textarea:focus {
+  border-color: #80618d;
+  box-shadow: 0 0 0 3px rgba(128, 97, 141, 0.12);
+}
+
+.request-form textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.request-form textarea::placeholder {
+  color: #a99eae;
+}
+
+.request-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.request-cancel-button,
+.request-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid #e4d9e5;
+  border-radius: 0.55rem;
+  background: #fff;
+  color: #594866;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.request-guidance h2 {
+  margin-bottom: 1rem;
+}
+
+.request-guidance > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f0ebf1;
+}
+
+.request-guidance > div:last-of-type {
+  border-bottom: 0;
+}
+
+.request-guidance > div > svg {
+  flex-shrink: 0;
+  color: #886294;
+}
+
+.request-guidance strong {
+  color: #463951;
+  font-size: 0.75rem;
+}
+
+.request-guidance section p {
+  margin: 0.3rem 0 0;
+  color: #8d8192;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.request-guidance__note {
+  margin: 1rem 0 0;
+  padding: 0.75rem;
+  border-radius: 0.55rem;
+  background: #f8eff5;
+  color: #765d79;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.request-success {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.request-success > svg {
+  color: #168b75;
+}
+
+.request-success h2 {
+  margin: 1rem 0 0.5rem;
+  color: #342747;
+}
+
+.request-success p {
+  color: #817487;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.request-success > a {
+  display: block;
+  margin: 1rem 0;
+  color: #4e5fc4;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .request-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .request-form__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .request-form__actions > * {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -18,7 +18,11 @@ import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage';
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import NotFoundPage from './NotFoundPage';
-
+import EmployeeDashboardPage from '../features/employee/pages/EmployeeDashboardPage';
+import MyProfilePage from '../features/employee/pages/MyProfilePage';
+import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
+import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
+import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
   {
@@ -93,7 +97,47 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
+  // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
+  {
+    path: '/employee',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <EmployeeDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/employee/profile',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <MyProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/employee/my-devices',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <MyDevicesPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/employee/access-requests/new',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <RequestAccessPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/employee/access-requests',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <MyRequestsPage />
+      </ProtectedRoute>
+    ),
+  },
   // ── 4. Unbuilt Teammate Feature Slots ──────────────────────────────────────
   // Note: Following project guidelines, only pages that actually exist are
   // registered. As teammates implement their pages, import and register them here:
