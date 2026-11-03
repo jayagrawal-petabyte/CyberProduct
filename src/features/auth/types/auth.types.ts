@@ -18,9 +18,11 @@ export interface LoginFormErrors {
 
 export type AuthStatus = 'idle' | 'loading' | 'success' | 'error';
 
+export type UserRole = 'employee' | 'lead' | 'admin' | 'security';
+
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'employee' | 'lead' | 'admin' | 'security';
+  role: UserRole;
 }

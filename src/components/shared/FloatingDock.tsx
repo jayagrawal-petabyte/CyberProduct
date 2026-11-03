@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '../ui/Icon';
 import type { IconName } from '../../types/ui';
 
@@ -44,6 +45,15 @@ export const FloatingDock: React.FC<FloatingDockProps> = ({
   className = '',
   style,
 }) => {
+  const navigate = useNavigate();
+
+  const handleItemClick = (item: DockItem) => {
+    onSelect?.(item.id);
+    if (item.href) {
+      navigate(item.href);
+    }
+  };
+
   return (
     <nav
       aria-label="Application Dock Navigation"
@@ -75,7 +85,7 @@ export const FloatingDock: React.FC<FloatingDockProps> = ({
           <button
             key={item.id}
             type="button"
-            onClick={() => onSelect?.(item.id)}
+            onClick={() => handleItemClick(item)}
             aria-label={item.label}
             aria-current={isActive ? 'page' : undefined}
             title={item.label}
