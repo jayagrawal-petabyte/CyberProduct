@@ -28,10 +28,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const dockItems = getNavItemsForRole(user?.role);
 
-  // Match active dock item by current path
-  const activeDockItem = dockItems.find((item) =>
-    item.href ? location.pathname === item.href || location.pathname.startsWith(`${item.href}/`) : false
-  );
+  // Match active dock item by current path (exact match prioritized over prefix)
+  const activeDockItem =
+    dockItems.find((item) => item.href === location.pathname) ||
+    dockItems.find((item) =>
+      item.href && item.href !== '/' && item.href !== '/admin'
+        ? location.pathname.startsWith(`${item.href}/`)
+        : false
+    );
 
   const activeDockId = activeDockItem?.id || (user?.role === 'lead' ? 'approvals' : 'dashboard');
 

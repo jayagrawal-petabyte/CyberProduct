@@ -1,20 +1,12 @@
-
-/**
- * Application Router
- * CyberProduct Platform
- * Owner: Shivam Kumar (Frontend Lead)
- *
- * Route Registry & Navigation Architecture:
- * - Public authentication routes (/login, /forgot-password)
- * - Protected dashboard and approval workspaces
- * - Role-based route authorization guards
- * - BrainMint 404 fallback handling for unmapped routes
- */
-
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '../features/auth/pages/LoginPage';
 import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
-import DashboardPage from '../features/admin/pages/DashboardPage';
+import {
+  DashboardPage,
+  UsersPage,
+  DevicesPage,
+  ResourcesPage,
+} from '../features/admin';
 import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage';
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
@@ -41,7 +33,7 @@ export const router = createBrowserRouter([
     element: <ForgotPasswordPage />,
   },
 
-  // ── 2. Admin Dashboard Module (Ishaan Gupta) ──────────────────────────────
+  // ── 2. Admin Management Module (Ishaan Gupta) ──────────────────────────────
   {
     path: '/dashboard',
     element: (
@@ -61,6 +53,30 @@ export const router = createBrowserRouter([
   {
     path: '/admin/dashboard',
     element: <Navigate to="/admin" replace />,
+  },
+  {
+    path: '/admin/users',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <UsersPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/devices',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <DevicesPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/admin/resources',
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <ResourcesPage />
+      </ProtectedRoute>
+    ),
   },
 
   // ── 3. Team Lead / Approvals Module (Harsh Gupta) ─────────────────────────
@@ -101,7 +117,8 @@ export const router = createBrowserRouter([
     ),
   },
 
-  // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
+
+    // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
   {
     path: '/employee',
     element: (
@@ -142,6 +159,15 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  // ── 4. Unbuilt Teammate Feature Slots ──────────────────────────────────────
+  // Note: Following project guidelines, only pages that actually exist are
+  // registered. As teammates implement their pages, import and register them here:
+  // - Employee Portal (Aastha Singh): /employee/*
+  // - Alerts & Audit Center (Aarushi Srivastava): /security/*
+  // - Admin Subpages (Ishaan Gupta): /admin/policies
+  // - Approvals Grants (Harsh Gupta): /approvals/grants
+
 
   // ── 5. Security & Alerts Center (Aarushi Srivastava) ──────────────────────
   {

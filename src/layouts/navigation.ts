@@ -13,7 +13,7 @@ import type { DockItem } from '../components/shared/FloatingDock';
 import type { UserRole } from '../features/auth/types/auth.types';
 
 export const ROLE_HOME_ROUTES: Record<UserRole, string> = {
-  admin: '/dashboard',
+  admin: '/admin',
   lead: '/approvals',
   employee: '/dashboard',
   security: '/dashboard',
@@ -36,8 +36,10 @@ export const LEAD_NAV_ITEMS: DockItem[] = [
 ];
 
 export const ADMIN_NAV_ITEMS: DockItem[] = [
-  { id: 'dashboard', label: 'Admin Dashboard', icon: 'grid', href: '/dashboard' },
+  { id: 'dashboard', label: 'Admin Dashboard', icon: 'grid', href: '/admin' },
+  { id: 'users', label: 'Users', icon: 'user', href: '/admin/users' },
   { id: 'devices', label: 'Devices', icon: 'monitor', href: '/admin/devices' },
+  { id: 'resources', label: 'Resources', icon: 'file-text', href: '/admin/resources' },
   { id: 'requests', label: 'Access Demand', icon: 'clock', href: '/admin/requests' },
   { id: 'policies', label: 'Policy Rules', icon: 'shield-check', href: '/admin/policies' },
   { id: 'alerts', label: 'Notifications', icon: 'bell', href: '/admin/alerts' },
