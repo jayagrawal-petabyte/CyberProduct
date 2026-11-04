@@ -101,7 +101,7 @@ export default function ApprovalInboxPage() {
       <button type="button" disabled aria-label="Devices (not available yet)"><ApprovalIcon name="monitor" size={23} /></button>
       <button type="button" disabled aria-label="Request access (not available yet)"><ApprovalIcon name="plus" size={23} /></button>
       <Link className="approval-bottom-nav__active" to={basePath} aria-current="page" aria-label="Access requests"><ApprovalIcon name="clipboard" size={23} /></Link>
-      <button type="button" disabled aria-label="Notifications (not available yet)"><ApprovalIcon name="bell" size={23} /></button>
+      <Link to="/lead/notifications" aria-label="Notifications"><ApprovalIcon name="bell" size={23} /></Link>
       <button type="button" disabled aria-label="Profile (not available yet)"><ApprovalIcon name="user" size={23} /></button>
     </nav>
   </main>

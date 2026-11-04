@@ -8,6 +8,7 @@ const navItems = [
   { label: 'Devices', path: '/employee/my-devices', icon: 'monitor' as const },
   { label: 'Request Access', path: '/employee/access-requests/new', icon: 'plus' as const },
   { label: 'My Requests', path: '/employee/access-requests', icon: 'file-text' as const },
+  { label: 'Notifications', path: '/employee/notifications', icon: 'bell' as const },
   { label: 'Profile', path: '/employee/profile', icon: 'user' as const },
 ];
 

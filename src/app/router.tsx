@@ -16,7 +16,8 @@ import MyProfilePage from '../features/employee/pages/MyProfilePage';
 import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
 import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
 import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
-import { SecurityView } from '../features/security/SecurityView';
+import SecurityProfilePage from '../features/security/pages/SecurityProfilePage';
+import { NotificationsPage } from '../features/notifications';
 
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
@@ -116,6 +117,14 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/lead/notifications',
+    element: (
+      <ProtectedRoute allowedRoles={['lead', 'admin']}>
+        <NotificationsPage />
+      </ProtectedRoute>
+    ),
+  },
 
 
     // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
@@ -159,25 +168,44 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
-  // ── 4. Unbuilt Teammate Feature Slots ──────────────────────────────────────
-  // Note: Following project guidelines, only pages that actually exist are
-  // registered. As teammates implement their pages, import and register them here:
-  // - Employee Portal (Aastha Singh): /employee/*
-  // - Alerts & Audit Center (Aarushi Srivastava): /security/*
-  // - Admin Subpages (Ishaan Gupta): /admin/policies
-  // - Approvals Grants (Harsh Gupta): /approvals/grants
-
-
-  // ── 5. Security & Alerts Center (Aarushi Srivastava) ──────────────────────
   {
-    path: '/security',
+    path: '/employee/notifications',
     element: (
-      <ProtectedRoute allowedRoles={['admin', 'lead', 'employee']}>
-        <SecurityView />
+      <ProtectedRoute allowedRoles={['employee', 'admin']}>
+        <NotificationsPage />
       </ProtectedRoute>
     ),
   },
+
+  // ── 5. Security Module (Aarushi Srivastava) ────────────────────────────────
+  {
+    path: '/security/profile',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <SecurityProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/security/notifications',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <NotificationsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/security',
+    element: <Navigate to="/security/profile" replace />,
+  },
+
+  // ── Unbuilt Teammate Feature Slots ──────────────────────────────────────
+  // Note: Following project guidelines, only pages that actually exist are
+  // registered. As teammates implement their pages, import and register them here:
+  // - Alerts & Audit Center (Aarushi Srivastava): /security/alerts, /security/audit (pending)
+  // - Admin Subpages (Ishaan Gupta): /admin/policies
+  // - Approvals Grants (Harsh Gupta): /approvals/grants
+
 
   // ── 6. Error & Fallback Routes ─────────────────────────────────────────────
   {
