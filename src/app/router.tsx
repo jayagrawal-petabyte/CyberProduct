@@ -1,3 +1,4 @@
+
 /**
  * Application Router
  * CyberProduct Platform
@@ -23,6 +24,8 @@ import MyProfilePage from '../features/employee/pages/MyProfilePage';
 import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
 import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
 import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
+import { SecurityView } from '../features/security/SecurityView';
+
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
   {
@@ -97,6 +100,7 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
   {
     path: '/employee',
@@ -138,15 +142,18 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  // ── 4. Unbuilt Teammate Feature Slots ──────────────────────────────────────
-  // Note: Following project guidelines, only pages that actually exist are
-  // registered. As teammates implement their pages, import and register them here:
-  // - Employee Portal (Aastha Singh): /employee/*
-  // - Alerts & Audit Center (Aarushi Srivastava): /security/*
-  // - Admin Subpages (Ishaan Gupta): /admin/users, /admin/devices, /admin/policies
-  // - Approvals Grants (Harsh Gupta): /approvals/grants
 
-  // ── 5. Error & Fallback Routes ─────────────────────────────────────────────
+  // ── 5. Security & Alerts Center (Aarushi Srivastava) ──────────────────────
+  {
+    path: '/security',
+    element: (
+      <ProtectedRoute allowedRoles={['admin', 'lead', 'employee']}>
+        <SecurityView />
+      </ProtectedRoute>
+    ),
+  },
+
+  // ── 6. Error & Fallback Routes ─────────────────────────────────────────────
   {
     path: '*',
     element: <NotFoundPage />,
