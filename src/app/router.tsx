@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import LoginPage from '../features/auth/pages/LoginPage';
 import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
@@ -18,6 +19,11 @@ import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
 import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
 import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
 import SecurityProfilePage from '../features/security/pages/SecurityProfilePage';
+import { SecurityDashboardPage } from '../features/security/pages/SecurityDashboardPage';
+import { SecurityAlertsPage } from '../features/security/pages/SecurityAlertsPage';
+import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditLogsPage';
+import { EmployeeAccessActivityPage } from '../features/security/pages/EmployeeAccessActivityPage';
+import { AccessDeniedPage } from '../features/security/pages/AccessDeniedPage';
 import { NotificationsPage } from '../features/notifications';
 
 export const router = createBrowserRouter([
@@ -135,8 +141,7 @@ export const router = createBrowserRouter([
     ),
   },
 
-
-    // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
+  // ── 4. Employee Portal (Aastha Singh) ─────────────────────────────
   {
     path: '/employee',
     element: (
@@ -188,6 +193,38 @@ export const router = createBrowserRouter([
 
   // ── 5. Security Module (Aarushi Srivastava) ────────────────────────────────
   {
+    path: '/security/dashboard',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <SecurityDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/security/alerts',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <SecurityAlertsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/security/audit',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <SecurityAuditLogsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/security/employee-activity',
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <EmployeeAccessActivityPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/security/profile',
     element: (
       <ProtectedRoute allowedRoles={['security', 'admin']}>
@@ -204,17 +241,17 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/security',
-    element: <Navigate to="/security/profile" replace />,
+    path: '/security/access-denied',
+    element: (
+      <ProtectedRoute>
+        <AccessDeniedPage />
+      </ProtectedRoute>
+    ),
   },
-
-  // ── Unbuilt Teammate Feature Slots ──────────────────────────────────────
-  // Note: Following project guidelines, only pages that actually exist are
-  // registered. As teammates implement their pages, import and register them here:
-  // - Alerts & Audit Center (Aarushi Srivastava): /security/alerts, /security/audit (pending)
-  // - Admin Subpages (Ishaan Gupta): /admin/policies
-  // - Approvals Grants (Harsh Gupta): /approvals/grants
-
+  {
+    path: '/security',
+    element: <Navigate to="/security/dashboard" replace />,
+  },
 
   // ── 6. Error & Fallback Routes ─────────────────────────────────────────────
   {

@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
-import { AuthProvider } from './providers';
+import { AuthProvider } from './providers'; // or use relative path '../features/security/SecurityView'
 
 /**
  * Root application component.
