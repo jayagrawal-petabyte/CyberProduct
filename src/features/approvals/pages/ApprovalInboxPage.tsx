@@ -97,7 +97,7 @@ export default function ApprovalInboxPage() {
     </div>
 
     <nav className="approval-bottom-nav" aria-label="Primary navigation">
-      <button type="button" disabled aria-label="Dashboard (not available yet)"><ApprovalIcon name="grid" size={23} /></button>
+      <Link to="/lead/dashboard" aria-label="Dashboard"><ApprovalIcon name="grid" size={23} /></Link>
       <button type="button" disabled aria-label="Devices (not available yet)"><ApprovalIcon name="monitor" size={23} /></button>
       <button type="button" disabled aria-label="Request access (not available yet)"><ApprovalIcon name="plus" size={23} /></button>
       <Link className="approval-bottom-nav__active" to={basePath} aria-current="page" aria-label="Access requests"><ApprovalIcon name="clipboard" size={23} /></Link>

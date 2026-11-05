@@ -14,7 +14,7 @@ import type { UserRole } from '../features/auth/types/auth.types';
 
 export const ROLE_HOME_ROUTES: Record<UserRole, string> = {
   admin: '/admin',
-  lead: '/approvals',
+  lead: '/lead/dashboard',
   employee: '/dashboard',
   security: '/security/profile',
 };
@@ -28,7 +28,8 @@ export const EMPLOYEE_NAV_ITEMS: DockItem[] = [
 ];
 
 export const LEAD_NAV_ITEMS: DockItem[] = [
-  { id: 'approvals', label: 'Access Requests', icon: 'file-text', href: '/approvals' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'home', href: '/lead/dashboard' },
+  { id: 'approvals', label: 'Access Requests', icon: 'file-text', href: '/lead/approvals' },
   { id: 'notifications', label: 'Notifications', icon: 'bell', href: '/lead/notifications' },
 ];
 

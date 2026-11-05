@@ -9,6 +9,7 @@ import {
 } from '../features/admin';
 import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage';
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage';
+import TeamLeadDashboardPage from '../features/dashboard/pages/TeamLeadDashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import NotFoundPage from './NotFoundPage';
 import EmployeeDashboardPage from '../features/employee/pages/EmployeeDashboardPage';
@@ -82,6 +83,14 @@ export const router = createBrowserRouter([
 
   // ── 3. Team Lead / Approvals Module (Harsh Gupta) ─────────────────────────
   {
+    path: '/lead/dashboard',
+    element: (
+      <ProtectedRoute allowedRoles={['lead', 'admin']}>
+        <TeamLeadDashboardPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/approvals',
     element: (
       <ProtectedRoute allowedRoles={['lead', 'admin']}>
@@ -99,7 +108,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/lead',
-    element: <Navigate to="/lead/approvals" replace />,
+    element: <Navigate to="/lead/dashboard" replace />,
   },
   {
     path: '/lead/approvals',
