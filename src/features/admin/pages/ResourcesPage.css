@@ -1,0 +1,622 @@
+/* ============================================================
+   BrainMint Design System — Resource Management Page
+   src/features/admin/pages/ResourcesPage.css
+
+   Visual reference: DevicesPage.css / UsersPage.css
+   Scoped to the Resource Management page (resources-* prefixes only).
+   ============================================================ */
+
+/* ── 1. Page shell ──────────────────────────────────────── */
+.resources-page {
+  min-height: 100vh;
+  /*
+   * DOCK OVERLAP FIX (stronger clearance, mirrors .devices-page / .users-page):
+   * Fixed dock footprint ≈ 4.8rem (4.125rem dock + 0.65rem offset).
+   * 10rem bottom padding (16rem = 160px) guarantees the last table row
+   * AND the pagination row always scroll fully clear of the dock, at any
+   * viewport height (the space scrolls with the content, not the screen).
+   */
+  padding-bottom: 10rem;
+  color: #32154f;
+  background:
+    radial-gradient(ellipse at 105% 2%, #a4aec4 0, #c5a6bd 13%, transparent 30%),
+    radial-gradient(ellipse at -12% 100%, #91a0bf 0, #d8bbc9 28%, transparent 45%),
+    linear-gradient(120deg, #f8e2d7 0%, #f0d5d4 47%, #b58daa 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Decorative concentric-circle glow (bottom-right corner) */
+.resources-page::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 34rem;
+  height: 34rem;
+  right: -13rem;
+  bottom: -14rem;
+  border: 1px solid #674b6d66;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rem #8f6b9060, 0 0 0 6rem #8f6b9038, 0 0 0 9rem #8f6b9026;
+}
+
+.resources-brand-header,
+.resources-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 2. Brand header ─────────────────────────────────────── */
+.resources-brand-header {
+  height: 5.375rem;
+  padding: 1.1875rem 1.25rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.resources-brand-header img {
+  width: 14.5rem;
+  height: 4.1875rem;
+  object-fit: contain;
+  object-position: left top;
+}
+
+.resources-profile-button {
+  display: none;
+}
+
+/* ── 3. Content wrapper ──────────────────────────────────── */
+.resources-content {
+  padding: 0 2.35% 0 2.22%;
+}
+
+/* ── 4. Page header ──────────────────────────────────────── */
+.resources-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 4.7rem;
+  margin-bottom: 1.4rem;
+}
+
+.resources-page-header h1 {
+  margin: 0;
+  color: #281a3c; /* BrainMint deep plum/aubergine */
+  font-size: 2.3rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.18;
+}
+
+.resources-page-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: #6b5d70;
+}
+
+.resources-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.15rem;
+}
+
+.resources-page-actions > span {
+  padding: 0.3rem 0.55rem;
+  color: #60446c;
+  background: #fff5f5aa;
+  border-radius: 1rem;
+  font-size: 0.67rem;
+  white-space: nowrap;
+}
+
+.resources-refresh {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  color: #2a104b;
+  background: #fff5f5aa;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.resources-refresh:hover:not(:disabled) { background: #fff5f5; }
+.resources-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.resources-refresh:focus-visible,
+.resources-bottom-nav button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 3px;
+}
+
+.resources-spin {
+  animation: resources-spin 0.75s linear infinite;
+}
+
+@keyframes resources-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── 5. Summary cards ────────────────────────────────────── */
+.resources-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 0.95rem;
+}
+
+.resources-summary-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 6.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem; /* ~20px BrainMint card rounding */
+  background: #fff5f5;
+  border: 1px solid #fdf0f2;
+  box-shadow: 0 2px 10px -6px rgba(74, 34, 64, 0.12);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.resources-summary-card:hover {
+  box-shadow: 0 6px 20px -4px rgba(74, 34, 64, 0.14);
+  transform: translateY(-1px);
+}
+
+.resources-summary-card > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.resources-summary-card__label {
+  font-size: 0.82rem;
+  color: #32154f;
+}
+
+.resources-summary-card__value {
+  margin-top: 0.18rem;
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 600;
+  color: #281a3c;
+}
+
+.resources-summary-card__detail {
+  margin-top: 0.18rem;
+  font-size: 0.69rem;
+  color: #6b5d70;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.resources-summary-card__icon {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.65rem;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+/* Icon / value tones */
+.resources-summary-card--default .resources-summary-card__icon { color: #3158bc; background: #eff6ff; }
+.resources-summary-card--success .resources-summary-card__icon { color: #00834d; background: #ecfdf3; }
+.resources-summary-card--danger  .resources-summary-card__icon { color: #b42318; background: #fef3f2; }
+.resources-summary-card--warning .resources-summary-card__icon { color: #b54708; background: #fffaeb; }
+.resources-summary-card--neutral .resources-summary-card__icon { color: #536075; background: #edf0f5; }
+
+.resources-summary-card--success .resources-summary-card__value { color: #00834d; }
+.resources-summary-card--danger  .resources-summary-card__value { color: #b42318; }
+.resources-summary-card--warning .resources-summary-card__value { color: #b54708; }
+
+/* ── 6. Resource directory card ──────────────────────────── */
+.resources-table-card {
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: #fff5f5;
+  box-shadow: 0 2px 14px -8px rgba(74, 34, 64, 0.16);
+  /*
+   * DOCK OVERLAP FIX (belt-and-suspenders):
+   * Extra bottom margin on the card itself (plus 1rem min-height spacer)
+   * so the pagination row is never flush against the dock area even if
+   * the page padding is ever overridden.
+   */
+  margin-bottom: 3rem;
+}
+
+.resources-table-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.35rem;
+  border-bottom: 1px solid #ece7ed;
+  flex-wrap: wrap;
+}
+
+.resources-table-controls__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #281a3c;
+}
+
+/* ── 7. Filter row ───────────────────────────────────────── */
+.resources-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.resources-filter-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: #ece7ed;
+  flex-shrink: 0;
+}
+
+.resources-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.resources-search-wrap > svg {
+  position: absolute;
+  left: 0.5rem;
+  pointer-events: none;
+  color: #6b5d70;
+}
+
+.resources-search-input {
+  height: 2.25rem;
+  width: 12rem;
+  border: 0;
+  background: transparent;
+  padding: 0 0.5rem 0 2rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #32154f;
+}
+
+.resources-search-input::placeholder { color: #6b5d70; opacity: 1; }
+.resources-search-input:focus { outline: none; }
+
+.resources-filter-select {
+  height: 2.25rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.79rem;
+  color: #32154f;
+  cursor: pointer;
+  padding: 0 0.4rem;
+  appearance: none;
+  max-width: 10rem;
+}
+
+.resources-filter-select:focus { outline: none; }
+
+.resources-filters-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 1rem;
+  background: #ffffff;
+  color: #60446c;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.resources-filters-clear:hover { background: #f7eeff; }
+
+.resources-filters-clear:focus-visible,
+.resources-search-input:focus-visible,
+.resources-filter-select:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 1px;
+}
+
+.resources-filter-count {
+  font-size: 0.7rem;
+  color: #6b5d70;
+  white-space: nowrap;
+}
+
+/* ── 8. Pagination ───────────────────────────────────────── */
+.resources-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1.35rem;
+  border-top: 1px solid #ece7ed;
+  flex-wrap: wrap;
+}
+
+.resources-pagination__meta {
+  font-size: 0.73rem;
+  color: #6b5d70;
+}
+
+.resources-pagination__meta:empty {
+  display: none;
+}
+
+.resources-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.resources-pagination__controls > button {
+  height: 2rem;
+  padding: 0 0.85rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 1rem;
+  background: #ffffff;
+  color: #2a104b;
+  font: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  white-space: nowrap;
+}
+
+.resources-pagination__controls > button:hover:not(:disabled) { background: #f7eeff; }
+.resources-pagination__controls > button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.resources-pagination__controls > button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 2px;
+}
+
+.resources-pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resources-pagination__pages button {
+  min-width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: #4d526c;
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.resources-pagination__pages button:hover { background: #f0e6f3; }
+
+.resources-pagination__pages button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 1px;
+}
+
+.resources-pagination__page--current,
+.resources-pagination__page--current:hover {
+  background: #2a104b;
+  color: #ffe5d7;
+}
+
+.resources-pagination__gap {
+  color: #9e8c96;
+  font-size: 0.73rem;
+  padding: 0 0.2rem;
+}
+
+/* ── 9. Details modal (inherits shared BrainMint Modal) ──── */
+.resources-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.resources-category-icon--lg {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.8rem;
+}
+
+.resources-modal-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem 1rem;
+  background: #fdf3f5;
+  border: 1px solid #f2e3ea;
+  border-radius: 1rem;
+}
+
+.resources-modal-identity__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.resources-modal-identity__meta strong {
+  color: #281a3c;
+  font-size: 0.95rem;
+}
+
+.resources-modal-identity__meta span {
+  color: #6f5d6b;
+  font-size: 0.73rem;
+  margin-top: 0.1rem;
+}
+
+.resources-modal-identity__status {
+  flex-shrink: 0;
+}
+
+.resources-modal-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.resources-modal-row {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: 1rem;
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid #f4ecf0;
+  align-items: center;
+}
+
+.resources-modal-row:last-child {
+  border-bottom: 0;
+}
+
+.resources-modal-row dt {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b5d70;
+}
+
+.resources-modal-row dd {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #281a3c;
+  overflow-wrap: anywhere;
+}
+
+.resources-operator-code {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
+/* ── 10. Bottom navigation dock ──────────────────────────── */
+.resources-bottom-nav {
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 29rem;
+  height: 4.125rem;
+  padding: 0.375rem 1.1rem;
+  transform: translateX(calc(-50% + 1.25rem));
+  border-radius: 2rem;
+  background: #2a104b;
+  box-shadow: 0 0.25rem 1.5rem #2b104b30;
+}
+
+.resources-bottom-nav button {
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  height: 3.25rem;
+  border: 0;
+  border-radius: 50%;
+  color: #ffe5d7;
+  background: transparent;
+  cursor: pointer;
+}
+
+.resources-bottom-nav button:disabled {
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Resources page → resources tile is highlighted (its "active" slot) */
+.resources-bottom-nav__child {
+  color: #1d1024 !important;
+  background: #f6c4a7 !important;
+}
+
+/* ── 11. Skip / focus helpers ────────────────────────────── */
+.resources-skip-link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.resources-skip-link:focus {
+  z-index: 10;
+  top: 0;
+  left: 1rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.7rem;
+  color: #fff;
+  background: #2a104b;
+  clip: auto;
+}
+
+/* ── 12. Responsive ──────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .resources-content { padding: 0 2rem; }
+  .resources-filter-select { max-width: 9rem; }
+}
+
+@media (max-width: 900px) {
+  .resources-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+}
+
+@media (max-width: 680px) {
+  /* Dock is full-width on mobile → keep generous clearance below it. */
+  .resources-page { padding-bottom: 11rem; }
+  .resources-brand-header { height: 5.5rem; padding-left: 1rem; }
+  .resources-brand-header img { width: 13rem; }
+  .resources-content { padding: 0 1rem; }
+  .resources-page-header { display: block; min-height: 0; margin-bottom: 1rem; }
+  .resources-page-header h1 { font-size: 1.85rem; }
+  .resources-page-actions { justify-content: space-between; margin-top: 0.55rem; flex-wrap: wrap; }
+  .resources-table-controls { padding: 0.85rem 1rem; }
+  .resources-table-controls__title { margin-bottom: 0.4rem; }
+  .resources-search-input { width: 9.5rem; }
+  .resources-summary-card { min-height: 6.2rem; padding: 0.75rem; }
+  .resources-summary-card__value { font-size: 1.7rem; }
+  .resources-summary-card__icon { width: 1.8rem; height: 1.8rem; }
+  .resources-pagination { flex-direction: column; align-items: flex-start; }
+  .resources-bottom-nav { width: calc(100% - 2rem); transform: translateX(-50%); }
+  .resources-bottom-nav button { width: 2.75rem; height: 2.75rem; }
+  .resources-modal-row { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resources-page, .resources-page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,139 @@
+.my-requests-panel {
+  margin-top: 0.5rem;
+}
+
+.request-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.2rem;
+}
+
+.request-filter {
+  padding: 0.55rem 1rem;
+  border: 1px solid #e8dfe9;
+  border-radius: 2rem;
+  background: #fff;
+  color: #766b7c;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.request-filter--active {
+  border-color: #281a3c;
+  background: #281a3c;
+  color: #fff;
+}
+
+.my-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.my-request-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee7ef;
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.my-request-card__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.my-request-card__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 0.75rem;
+  background: #f5eaf1;
+  color: #684675;
+}
+
+.my-request-card__main h3 {
+  margin: 0;
+  color: #3e304b;
+  font-size: 0.85rem;
+}
+
+.my-request-card__main p {
+  margin: 0.3rem 0;
+  color: #85798c;
+  font-size: 0.7rem;
+}
+
+.my-request-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 0.55rem;
+  color: #968a9b;
+  font-size: 0.65rem;
+}
+
+.my-request-card__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.request-cancel-action {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #ead6dc;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #a64d67;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.request-cancel-action:hover {
+  background: #fff4f6;
+}
+
+.my-requests-empty {
+  padding: 2.5rem 1rem;
+  color: #817487;
+  text-align: center;
+}
+
+.my-requests-empty h3 {
+  margin: 0.7rem 0 0.3rem;
+  color: #44364f;
+  font-size: 0.9rem;
+}
+
+.my-requests-empty p {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .my-request-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .my-request-card__actions {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#281A3C"/>
+  <!-- BrainMint geometric facet shapes -->
+  <path d="M16 6L9 11L12 18L16 14Z" fill="#EF4444"/>
+  <path d="M16 6L23 11L20 18L16 14Z" fill="#F59E0B"/>
+  <path d="M9 11L7 17L12 24L12 18Z" fill="#10B981"/>
+  <path d="M23 11L25 17L20 24L20 18Z" fill="#3B82F6"/>
+  <path d="M12 24L16 26L20 24L16 14Z" fill="#8B5CF6"/>
+</svg>

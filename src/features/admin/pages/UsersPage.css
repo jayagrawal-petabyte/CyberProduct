@@ -1,0 +1,652 @@
+/* ============================================================
+   BrainMint Design System — User Management Page
+   src/features/admin/pages/UsersPage.css
+
+   Visual reference: DashboardPage.css / approvalInbox.css
+   Scoped to the User Management page (users-* prefixes only).
+   ============================================================ */
+
+/* ── 1. Page shell ──────────────────────────────────────── */
+.users-page {
+  min-height: 100vh;
+  /*
+   * DOCK OVERLAP FIX (mirrors .admin-page):
+   * Fixed dock footprint = 4.125rem height + 0.65rem bottom offset ≈ 4.8rem.
+   * 8.5rem bottom padding guarantees the last table row AND the
+   * pagination footer always scroll clear of the dock, on any
+   * viewport height (the space travels with the content, not the screen).
+   */
+  padding-bottom: 8.5rem;
+  color: #32154f;
+  background:
+    radial-gradient(ellipse at 105% 2%, #a4aec4 0, #c5a6bd 13%, transparent 30%),
+    radial-gradient(ellipse at -12% 100%, #91a0bf 0, #d8bbc9 28%, transparent 45%),
+    linear-gradient(120deg, #f8e2d7 0%, #f0d5d4 47%, #b58daa 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Decorative concentric-circle glow (bottom-right corner) */
+.users-page::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 34rem;
+  height: 34rem;
+  right: -13rem;
+  bottom: -14rem;
+  border: 1px solid #674b6d66;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rem #8f6b9060, 0 0 0 6rem #8f6b9038, 0 0 0 9rem #8f6b9026;
+}
+
+.users-brand-header,
+.users-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 2. Brand header ─────────────────────────────────────── */
+.users-brand-header {
+  height: 5.375rem;
+  padding: 1.1875rem 1.25rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.users-brand-header img {
+  width: 14.5rem;
+  height: 4.1875rem;
+  object-fit: contain;
+  object-position: left top;
+}
+
+.users-profile-button {
+  display: none;
+}
+
+/* ── 3. Content wrapper ──────────────────────────────────── */
+.users-content {
+  padding: 0 2.35% 0 2.22%;
+}
+
+/* ── 4. Page header ──────────────────────────────────────── */
+.users-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 4.7rem;
+  margin-bottom: 1.4rem;
+}
+
+.users-page-header h1 {
+  margin: 0;
+  color: #281a3c; /* BrainMint deep plum/aubergine */
+  font-size: 2.3rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.18;
+}
+
+.users-page-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: #6b5d70;
+}
+
+.users-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.15rem;
+}
+
+.users-page-actions > span {
+  padding: 0.3rem 0.55rem;
+  color: #60446c;
+  background: #fff5f5aa;
+  border-radius: 1rem;
+  font-size: 0.67rem;
+  white-space: nowrap;
+}
+
+.users-refresh {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  color: #2a104b;
+  background: #fff5f5aa;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.users-refresh:hover:not(:disabled) { background: #fff5f5; }
+.users-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.users-refresh:focus-visible,
+.users-bottom-nav button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 3px;
+}
+
+.users-spin {
+  animation: users-spin 0.75s linear infinite;
+}
+
+@keyframes users-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── 5. Summary cards ────────────────────────────────────── */
+.users-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 0.95rem;
+}
+
+.users-summary-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 6.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem; /* ~20px BrainMint card rounding */
+  background: #fff5f5;
+  border: 1px solid #fdf0f2;
+  box-shadow: 0 2px 10px -6px rgba(74, 34, 64, 0.12);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.users-summary-card:hover {
+  box-shadow: 0 6px 20px -4px rgba(74, 34, 64, 0.14);
+  transform: translateY(-1px);
+}
+
+.users-summary-card > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.users-summary-card__label {
+  font-size: 0.82rem;
+  color: #32154f;
+}
+
+.users-summary-card__value {
+  margin-top: 0.18rem;
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 600;
+  color: #281a3c;
+}
+
+.users-summary-card__detail {
+  margin-top: 0.18rem;
+  font-size: 0.69rem;
+  color: #6b5d70;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.users-summary-card__icon {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.65rem;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+/* Icon / value tones */
+.users-summary-card--default .users-summary-card__icon { color: #3158bc; background: #eff6ff; }
+.users-summary-card--success .users-summary-card__icon { color: #00834d; background: #ecfdf3; }
+.users-summary-card--neutral .users-summary-card__icon { color: #536075; background: #edf0f5; }
+.users-summary-card--danger  .users-summary-card__icon { color: #b42318; background: #fef3f2; }
+
+.users-summary-card--success .users-summary-card__value { color: #00834d; }
+.users-summary-card--danger  .users-summary-card__value { color: #b42318; }
+.users-summary-card--neutral .users-summary-card__value { color: #536075; }
+
+/* ── 6. Employee directory card ──────────────────────────── */
+.users-table-card {
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: #fff5f5;
+  box-shadow: 0 2px 14px -8px rgba(74, 34, 64, 0.16);
+  /*
+   * DOCK OVERLAP FIX (belt-and-suspenders):
+   * Extra bottom margin on the card itself so the pagination row is
+   * never flush against the dock area even if the page padding is
+   * ever overridden.
+   */
+  margin-bottom: 2.5rem;
+}
+
+.users-table-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.35rem;
+  border-bottom: 1px solid #ece7ed;
+  flex-wrap: wrap;
+}
+
+.users-table-controls__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #281a3c;
+}
+
+/* ── 7. Filter row ───────────────────────────────────────── */
+.users-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.users-filter-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: #ece7ed;
+  flex-shrink: 0;
+}
+
+.users-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.users-search-wrap > svg {
+  position: absolute;
+  left: 0.5rem;
+  pointer-events: none;
+  color: #6b5d70;
+}
+
+.users-search-input {
+  height: 2.25rem;
+  width: 14rem;
+  border: 0;
+  background: transparent;
+  padding: 0 0.5rem 0 2rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #32154f;
+}
+
+.users-search-input::placeholder { color: #6b5d70; opacity: 1; }
+.users-search-input:focus { outline: none; }
+
+.users-filter-select {
+  height: 2.25rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.79rem;
+  color: #32154f;
+  cursor: pointer;
+  padding: 0 0.4rem;
+  appearance: none;
+}
+
+.users-filter-select:focus { outline: none; }
+
+.users-filters-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 1rem;
+  background: #ffffff;
+  color: #60446c;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.users-filters-clear:hover { background: #f7eeff; }
+
+.users-filters-clear:focus-visible,
+.users-search-input:focus-visible,
+.users-filter-select:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 1px;
+}
+
+.users-filter-count {
+  font-size: 0.7rem;
+  color: #6b5d70;
+  white-space: nowrap;
+}
+
+/* ── 8. Pagination ───────────────────────────────────────── */
+.users-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1.35rem;
+  border-top: 1px solid #ece7ed;
+  flex-wrap: wrap;
+}
+
+.users-pagination__meta {
+  font-size: 0.73rem;
+  color: #6b5d70;
+}
+
+.users-pagination__meta:empty {
+  display: none;
+}
+
+.users-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.users-pagination__controls > button {
+  height: 2rem;
+  padding: 0 0.85rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 1rem;
+  background: #ffffff;
+  color: #2a104b;
+  font: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  white-space: nowrap;
+}
+
+.users-pagination__controls > button:hover:not(:disabled) { background: #f7eeff; }
+.users-pagination__controls > button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.users-pagination__controls > button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 2px;
+}
+
+.users-pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.users-pagination__pages button {
+  min-width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: #4d526c;
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.users-pagination__pages button:hover { background: #f0e6f3; }
+
+.users-pagination__pages button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 1px;
+}
+
+.users-pagination__page--current,
+.users-pagination__page--current:hover {
+  background: #2a104b;
+  color: #ffe5d7;
+}
+
+.users-pagination__gap {
+  color: #9e8c96;
+  font-size: 0.73rem;
+  padding: 0 0.2rem;
+}
+
+/* ── 9. Details modal (inherits shared BrainMint Modal) ──── */
+.users-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.users-modal-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem 1rem;
+  background: #fdf3f5;
+  border: 1px solid #f2e3ea;
+  border-radius: 1rem;
+}
+
+.users-modal-identity__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.users-modal-identity__meta strong {
+  color: #281a3c;
+  font-size: 0.95rem;
+}
+
+.users-modal-identity__meta span {
+  color: #6f5d6b;
+  font-size: 0.73rem;
+  margin-top: 0.1rem;
+}
+
+.users-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.users-avatar--1 { background: #f8dbd0; color: #9e3e19; }
+.users-avatar--2 { background: #dcefe2; color: #187349; }
+.users-avatar--3 { background: #ebddf3; color: #6b3d81; }
+.users-avatar--4 { background: #dce7ff; color: #2446be; }
+.users-avatar--5 { background: #fde8d8; color: #92400e; }
+
+.users-modal-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.users-modal-row {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: 1rem;
+  padding: 0.55rem 0.2rem;
+  border-bottom: 1px solid #f4ecf0;
+  align-items: center;
+}
+
+.users-modal-row:last-child {
+  border-bottom: 0;
+}
+
+.users-modal-row dt {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b5d70;
+}
+
+.users-modal-row dd {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #281a3c;
+  overflow-wrap: anywhere;
+}
+
+.users-operator-code {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.76rem;
+}
+
+/* Status badge (mirrors table badge tones inside the modal) */
+.users-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.users-status-badge--active    { color: #00834d; background: #ecfdf3; }
+.users-status-badge--inactive  { color: #536075; background: #edf0f5; }
+.users-status-badge--suspended { color: #b42318; background: #fef3f2; }
+
+.users-status-dot {
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.users-status-dot--active    { background: #10b981; }
+.users-status-dot--inactive  { background: #8a93a5; }
+.users-status-dot--suspended { background: #ef4444; }
+
+/* ── 10. Bottom navigation dock ──────────────────────────── */
+.users-bottom-nav {
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 29rem;
+  height: 4.125rem;
+  padding: 0.375rem 1.1rem;
+  transform: translateX(calc(-50% + 1.25rem));
+  border-radius: 2rem;
+  background: #2a104b;
+  box-shadow: 0 0.25rem 1.5rem #2b104b30;
+}
+
+.users-bottom-nav button {
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  height: 3.25rem;
+  border: 0;
+  border-radius: 50%;
+  color: #ffe5d7;
+  background: transparent;
+  cursor: pointer;
+}
+
+.users-bottom-nav button:disabled {
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Users page → user slot is highlighted (its "active" tile) */
+.users-bottom-nav__child {
+  color: #1d1024 !important;
+  background: #f6c4a7 !important;
+}
+
+/* ── 11. Skip / focus helpers ────────────────────────────── */
+.users-skip-link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.users-skip-link:focus {
+  z-index: 10;
+  top: 0;
+  left: 1rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.7rem;
+  color: #fff;
+  background: #2a104b;
+  clip: auto;
+}
+
+/* ── 12. Responsive ──────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .users-content { padding: 0 2rem; }
+}
+
+@media (max-width: 900px) {
+  .users-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+}
+
+@media (max-width: 680px) {
+  /* Dock is full-width on mobile → keep generous clearance below it. */
+  .users-page { padding-bottom: 9rem; }
+  .users-brand-header { height: 5.5rem; padding-left: 1rem; }
+  .users-brand-header img { width: 13rem; }
+  .users-content { padding: 0 1rem; }
+  .users-page-header { display: block; min-height: 0; margin-bottom: 1rem; }
+  .users-page-header h1 { font-size: 1.85rem; }
+  .users-page-actions { justify-content: space-between; margin-top: 0.55rem; flex-wrap: wrap; }
+  .users-table-controls { padding: 0.85rem 1rem; }
+  .users-table-controls__title { margin-bottom: 0.4rem; }
+  .users-search-input { width: 10.5rem; }
+  .users-summary-card { min-height: 6.2rem; padding: 0.75rem; }
+  .users-summary-card__value { font-size: 1.7rem; }
+  .users-summary-card__icon { width: 1.8rem; height: 1.8rem; }
+  .users-pagination { flex-direction: column; align-items: flex-start; }
+  .users-bottom-nav { width: calc(100% - 2rem); transform: translateX(-50%); }
+  .users-bottom-nav button { width: 2.75rem; height: 2.75rem; }
+  .users-modal-row { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .users-page, .users-page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

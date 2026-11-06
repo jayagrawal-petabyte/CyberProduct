@@ -1,0 +1,214 @@
+/* ============================================================
+   BrainMint Design System — User Management · Table
+   src/features/admin/components/UsersTable.css
+   Mirrors DashboardPage table styling (scoped to users-*).
+   ============================================================ */
+
+.users-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  min-width: 56rem;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 0.81rem;
+  text-align: left;
+}
+
+.users-table th:nth-child(1) { width: 24%; } /* Employee   */
+.users-table th:nth-child(2) { width: 12%; } /* Emp ID     */
+.users-table th:nth-child(3) { width: 13%; } /* Department */
+.users-table th:nth-child(4) { width: 13%; } /* Role       */
+.users-table th:nth-child(5) { width: 10%; } /* Status     */
+.users-table th:nth-child(6) { width: 14%; } /* Last Active */
+.users-table th:nth-child(7) { width: 14%; } /* Actions    */
+
+.users-table th {
+  height: 2.75rem;
+  padding: 0 1rem;
+  color: #4d526c;
+  background: #f8fafc;
+  font-size: 0.73rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.users-table td {
+  height: 3.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f0edf1;
+  vertical-align: middle;
+}
+
+.users-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Clickable rows */
+.users-row {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.users-row:hover { background: #f5edf5; }
+.users-row:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: -2px;
+  background: #f5edf5;
+}
+
+/* Employee cell */
+.users-employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.users-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.users-avatar--1 { background: #f8dbd0; color: #9e3e19; }
+.users-avatar--2 { background: #dcefe2; color: #187349; }
+.users-avatar--3 { background: #ebddf3; color: #6b3d81; }
+.users-avatar--4 { background: #dce7ff; color: #2446be; }
+.users-avatar--5 { background: #fde8d8; color: #92400e; }
+
+.users-employee-meta {
+  min-width: 0;
+}
+
+.users-employee-name {
+  display: block;
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: #2a104b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users-employee-email {
+  display: block;
+  font-size: 0.67rem;
+  color: #6b5d70;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.1rem;
+}
+
+/* Monospace employee IDs */
+.users-employee-id {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.71rem;
+  color: #32154f;
+}
+
+.users-cell-text {
+  color: #2a1b38;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* Role pill */
+.users-role-pill {
+  display: inline-block;
+  padding: 0.16rem 0.55rem;
+  border-radius: 9999px;
+  background: #f5f3ff;
+  border: 1px solid #e6ddfb;
+  color: #5b21b6;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Status badges — Active green / Inactive grey / Suspended red */
+.users-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Per-status badge tones: Active green / Inactive grey / Suspended red */
+.users-status-badge--active    { color: #00834d; background: #ecfdf3; }
+.users-status-badge--inactive  { color: #536075; background: #edf0f5; }
+.users-status-badge--suspended { color: #b42318; background: #fef3f2; }
+
+.users-status-dot {
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.users-status-dot--active    { background: #10b981; }
+.users-status-dot--inactive  { background: #8a93a5; }
+.users-status-dot--suspended { background: #ef4444; }
+
+/* Last active */
+.users-last-active {
+  font-size: 0.73rem;
+  color: #6b5d70;
+  white-space: nowrap;
+}
+
+/* View details action */
+.users-view-button {
+  height: 1.9rem;
+  padding: 0 0.8rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: #2a104b;
+  font: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+
+.users-view-button:hover {
+  background: #f7eeff;
+  border-color: #d7c3e6;
+}
+
+.users-view-button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 2px;
+}
+
+/* Empty / loading states (mirrors .admin-state) */
+.users-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 13rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.users-state h2 { margin: 0; font-size: 1.2rem; color: #2a104b; }
+.users-state p  { margin: 0; font-size: 0.86rem; color: #6b5d70; }
+.users-icon-muted { color: #72527f; }
+
+@media (max-width: 680px) {
+  .users-table { min-width: 62rem; }
+  .users-view-button { padding: 0 0.55rem; font-size: 0.66rem; }
+}
