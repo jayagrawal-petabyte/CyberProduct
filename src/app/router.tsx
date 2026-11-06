@@ -21,7 +21,9 @@ import EmployeeDashboardPage from '../features/employee/pages/EmployeeDashboardP
 import MyProfilePage from '../features/employee/pages/MyProfilePage';
 import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
 import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
+import MyPoliciesPage from '../features/employee/pages/MyPoliciesPage';
 import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
+
 import SecurityProfilePage from '../features/security/pages/SecurityProfilePage';
 import { SecurityDashboardPage } from '../features/security/pages/SecurityDashboardPage';
 import { SecurityAlertsPage } from '../features/security/pages/SecurityAlertsPage';
@@ -29,6 +31,7 @@ import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditL
 import { EmployeeAccessActivityPage } from '../features/security/pages/EmployeeAccessActivityPage';
 import { AccessDeniedPage } from '../features/security/pages/AccessDeniedPage';
 import { NotificationsPage } from '../features/notifications';
+
 
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
@@ -218,6 +221,21 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/employee/my-policies',
+    element: (
+      <ProtectedRoute allowedRoles={['employee']}>
+        <MyPoliciesPage />
+      </ProtectedRoute>
+    ),
+  },
+  // ── 4. Unbuilt Teammate Feature Slots ──────────────────────────────────────
+  // Note: Following project guidelines, only pages that actually exist are
+  // registered. As teammates implement their pages, import and register them here:
+  // - Employee Portal (Aastha Singh): /employee/*
+  // - Alerts & Audit Center (Aarushi Srivastava): /security/*
+  // - Admin Subpages (Ishaan Gupta): /admin/users, /admin/devices, /admin/policies
+  // - Approvals Grants (Harsh Gupta): /approvals/grants
 
   // ── 5. Security Module (Aarushi Srivastava) ────────────────────────────────
   {

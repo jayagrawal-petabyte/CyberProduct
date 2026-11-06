@@ -4,12 +4,37 @@ import { Icon } from '../../../components/ui';
 import './EmployeeBottomNav.css';
 
 const navItems = [
-  { label: 'Dashboard', path: '/employee', icon: 'grid' as const, end: true },
-  { label: 'Devices', path: '/employee/my-devices', icon: 'monitor' as const },
-  { label: 'Request Access', path: '/employee/access-requests/new', icon: 'plus' as const },
-  { label: 'My Requests', path: '/employee/access-requests', icon: 'file-text' as const },
-  { label: 'Notifications', path: '/employee/notifications', icon: 'bell' as const },
-  { label: 'Profile', path: '/employee/profile', icon: 'user' as const },
+  {
+    label: 'Home',
+    path: '/employee',
+    icon: 'home' as const,
+    end: true,
+  },
+  {
+    label: 'My Devices',
+    path: '/employee/my-devices',
+    icon: 'monitor' as const,
+  },
+  {
+    label: 'Requests',
+    path: '/employee/access-requests',
+    icon: 'file-text' as const,
+  },
+  {
+    label: 'My Policies',
+    path: '/employee/my-policies',
+    icon: 'file-text' as const,
+  },
+  {
+    label: 'Notifications',
+    path: '/employee/notifications',
+    icon: 'bell' as const,
+  },
+  {
+    label: 'My Profile',
+    path: '/employee/profile',
+    icon: 'user' as const,
+  },
 ];
 
 const EmployeeBottomNav: React.FC = () => (
