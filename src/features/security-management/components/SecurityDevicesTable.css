@@ -1,0 +1,305 @@
+/* ============================================================
+   BrainMint Design System — Device Management · Inventory
+   src/features/security-management/components/SecurityDevicesTable.css
+   Owner: Ishaan Gupta (Security Management module)
+   Chassis mirrors PoliciesTable.css; scoped to secdev-* only.
+   Includes the posture tabs strip above the inventory.
+   ============================================================ */
+
+/* ── Posture tabs (above the inventory table) ────────────── */
+.secdev-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.35rem 0;
+}
+
+.secdev-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.1rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #6f5d6b);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease), color var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secdev-tab:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+.secdev-tab:focus-visible { outline: 2px solid var(--color-border-focus, #281a3c); outline-offset: 2px; }
+
+.secdev-tab--current {
+  background: var(--color-brand-primary, #281a3c);
+  border-color: var(--color-brand-primary, #281a3c);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.secdev-tab__count {
+  font-size: 0.6563rem;
+  font-weight: 700;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--color-bg-card-subtle, #fff8fa);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  color: var(--color-text-body, #2a1b38);
+}
+
+.secdev-tab--current .secdev-tab__count {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: transparent;
+  color: #ffe5d7;
+}
+
+/* ── Inventory table ─────────────────────────────────────── */
+.secdev-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.secdev-table {
+  width: 100%;
+  min-width: 56rem;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.secdev-table th:nth-child(1) { width: 26%; } /* DEVICE           */
+.secdev-table th:nth-child(2) { width: 18%; } /* ASSIGNED EMPLOYEE */
+.secdev-table th:nth-child(3) { width: 14%; } /* PLATFORM          */
+.secdev-table th:nth-child(4) { width: 16%; } /* SECURITY POSTURE  */
+.secdev-table th:nth-child(5) { width: 13%; } /* LAST CHECK        */
+.secdev-table th:nth-child(6) { width: 13%; } /* ACTION            */
+
+.secdev-table th {
+  height: 2.9rem;
+  padding: 0 1rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  background: transparent;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.secdev-table td {
+  height: 4rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  vertical-align: middle;
+}
+
+.secdev-table tbody tr:last-child td { border-bottom: 0; }
+
+.secdev-row {
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.secdev-row:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+
+.secdev-row:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: -2px;
+  background: var(--color-bg-card-hover, #fdf5f8);
+}
+
+/* Device cell — platform chip + name + id line */
+.secdev-device-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.secdev-platform-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  background: var(--color-bg-card-subtle, #fff8fa);
+  color: #6b5d70;
+}
+
+.secdev-platform-chip--Windows { color: #3556b8; background: color-mix(in srgb, #3556b8 9%, #ffffff); }
+.secdev-platform-chip--macOS   { color: #6b3fa0; background: color-mix(in srgb, #6b3fa0 9%, #ffffff); }
+.secdev-platform-chip--Linux   { color: #0f7a5c; background: color-mix(in srgb, #0f7a5c 9%, #ffffff); }
+.secdev-platform-chip--iOS     { color: #7a4457; background: color-mix(in srgb, #7a4457 8%, #ffffff); }
+.secdev-platform-chip--Android { color: #b45309; background: color-mix(in srgb, #b45309 8%, #ffffff); }
+
+.secdev-device-meta { min-width: 0; }
+
+.secdev-device-name {
+  display: block;
+  font-size: 0.8438rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secdev-device-idline {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  color: var(--color-text-muted, #9e8c96);
+  white-space: nowrap;
+}
+
+/* Assigned employee cell */
+.secdev-employee-meta { min-width: 0; }
+
+.secdev-employee-name {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-body, #2a1b38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secdev-employee-email {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted, #9e8c96);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Platform cell — text version of os + form factor */
+.secdev-cell-text {
+  font-size: 0.8125rem;
+  color: var(--color-text-body, #2a1b38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Posture — dot + label (green / amber / red) */
+.secdev-posture {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.secdev-posture-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.secdev-posture--compliant     { color: var(--color-success-text, #059669); }
+.secdev-posture--compliant .secdev-posture-dot { background: var(--color-success, #10b981); }
+
+.secdev-posture--non-compliant { color: var(--color-warning-text, #b45309); }
+.secdev-posture--non-compliant .secdev-posture-dot { background: var(--color-warning, #f59e0b); }
+
+.secdev-posture--quarantined   { color: var(--color-danger-text, #b91c1c); }
+.secdev-posture--quarantined .secdev-posture-dot { background: var(--color-danger, #ef4444); }
+
+/* Pill variant used inside the details modal */
+.secdev-posture-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-pill, 9999px);
+  font-size: 0.7188rem;
+  font-weight: 600;
+}
+
+.secdev-posture-pill--compliant     { color: var(--color-success-text, #059669); background: var(--color-success-bg, #ebf9f1); border: 1px solid var(--color-success-border, #d1f2de); }
+.secdev-posture-pill--non-compliant { color: var(--color-warning-text, #b45309); background: var(--color-warning-bg, #fef7ed); border: 1px solid var(--color-warning-border, #fce7c9); }
+.secdev-posture-pill--quarantined   { color: var(--color-danger-text, #b91c1c); background: var(--color-danger-bg, #fdf2f2); border: 1px solid var(--color-danger-border, #f8d7da); }
+
+/* LAST CHECK cell */
+.secdev-last-check {
+  font-size: 0.7813rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  white-space: nowrap;
+}
+
+/* ACTION — Inspect → (+ Remediate → where appropriate) */
+.secdev-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.secdev-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  background: transparent;
+  padding: 0.25rem 0.1rem;
+  font: inherit;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  color: #5b6478;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0.4rem;
+}
+
+.secdev-action-btn--remediate { color: var(--color-warning-text, #b45309); }
+
+.secdev-action-btn:hover { text-decoration: underline; }
+.secdev-action-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: 2px;
+}
+
+/* Compliance note box in the details modal (token set matches the
+   restriction notes used by the Restricted Resources screen). */
+.secdev-note-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--color-warning-bg, #fef7ed);
+  border: 1px solid var(--color-warning-border, #fce7c9);
+  border-radius: var(--radius-md, 12px);
+  font-size: 0.7188rem;
+  line-height: 1.45;
+  color: var(--color-warning-text, #b45309);
+}
+
+.secdev-note-box--quarantined {
+  background: var(--color-danger-bg, #fdf2f2);
+  border-color: var(--color-danger-border, #f8d7da);
+  color: var(--color-danger-text, #b91c1c);
+}
+
+.secdev-note-box svg { flex-shrink: 0; margin-top: 0.08rem; }
+
+/* Mobile minimum width */
+@media (max-width: 680px) {
+  .secdev-table { min-width: 62rem; }
+}

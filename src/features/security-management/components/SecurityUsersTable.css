@@ -1,0 +1,248 @@
+/* ============================================================
+   BrainMint Design System — Security User Management · Table & Tabs
+   src/features/security-management/components/SecurityUsersTable.css
+   Scoped to secuser-*
+   ============================================================ */
+
+/* ── 1. Status Tabs ────────────────────────────────────────── */
+.secuser-page {
+  /*
+   * FLOATING DOCK OVERLAP CLEARANCE FIX:
+   * Real dock footprint: height (42px) + padding (0.8rem) + border + fixed bottom (1.5rem) ≈ 5rem.
+   * On 1600x728 and smaller viewport heights, setting padding-bottom to 14rem desktop / 15rem mobile
+   * and margin-bottom to 4rem on the library container guarantees the table rows, pagination footer,
+   * and "Showing X of Y" info can fully scroll completely above the FloatingDock with generous clearance.
+   */
+  padding-bottom: 14rem !important;
+}
+
+@media (max-width: 680px) {
+  .secuser-page {
+    padding-bottom: 15rem !important;
+  }
+}
+
+.secuser-library {
+  margin-bottom: 3.5rem;
+}
+
+.secuser-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  padding: 0.75rem 1.35rem 0.6rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  overflow-x: auto;
+}
+
+.secuser-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.1rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #6f5d6b);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill, 9999px);
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease), color var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secuser-tab:hover {
+  background: var(--color-bg-card-hover, #fdf5f8);
+  color: var(--color-text-primary, #1e1229);
+}
+
+.secuser-tab:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: 2px;
+}
+
+.secuser-tab--current {
+  background: var(--color-brand-primary, #281a3c);
+  border-color: var(--color-brand-primary, #281a3c);
+  color: var(--color-text-inverse, #ffffff);
+  font-weight: 600;
+}
+
+.secuser-tab--current:hover {
+  background: #392454;
+  border-color: #392454;
+  color: #ffffff;
+}
+
+.secuser-tab__count {
+  font-size: 0.6563rem;
+  font-weight: 700;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--color-bg-card-subtle, #fff8fa);
+  color: var(--color-brand-primary, #281a3c);
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.secuser-tab--current .secuser-tab__count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+/* ── 2. Table Column Sizing ────────────────────────────────── */
+.secuser-table th:nth-child(1) { width: 28%; } /* Employee     */
+.secuser-table th:nth-child(2) { width: 16%; } /* Department   */
+.secuser-table th:nth-child(3) { width: 20%; } /* Role         */
+.secuser-table th:nth-child(4) { width: 14%; } /* Status       */
+.secuser-table th:nth-child(5) { width: 14%; } /* Last Active  */
+.secuser-table th:nth-child(6) { width: 8%; text-align: right; } /* Action */
+
+/* ── 3. Identity Cell ──────────────────────────────────────── */
+.secuser-cell-employee {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.secuser-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.secuser-avatar--1 { background: #efe3f8; color: #582470; }
+.secuser-avatar--2 { background: #e0f2fe; color: #0369a1; }
+.secuser-avatar--3 { background: #ecfdf5; color: #047857; }
+.secuser-avatar--4 { background: #fef3c7; color: #b45309; }
+.secuser-avatar--5 { background: #ffe4e6; color: #be123c; }
+
+.secuser-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.secuser-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1e1229;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secuser-subtext {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: #7b6d77;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 4. Role Badges ────────────────────────────────────────── */
+.secuser-role-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.35rem;
+  white-space: nowrap;
+}
+
+.secuser-role-badge--admin {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
+}
+
+.secuser-role-badge--lead {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.secuser-role-badge--employee {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* ── 5. Status Indicators ──────────────────────────────────── */
+.secuser-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.79rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.secuser-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.secuser-status-dot--active {
+  background-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.secuser-status-dot--suspended {
+  background-color: #dc2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.secuser-status-dot--invited {
+  background-color: #ca8a04;
+  box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.2);
+}
+
+.secuser-status-text--active {
+  color: #15803d;
+}
+
+.secuser-status-text--suspended {
+  color: #b91c1c;
+}
+
+.secuser-status-text--invited {
+  color: #a16207;
+}
+
+/* ── 6. Manage Action Button ───────────────────────────────── */
+.secuser-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: color 120ms ease, background 120ms ease;
+  white-space: nowrap;
+}
+
+.secuser-action-btn:hover {
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.08);
+}
+
