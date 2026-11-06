@@ -31,7 +31,7 @@ import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditL
 import { EmployeeAccessActivityPage } from '../features/security/pages/EmployeeAccessActivityPage';
 import { AccessDeniedPage } from '../features/security/pages/AccessDeniedPage';
 import { NotificationsPage } from '../features/notifications';
-
+import EmployeeNotificationsPage from '../features/employee/pages/EmployeeNotificationsPage';
 
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
@@ -216,10 +216,10 @@ export const router = createBrowserRouter([
   {
     path: '/employee/notifications',
     element: (
-      <ProtectedRoute allowedRoles={['employee', 'admin']}>
-        <NotificationsPage />
-      </ProtectedRoute>
-    ),
+       <ProtectedRoute allowedRoles={['employee']}>
+        <EmployeeNotificationsPage />
+       </ProtectedRoute>
+   ),
   },
   {
     path: '/employee/my-policies',
