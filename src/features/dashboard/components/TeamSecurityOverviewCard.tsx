@@ -60,3 +60,4 @@ export function TeamSecurityOverviewCard({ overview }: TeamSecurityOverviewCardP
     </section>
   )
 }
+

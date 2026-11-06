@@ -10,6 +10,10 @@ import {
 } from '../features/admin';
 import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage';
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage';
+import ApprovalHistoryPage from '../features/approvals/pages/ApprovalHistoryPage';
+import LeadEmployeeActivityPage from '../features/approvals/pages/LeadEmployeeActivityPage';
+import LeadNotificationsPage from '../features/approvals/pages/LeadNotificationsPage';
+import LeadProfilePage from '../features/approvals/pages/LeadProfilePage';
 import TeamLeadDashboardPage from '../features/dashboard/pages/TeamLeadDashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import NotFoundPage from './NotFoundPage';
@@ -133,10 +137,34 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/lead/approval-history',
+    element: (
+      <ProtectedRoute allowedRoles={['lead', 'admin']}>
+        <ApprovalHistoryPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/lead/employee-activity',
+    element: (
+      <ProtectedRoute allowedRoles={['lead', 'admin']}>
+        <LeadEmployeeActivityPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/lead/notifications',
     element: (
       <ProtectedRoute allowedRoles={['lead', 'admin']}>
-        <NotificationsPage />
+        <LeadNotificationsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/lead/profile',
+    element: (
+      <ProtectedRoute allowedRoles={['lead', 'admin']}>
+        <LeadProfilePage />
       </ProtectedRoute>
     ),
   },

@@ -29,8 +29,11 @@ export const EMPLOYEE_NAV_ITEMS: DockItem[] = [
 
 export const LEAD_NAV_ITEMS: DockItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'home', href: '/lead/dashboard' },
+  { id: 'activity', label: 'Employee Activity', icon: 'monitor', href: '/lead/employee-activity' },
   { id: 'approvals', label: 'Access Requests', icon: 'file-text', href: '/lead/approvals' },
+  { id: 'history', label: 'Approval History', icon: 'file-text', href: '/lead/approval-history' },
   { id: 'notifications', label: 'Notifications', icon: 'bell', href: '/lead/notifications' },
+  { id: 'profile', label: 'Profile', icon: 'user', href: '/lead/profile' },
 ];
 
 export const ADMIN_NAV_ITEMS: DockItem[] = [

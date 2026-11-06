@@ -72,3 +72,4 @@ export function DashboardSummaryCards({ summary }: DashboardSummaryCardsProps) {
     </section>
   )
 }
+

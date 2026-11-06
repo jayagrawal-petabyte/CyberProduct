@@ -167,3 +167,4 @@ export function DashboardIcon({ name, size = 20, className, strokeWidth = 2 }: D
     </svg>
   )
 }
+

@@ -75,3 +75,4 @@ export function RecentTeamActivityCard({ activity, activityDate }: RecentTeamAct
     </section>
   )
 }
+

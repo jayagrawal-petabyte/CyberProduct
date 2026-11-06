@@ -138,14 +138,13 @@ export default function TeamLeadDashboardPage() {
         >
           <DashboardIcon name="home" size={29} strokeWidth={1.8} />
         </Link>
-        <button
-          type="button"
-          disabled
-          aria-label="Devices (not available yet)"
-          title="Devices — not implemented in this workspace"
+        <Link
+          to="/lead/employee-activity"
+          aria-label="Employee Activity"
+          title="Employee Activity"
         >
           <DashboardIcon name="monitor" size={29} strokeWidth={1.8} />
-        </button>
+        </Link>
         <button
           type="button"
           disabled
@@ -160,16 +159,16 @@ export default function TeamLeadDashboardPage() {
         <Link to="/lead/notifications" aria-label="Notifications">
           <DashboardIcon name="bell" size={29} strokeWidth={1.8} />
         </Link>
-        <button
-          type="button"
-          disabled
-          aria-label="Profile (not available yet)"
-          title="Profile — not implemented in this workspace"
+        <Link
+          to="/lead/profile"
+          aria-label="Profile"
+          title="Profile"
         >
           <DashboardIcon name="user" size={29} strokeWidth={1.8} />
-        </button>
+        </Link>
       </nav>
     </div>
   )
 }
 export { TeamLeadDashboardPage }
+

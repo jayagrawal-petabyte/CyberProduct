@@ -790,3 +790,4 @@
   .dashboard-bottom-nav { width: min(29rem, calc(100% - 2rem)); transform: translateX(-50%); height: 4rem; padding: 0.375rem 0.75rem; }
   .dashboard-bottom-nav button, .dashboard-bottom-nav a { width: 2.75rem; height: 2.75rem; }
 }
+
