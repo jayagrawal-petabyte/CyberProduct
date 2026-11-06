@@ -5,7 +5,7 @@ export const SecurityDashboardPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+    <div style={{ padding: '2rem', paddingBottom: '6.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

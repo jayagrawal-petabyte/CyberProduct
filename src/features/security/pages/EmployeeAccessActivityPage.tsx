@@ -11,7 +11,7 @@ export const EmployeeAccessActivityPage: React.FC = () => {
   );
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+    <div style={{ padding: '2rem', paddingBottom: '6.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary, #0f172a)' }}>
           Employee Access Activity

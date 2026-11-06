@@ -21,7 +21,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from '../../../components/ui'
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock'
 import RestrictedResourcesTable from '../components/RestrictedResourcesTable'
 import RestrictedResourceFilters from '../components/RestrictedResourceFilters'
 import RestrictedResourceDetailsModal from '../components/RestrictedResourceDetailsModal'
@@ -74,7 +73,6 @@ export const RestrictedResourcesPage: React.FC = () => {
     isLoading,
     lastUpdated,
     departments,
-    refetch,
     createLocalResource,
     updateLocalResource,
   } = useRestrictedResources()
@@ -316,21 +314,8 @@ export const RestrictedResourcesPage: React.FC = () => {
         statuses={RESTRICTED_STATUS_OPTIONS}
         departments={departments}
       />
-
-      {/* ── Floating bottom dock ── */}
-      <FloatingDock items={dockItems} activeId="resources" />
     </main>
   )
 }
-
-/** Security navigation dock; unreleased screens stay href-less (no dead links). */
-const dockItems: DockItem[] = [
-  { id: 'dashboard', label: 'Security Dashboard', icon: 'home', href: '/security/dashboard' },
-  { id: 'policies', label: 'Security Policies', icon: 'file-text', href: '/security/policies' },
-  { id: 'resources', label: 'Restricted Resources', icon: 'shield' },
-  { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/alerts' },
-  { id: 'audit', label: 'Audit Logs', icon: 'clock', href: '/security/audit' },
-  { id: 'profile', label: 'Security Profile', icon: 'user', href: '/security/profile' },
-]
 
 export default RestrictedResourcesPage

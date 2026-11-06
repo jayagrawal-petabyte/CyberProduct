@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDevicesData, filterDevices } from '../hooks/useDevicesData'
 import {
   AdminDeviceRecord,
@@ -112,6 +113,7 @@ function pageList(current: number, total: number): Array<number | 'gap'> {
 
 export const DevicesPage: React.FC = () => {
   const { devices, summary, isLoading, lastUpdated, refetch } = useDevicesData()
+  const navigate = useNavigate()
   const [filters, setFilters] = useState<DeviceFiltersState>(DEFAULT_DEVICE_FILTERS)
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<AdminDeviceRecord | null>(null)
@@ -271,24 +273,26 @@ export const DevicesPage: React.FC = () => {
 
       {/* ── Bottom navigation dock ── */}
       <nav className="devices-bottom-nav" aria-label="Primary navigation">
-        <button type="button" aria-label="Dashboard (admin overview)">
+        <button type="button" aria-label="Dashboard" onClick={() => navigate('/admin')}>
           <Icon name="grid" size={22} />
         </button>
-        <button type="button" className="devices-bottom-nav__child" aria-label="Devices">
+        <button type="button" className="devices-bottom-nav__child" aria-current="page" aria-label="Devices">
           <Icon name="monitor" size={22} />
         </button>
-        <button type="button" disabled aria-label="New request (not available yet)">
+        <button type="button" aria-label="Users" onClick={() => navigate('/admin/users')}>
           <Icon name="plus" size={22} />
         </button>
-        <button type="button" disabled aria-label="Users (not available yet)">
-          <Icon name="user" size={22} />
+        <button type="button" aria-label="Resources" onClick={() => navigate('/admin/resources')}>
+          <Icon name="file-text" size={22} />
         </button>
-        <button type="button" disabled aria-label="Notifications (not available yet)">
+        {/* Notifications — no route yet; visually present, not interactive */}
+        <span className="devices-bottom-nav__visual" aria-hidden="true">
           <Icon name="bell" size={22} />
-        </button>
-        <button type="button" disabled aria-label="Profile (not available yet)">
+        </span>
+        {/* Profile — no route yet; visually present, not interactive */}
+        <span className="devices-bottom-nav__visual" aria-hidden="true">
           <Icon name="user" size={22} />
-        </button>
+        </span>
       </nav>
     </main>
   )

@@ -30,6 +30,14 @@ import { SecurityAlertsPage } from '../features/security/pages/SecurityAlertsPag
 import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditLogsPage';
 import { EmployeeAccessActivityPage } from '../features/security/pages/EmployeeAccessActivityPage';
 import { AccessDeniedPage } from '../features/security/pages/AccessDeniedPage';
+import { SecurityLayout } from '../features/security';
+import {
+  SecurityPoliciesPage,
+  RestrictedResourcesPage,
+  NetworkCompliancePage,
+  DeviceManagementPage,
+  SecurityUsersPage,
+} from '../features/security-management';
 import { NotificationsPage } from '../features/notifications';
 import EmployeeNotificationsPage from '../features/employee/pages/EmployeeNotificationsPage';
 
@@ -239,64 +247,70 @@ export const router = createBrowserRouter([
 
   // ── 5. Security Module (Aarushi Srivastava) ────────────────────────────────
   {
-    path: '/security/dashboard',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <SecurityDashboardPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/alerts',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <SecurityAlertsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/audit',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <SecurityAuditLogsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/employee-activity',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <EmployeeAccessActivityPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/profile',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <SecurityProfilePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/notifications',
-    element: (
-      <ProtectedRoute allowedRoles={['security', 'admin']}>
-        <NotificationsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/security/access-denied',
-    element: (
-      <ProtectedRoute>
-        <AccessDeniedPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
     path: '/security',
-    element: <Navigate to="/security/dashboard" replace />,
+    element: (
+      <ProtectedRoute allowedRoles={['security', 'admin']}>
+        <SecurityLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <SecurityDashboardPage />,
+      },
+      {
+        path: 'dashboard',
+        element: <SecurityDashboardPage />,
+      },
+      {
+        path: 'notifications',
+        element: <NotificationsPage />,
+      },
+      {
+        path: 'audit-logs',
+        element: <SecurityAuditLogsPage />,
+      },
+      {
+        path: 'audit',
+        element: <Navigate to="/security/audit-logs" replace />,
+      },
+      {
+        path: 'alerts',
+        element: <SecurityAlertsPage />,
+      },
+      {
+        path: 'policies',
+        element: <SecurityPoliciesPage />,
+      },
+      {
+        path: 'restricted-resources',
+        element: <RestrictedResourcesPage />,
+      },
+      {
+        path: 'network-compliance',
+        element: <NetworkCompliancePage />,
+      },
+      {
+        path: 'devices',
+        element: <DeviceManagementPage />,
+      },
+      {
+        path: 'users',
+        element: <SecurityUsersPage />,
+      },
+      {
+        path: 'profile',
+        element: <SecurityProfilePage />,
+      },
+      {
+        path: 'employee-activity',
+        element: <EmployeeAccessActivityPage />,
+      },
+      {
+        path: 'access-denied',
+        element: <AccessDeniedPage />,
+      },
+    ],
   },
 
   // ── 6. Error & Fallback Routes ─────────────────────────────────────────────

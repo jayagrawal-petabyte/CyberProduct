@@ -24,7 +24,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from '../../../components/ui'
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock'
 import SecurityUsersTable from '../components/SecurityUsersTable'
 import SecurityUserStatusTabs from '../components/SecurityUserStatusTabs'
 import SecurityUserFilters from '../components/SecurityUserFilters'
@@ -117,18 +116,6 @@ export const SecurityUsersPage: React.FC = () => {
     const updated = updateUser(id, values)
     setFeedback(`Identity profile updated for ${updated.fullName} — local prototype in-memory state.`)
   }
-
-  // Floating dock items consistent with security management suite
-  const dockItems: DockItem[] = [
-    { id: 'dashboard', label: 'Security Dashboard', icon: 'home', href: '/security/dashboard' },
-    { id: 'policies', label: 'Security Policies', icon: 'file-text', href: '/security/policies' },
-    { id: 'resources', label: 'Restricted Resources', icon: 'shield', href: '/security/resources' },
-    { id: 'network', label: 'Network Compliance', icon: 'shield-check', href: '/security/network-compliance' },
-    { id: 'devices', label: 'Device Management', icon: 'monitor', href: '/security/devices' },
-    { id: 'users', label: 'User Management', icon: 'user', href: '/security/users' },
-    { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/alerts' },
-    { id: 'audit', label: 'Audit Logs', icon: 'clock', href: '/security/audit' },
-  ]
 
   return (
     <main className="secpol-page secuser-page">
@@ -334,9 +321,6 @@ export const SecurityUsersPage: React.FC = () => {
           )}
         </section>
       </div>
-
-      {/* ── Floating Dock Navigation ── */}
-      <FloatingDock items={dockItems} activeId="users" />
 
       {/* ── Modals ── */}
       <SecurityUserDetailsModal

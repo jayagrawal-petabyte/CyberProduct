@@ -17,7 +17,6 @@ import React, { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { BrandLogo } from '../../../components/shared/BrandLogo';
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock';
 import { StatusBadge } from '../../../components/ui/StatusBadge';
 import { Toggle } from '../../../components/ui/Toggle';
 import { Icon } from '../../../components/ui/Icon';
@@ -146,18 +145,6 @@ export const SecurityProfilePage: React.FC = () => {
     logout();
     navigate('/login');
   };
-
-  // Security navigation dock items
-  const securityDockItems: DockItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'home', href: '/security/profile' },
-    { id: 'requests', label: 'Requests', icon: 'file-text', href: '/security/profile' },
-    { id: 'devices', label: 'Devices', icon: 'monitor', href: '/security/profile' },
-    { id: 'cloud', label: 'Cloud Resources', icon: 'shield', href: '/security/profile' },
-    { id: 'grid', label: 'Applications', icon: 'grid', href: '/security/profile' },
-    { id: 'audit', label: 'Audit Logs', icon: 'file-text', href: '/security/profile' },
-    { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/notifications' },
-    { id: 'profile', label: 'Security Profile', icon: 'user', href: '/security/profile' },
-  ];
 
   return (
     <main className="security-profile-page">
@@ -606,17 +593,6 @@ export const SecurityProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Floating Bottom Dock */}
-      <FloatingDock
-        items={securityDockItems}
-        activeId="profile"
-        onSelect={(id) => {
-          if (id === 'profile') {
-            navigate('/security/profile');
-          }
-        }}
-      />
     </main>
   );
 };

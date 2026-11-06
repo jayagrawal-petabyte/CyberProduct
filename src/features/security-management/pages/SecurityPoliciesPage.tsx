@@ -20,7 +20,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from '../../../components/ui'
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock'
 import PoliciesTable from '../components/PoliciesTable'
 import PolicyFilters from '../components/PolicyFilters'
 import PolicyDetailsModal from '../components/PolicyDetailsModal'
@@ -137,16 +136,6 @@ export const SecurityPoliciesPage: React.FC = () => {
       'Local prototype only: reminder not dispatched — policy acknowledgment runs on the backend.',
     )
   }
-
-  // Security navigation dock; unreleased screens stay href-less (no dead links).
-  const dockItems: DockItem[] = [
-    { id: 'dashboard', label: 'Security Dashboard', icon: 'home', href: '/security/dashboard' },
-    { id: 'policies', label: 'Security Policies', icon: 'file-text', href: '/security/policies' },
-    { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/alerts' },
-    { id: 'audit', label: 'Audit Logs', icon: 'clock', href: '/security/audit' },
-    { id: 'activity', label: 'Access Activity', icon: 'shield' },
-    { id: 'profile', label: 'Security Profile', icon: 'user', href: '/security/profile' },
-  ]
 
   return (
     <main className="secpol-page">
@@ -352,9 +341,6 @@ export const SecurityPoliciesPage: React.FC = () => {
         initial={editor?.mode === 'edit' ? editor.policy : null}
         categories={POLICY_CATEGORY_OPTIONS}
       />
-
-      {/* ── Floating bottom dock ── */}
-      <FloatingDock items={dockItems} activeId="policies" />
     </main>
   )
 }

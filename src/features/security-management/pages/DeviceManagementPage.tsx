@@ -20,7 +20,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from '../../../components/ui'
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock'
 import SecurityDevicesTable from '../components/SecurityDevicesTable'
 import DevicePostureTabs from '../components/DevicePostureTabs'
 import SecurityDeviceFilters from '../components/SecurityDeviceFilters'
@@ -32,7 +31,6 @@ import {
 import {
   INVENTORY_SNAPSHOT_DATE,
   SECURITY_DEVICE_OS_OPTIONS,
-  DEVICE_POSTURE_OPTIONS,
 } from '../data/mockSecurityDevices'
 import type {
   DevicePosture,
@@ -130,19 +128,7 @@ export const DeviceManagementPage: React.FC = () => {
     )
   }
 
-  // Security navigation dock; unreleased screens stay href-less (no dead links).
-  const dockItems: DockItem[] = [
-    { id: 'dashboard', label: 'Security Dashboard', icon: 'home', href: '/security/dashboard' },
-    { id: 'policies', label: 'Security Policies', icon: 'file-text', href: '/security/policies' },
-    { id: 'resources', label: 'Restricted Resources', icon: 'shield' },
-    { id: 'network', label: 'Network Compliance', icon: 'shield-check' },
-    { id: 'devices', label: 'Device Management', icon: 'monitor' },
-    { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/alerts' },
-    { id: 'audit', label: 'Audit Logs', icon: 'clock', href: '/security/audit' },
-    { id: 'profile', label: 'Security Profile', icon: 'user', href: '/security/profile' },
-  ]
-
-  return (
+    return (
     <main className="secpol-page">
       <a className="secpol-skip-link" href="#secpol-content">Skip to main content</a>
       <span className="secpol-accent-dot" aria-hidden="true" />
@@ -319,9 +305,6 @@ export const DeviceManagementPage: React.FC = () => {
         onClose={() => setSelected(null)}
         onRemediate={handleRemediate}
       />
-
-      {/* ── Floating bottom dock ── */}
-      <FloatingDock items={dockItems} activeId="devices" />
     </main>
   )
 }

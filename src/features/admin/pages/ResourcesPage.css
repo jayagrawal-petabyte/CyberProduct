@@ -557,6 +557,21 @@
   background: #f6c4a7 !important;
 }
 
+/* Visual-only slot: matches inactive icon appearance but is not interactive */
+.resources-bottom-nav__visual {
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  color: #ffe5d7;
+  background: transparent;
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ── 11. Skip / focus helpers ────────────────────────────── */
 .resources-skip-link {
   position: absolute;

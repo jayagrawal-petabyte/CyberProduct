@@ -12,6 +12,7 @@
  */
 
 import React, { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import './DashboardPage.css'
 
@@ -60,6 +61,7 @@ function initials(name: string): string {
 /* ─── Component ───────────────────────────────────────────── */
 export const DashboardPage: React.FC = () => {
   const { data, isLoading, refetch } = useDashboardData()
+  const navigate = useNavigate()
 
   // Activity table local state
   const [search, setSearch] = useState('')
@@ -465,24 +467,26 @@ export const DashboardPage: React.FC = () => {
 
       {/* ── Bottom navigation dock ── */}
       <nav className="admin-bottom-nav" aria-label="Primary navigation">
-        <button type="button" className="admin-bottom-nav__active" aria-current="page" aria-label="Dashboard">
+        <button type="button" className="admin-bottom-nav__active" aria-current="page" aria-label="Dashboard" onClick={() => navigate('/admin')}>
           <AdminIcon name="grid" size={22} />
         </button>
-        <button type="button" disabled aria-label="Devices (not available yet)">
+        <button type="button" aria-label="Devices" onClick={() => navigate('/admin/devices')}>
           <AdminIcon name="monitor" size={22} />
         </button>
-        <button type="button" disabled aria-label="New request (not available yet)">
+        <button type="button" aria-label="Users" onClick={() => navigate('/admin/users')}>
           <AdminIcon name="plus" size={22} />
         </button>
-        <button type="button" disabled aria-label="Access requests (not available yet)">
+        <button type="button" aria-label="Resources" onClick={() => navigate('/admin/resources')}>
           <AdminIcon name="clipboard" size={22} />
         </button>
-        <button type="button" disabled aria-label="Notifications (not available yet)">
+        {/* Notifications — no route yet; visually present, not interactive */}
+        <span className="admin-bottom-nav__visual" aria-hidden="true">
           <AdminIcon name="bell" size={22} />
-        </button>
-        <button type="button" disabled aria-label="Profile (not available yet)">
+        </span>
+        {/* Profile — no route yet; visually present, not interactive */}
+        <span className="admin-bottom-nav__visual" aria-hidden="true">
           <AdminIcon name="user" size={22} />
-        </button>
+        </span>
       </nav>
     </main>
   )

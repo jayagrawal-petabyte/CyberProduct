@@ -92,17 +92,11 @@ export function filterPolicies(
 export function summarizePolicies(policies: SecurityPolicyRecord[]): PolicySummaryMetrics {
   let published = 0
   let drafts = 0
-  let ackCurrent = 0
-  let ackTarget = 0
   let rollout: SecurityPolicyRecord | null = null
 
   for (const policy of policies) {
     if (policy.state === 'published') {
       published += 1
-      if (policy.enforcement === 'Acknowledgment') {
-        ackCurrent += policy.ackCurrent
-        ackTarget += policy.ackTarget
-      }
     } else if (policy.state === 'draft') {
       drafts += 1
     }

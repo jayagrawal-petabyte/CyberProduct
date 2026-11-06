@@ -1,0 +1,13 @@
+/**
+ * BrainMint Security Module Layout
+ * CyberProduct Platform
+ */
+
+.security-module-layout {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 6rem;
+  box-sizing: border-box;
+}

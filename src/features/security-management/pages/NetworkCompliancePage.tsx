@@ -20,7 +20,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Icon } from '../../../components/ui'
-import { FloatingDock, type DockItem } from '../../../components/shared/FloatingDock'
 import NetworkZonesTable from '../components/NetworkZonesTable'
 import NetworkZoneFilters from '../components/NetworkZoneFilters'
 import ControlHealthPanel from '../components/ControlHealthPanel'
@@ -104,17 +103,6 @@ export const NetworkCompliancePage: React.FC = () => {
 
   /** Zero-pads the zone count for the "Networks monitored" card ("08"), per design. */
   const metricCards = buildMetricCards(summary)
-
-  // Security navigation dock; unreleased screens stay href-less (no dead links).
-  const dockItems: DockItem[] = [
-    { id: 'dashboard', label: 'Security Dashboard', icon: 'home', href: '/security/dashboard' },
-    { id: 'policies', label: 'Security Policies', icon: 'file-text', href: '/security/policies' },
-    { id: 'resources', label: 'Restricted Resources', icon: 'shield' },
-    { id: 'network', label: 'Network Compliance', icon: 'shield-check' },
-    { id: 'alerts', label: 'Threat Alerts', icon: 'bell', href: '/security/alerts' },
-    { id: 'audit', label: 'Audit Logs', icon: 'clock', href: '/security/audit' },
-    { id: 'profile', label: 'Security Profile', icon: 'user', href: '/security/profile' },
-  ]
 
   return (
     <main className="secpol-page">
@@ -260,9 +248,6 @@ export const NetworkCompliancePage: React.FC = () => {
         </div>
 
       </div>
-
-      {/* ── Floating bottom dock ── */}
-      <FloatingDock items={dockItems} activeId="network" />
     </main>
   )
 }

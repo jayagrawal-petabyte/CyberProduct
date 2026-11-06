@@ -44,7 +44,6 @@ const RequestAccessPage: React.FC = () => {
             <h1>Request Access</h1>
             <p>Request permission to access the resources you need for your work.</p>
           </div>
-
           <Link
             className="employee-primary-button"
             to="/employee/access-requests"

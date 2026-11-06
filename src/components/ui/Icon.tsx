@@ -138,12 +138,41 @@ export const Icon: React.FC<IconProps> = ({
         </svg>
       );
 
+    case 'shield-alert':
+      return (
+        <svg {...commonProps}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      );
+
     case 'monitor':
       return (
         <svg {...commonProps}>
           <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
           <line x1="8" y1="21" x2="16" y2="21" />
           <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      );
+
+    case 'monitor-check':
+      return (
+        <svg {...commonProps}>
+          <path d="m9 10 2 2 4-4" />
+          <rect width="20" height="14" x="2" y="3" rx="2" ry="2" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+        </svg>
+      );
+
+    case 'devices':
+      return (
+        <svg {...commonProps}>
+          <path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h6" />
+          <path d="M2 19h10" />
+          <rect width="6" height="10" x="14" y="10" rx="1.5" />
+          <circle cx="17" cy="17" r="0.5" fill={color} />
         </svg>
       );
 
@@ -178,11 +207,54 @@ export const Icon: React.FC<IconProps> = ({
         </svg>
       );
 
+    case 'user-circle':
+      return (
+        <svg {...commonProps}>
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="10" r="3" />
+          <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" />
+        </svg>
+      );
+
+    case 'users':
+      return (
+        <svg {...commonProps}>
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+
+    case 'house':
     case 'home':
       return (
         <svg {...commonProps}>
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+
+    case 'network':
+      return (
+        <svg {...commonProps}>
+          <rect x="16" y="16" width="6" height="6" rx="1" />
+          <rect x="2" y="16" width="6" height="6" rx="1" />
+          <rect x="9" y="2" width="6" height="6" rx="1" />
+          <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+          <path d="M12 12V8" />
+        </svg>
+      );
+
+    case 'clipboard-list':
+      return (
+        <svg {...commonProps}>
+          <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <path d="M12 11h4" />
+          <path d="M12 16h4" />
+          <path d="M8 11h.01" />
+          <path d="M8 16h.01" />
         </svg>
       );
 
@@ -290,6 +362,20 @@ export const Icon: React.FC<IconProps> = ({
           <line x1="16" y1="13" x2="8" y2="13" />
           <line x1="16" y1="17" x2="8" y2="17" />
           <polyline points="10 9 9 9 8 9" />
+        </svg>
+      );
+
+    case 'file-check':
+    case 'checklist':
+      return (
+        <svg {...commonProps}>
+          <rect x="3" y="3" width="18" height="18" rx="4" />
+          <path d="m7 8 1.5 1.5L11 7" />
+          <path d="M13.5 8.5h3.5" />
+          <path d="m7 12 1.5 1.5L11 11" />
+          <path d="M13.5 12.5h3.5" />
+          <path d="m7 16 1.5 1.5L11 15" />
+          <path d="M13.5 16.5h3.5" />
         </svg>
       );
 

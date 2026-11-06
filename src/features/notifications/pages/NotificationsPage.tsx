@@ -233,7 +233,7 @@ const NotificationsPage: React.FC = () => {
         />
       )}
 
-      {(effectiveRole === 'security' || effectiveRole === 'admin') && (
+      {!location.pathname.startsWith('/security') && effectiveRole === 'admin' && (
         <FloatingDock
           items={SECURITY_DOCK_ITEMS}
           activeId="alerts"

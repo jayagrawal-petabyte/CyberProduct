@@ -16,6 +16,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useUsersData, filterUsers } from '../hooks/useUsersData'
 import {
   AdminUserRecord,
@@ -97,6 +98,7 @@ function pageList(current: number, total: number): Array<number | 'gap'> {
 
 export const UsersPage: React.FC = () => {
   const { users, summary, isLoading, lastUpdated, refetch } = useUsersData()
+  const navigate = useNavigate()
   const [filters, setFilters] = useState<UserFiltersState>(DEFAULT_USER_FILTERS)
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<AdminUserRecord | null>(null)
@@ -253,24 +255,26 @@ export const UsersPage: React.FC = () => {
 
       {/* ── Bottom navigation dock ── */}
       <nav className="users-bottom-nav" aria-label="Primary navigation">
-        <button type="button" aria-label="Dashboard (admin overview)">
+        <button type="button" aria-label="Dashboard" onClick={() => navigate('/admin')}>
           <Icon name="grid" size={22} />
         </button>
-        <button type="button" disabled aria-label="Devices (not available yet)">
+        <button type="button" aria-label="Devices" onClick={() => navigate('/admin/devices')}>
           <Icon name="monitor" size={22} />
         </button>
-        <button type="button" disabled aria-label="New request (not available yet)">
+        <button type="button" className="users-bottom-nav__child" aria-current="page" aria-label="Users">
           <Icon name="plus" size={22} />
         </button>
-        <button type="button" aria-label="Users (not available yet)" className="users-bottom-nav__child">
-          <Icon name="user" size={22} />
+        <button type="button" aria-label="Resources" onClick={() => navigate('/admin/resources')}>
+          <Icon name="file-text" size={22} />
         </button>
-        <button type="button" disabled aria-label="Access requests (not available yet)">
+        {/* Notifications — no route yet; visually present, not interactive */}
+        <span className="users-bottom-nav__visual" aria-hidden="true">
           <Icon name="bell" size={22} />
-        </button>
-        <button type="button" disabled aria-label="Profile (not available yet)">
+        </span>
+        {/* Profile — no route yet; visually present, not interactive */}
+        <span className="users-bottom-nav__visual" aria-hidden="true">
           <Icon name="user" size={22} />
-        </button>
+        </span>
       </nav>
     </main>
   )
