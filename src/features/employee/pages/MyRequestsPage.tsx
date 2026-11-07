@@ -1,58 +1,23 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '../../../components/ui';
 import EmployeeBottomNav from '../components/EmployeeBottomNav';
+import {
+  getStoredRequests,
+  cancelStoredRequest,
+} from '../services/accessRequestsStore';
+import type { RequestStatus, AccessRequest } from '../types/accessRequest.types';
 import './MyRequestsPage.css';
 
-type RequestStatus = 'Pending' | 'Approved' | 'Rejected';
-
-type AccessRequest = {
-  id: string;
-  resource: string;
-  access: string;
-  submitted: string;
-  updated: string;
-  status: RequestStatus;
-};
-
-const initialRequests: AccessRequest[] = [
-  {
-    id: 'AR-2048',
-    resource: 'Snowflake Analytics',
-    access: 'Read-only · 7 days',
-    submitted: '04 Nov 2026',
-    updated: 'Today, 09:18',
-    status: 'Pending',
-  },
-  {
-    id: 'AR-2047',
-    resource: 'GitHub Repository',
-    access: 'Contributor · 7 days',
-    submitted: '23 Oct 2026',
-    updated: '23 Oct, 14:10',
-    status: 'Approved',
-  },
-  {
-    id: 'AR-2039',
-    resource: 'Looker',
-    access: 'Viewer · 90 days',
-    submitted: '21 Oct 2026',
-    updated: '21 Oct, 11:05',
-    status: 'Approved',
-  },
-  {
-    id: 'AR-2035',
-    resource: 'AWS Console',
-    access: 'Administrator · 30 days',
-    submitted: '18 Oct 2026',
-    updated: '19 Oct, 10:30',
-    status: 'Rejected',
-  },
-];
+export type { RequestStatus, AccessRequest };
 
 const MyRequestsPage: React.FC = () => {
-  const [requests, setRequests] = useState(initialRequests);
+  const location = useLocation();
+  const [requests, setRequests] = useState<AccessRequest[]>(() => getStoredRequests());
   const [filter, setFilter] = useState('All');
+  const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(() =>
+    Boolean((location.state as { submittedSuccess?: boolean } | null)?.submittedSuccess)
+  );
 
   const filteredRequests = useMemo(
     () =>
@@ -70,9 +35,8 @@ const MyRequestsPage: React.FC = () => {
   };
 
   const cancelRequest = (id: string) => {
-    setRequests((current) =>
-      current.filter((request) => request.id !== id),
-    );
+    const updated = cancelStoredRequest(id);
+    setRequests(updated);
   };
 
   return (
@@ -107,6 +71,31 @@ const MyRequestsPage: React.FC = () => {
             New Request
           </Link>
         </section>
+
+        {showSuccessBanner && (
+          <section className="employee-panel request-success-banner" role="status" aria-live="polite">
+            <div className="request-success-banner__content">
+              <span className="request-success-banner__icon">
+                <Icon name="check-circle" size={24} />
+              </span>
+              <div>
+                <h2>Request submitted successfully</h2>
+                <p>
+                  Your access request has been recorded in this demo interface.
+                  No approval workflow or backend submission is connected yet.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="request-success-banner__close"
+              onClick={() => setShowSuccessBanner(false)}
+              aria-label="Dismiss success message"
+            >
+              <Icon name="x" size={16} />
+            </button>
+          </section>
+        )}
 
         <section className="employee-metrics" aria-label="Request summary">
           {[

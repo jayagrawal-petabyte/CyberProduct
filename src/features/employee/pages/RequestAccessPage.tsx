@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '../../../components/ui';
 import EmployeeBottomNav from '../components/EmployeeBottomNav';
+import { addAccessRequest } from '../services/accessRequestsStore';
 import './RequestAccessPage.css';
 
 const RequestAccessPage: React.FC = () => {
+  const navigate = useNavigate();
   const [resource, setResource] = useState('');
   const [accessLevel, setAccessLevel] = useState('Read-only');
   const [duration, setDuration] = useState('7 days');
@@ -17,7 +19,20 @@ const RequestAccessPage: React.FC = () => {
 
     if (!resource || !businessReason.trim()) return;
 
+    addAccessRequest({
+      resource,
+      accessLevel,
+      duration,
+      businessReason,
+      additionalDetails,
+    });
+
     setSubmitted(true);
+    navigate('/employee/access-requests', {
+      state: {
+        submittedSuccess: true,
+      },
+    });
   };
 
   return (
@@ -158,7 +173,7 @@ const RequestAccessPage: React.FC = () => {
               />
 
               <div className="request-form__actions">
-                <Link to="/employee" className="request-cancel-button">
+                <Link to="/employee/access-requests" className="request-cancel-button">
                   Cancel
                 </Link>
                 <button type="submit" className="employee-primary-button">

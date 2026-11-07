@@ -124,6 +124,65 @@
   font-size: 0.75rem;
 }
 
+.request-success-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #c7eed8;
+  border-radius: 0.85rem;
+  background: #f0fdf4;
+  color: #14532d;
+}
+
+.request-success-banner__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.request-success-banner__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #168b75;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.request-success-banner h2 {
+  margin: 0;
+  color: #1f3b33;
+  font-size: 0.95rem;
+}
+
+.request-success-banner p {
+  margin: 0.35rem 0 0;
+  color: #31584e;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.request-success-banner__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  color: #4f736a;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.request-success-banner__close:hover {
+  background-color: rgba(22, 139, 117, 0.12);
+  color: #168b75;
+}
+
 @media (max-width: 600px) {
   .my-request-card {
     align-items: flex-start;

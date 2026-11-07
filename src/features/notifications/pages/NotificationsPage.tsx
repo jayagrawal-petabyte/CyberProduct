@@ -25,9 +25,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '../../../components/ui/Icon';
-import { FloatingDock } from '../../../components/shared/FloatingDock';
-import type { DockItem } from '../../../components/shared/FloatingDock';
 import EmployeeBottomNav from '../../employee/components/EmployeeBottomNav';
+import LeadBottomNav from '../../approvals/components/LeadBottomNav';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { NotificationFilters } from '../components/NotificationFilters';
@@ -35,28 +34,6 @@ import { NotificationList } from '../components/NotificationList';
 import type { NotificationFilterTab } from '../types/notification.types';
 import type { UserRole } from '../../auth/types/auth.types';
 import './NotificationsPage.css';
-
-// ── Lead dock (6 icons, matches ApprovalInboxPage dock icon set) ─────────────
-const LEAD_DOCK_ITEMS: DockItem[] = [
-  { id: 'home',          label: 'Dashboard',       icon: 'grid',         href: '/approvals' },
-  { id: 'devices',       label: 'Devices',          icon: 'monitor',      href: '/approvals' },
-  { id: 'requests',      label: 'New Request',      icon: 'diamond-plus', href: '/approvals' },
-  { id: 'approvals',     label: 'Access Requests',  icon: 'file-text',    href: '/approvals' },
-  { id: 'notifications', label: 'Notifications',    icon: 'bell',         href: '/lead/notifications' },
-  { id: 'profile',       label: 'Profile',          icon: 'user',         href: '/approvals' },
-];
-
-// ── Security dock (8 icons, matches SecurityProfilePage, alerts → /security/notifications) ─
-const SECURITY_DOCK_ITEMS: DockItem[] = [
-  { id: 'dashboard', label: 'Dashboard',         icon: 'home',      href: '/security/profile' },
-  { id: 'requests',  label: 'Requests',           icon: 'file-text', href: '/security/profile' },
-  { id: 'devices',   label: 'Devices',            icon: 'monitor',   href: '/security/profile' },
-  { id: 'cloud',     label: 'Cloud Resources',    icon: 'shield',    href: '/security/profile' },
-  { id: 'grid',      label: 'Applications',       icon: 'grid',      href: '/security/profile' },
-  { id: 'audit',     label: 'Audit Logs',         icon: 'file-text', href: '/security/profile' },
-  { id: 'alerts',    label: 'Notifications',      icon: 'bell',      href: '/security/notifications' },
-  { id: 'profile',   label: 'Security Profile',   icon: 'user',      href: '/security/profile' },
-];
 
 // ── Role config ──────────────────────────────────────────────────────────────
 interface RoleConfig {
@@ -73,7 +50,7 @@ const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   },
   lead: {
     subtitle: "Your team's approval queue, access updates, and security reminders.",
-    profileLink: '/approvals',
+    profileLink: '/lead/profile',
     markAllVariant: 'primary',
   },
   security: {
@@ -114,6 +91,8 @@ const NotificationsPage: React.FC = () => {
     error,
     activeFilter,
     setActiveFilter,
+    searchQuery,
+    setSearchQuery,
     markAsRead,
     markAllAsRead,
     deleteNotification,
@@ -196,17 +175,42 @@ const NotificationsPage: React.FC = () => {
               <h2 className="notif-page__inbox-title">Inbox</h2>
               <p className="notif-page__inbox-subtitle">Stay informed about your workspace</p>
             </div>
-            <select
-              className="notif-page__category-select"
-              value={categorySelectValue}
-              onChange={handleCategorySelect}
-              aria-label="Filter by category"
-            >
-              <option value="all">All categories</option>
-              <option value="access">Access</option>
-              <option value="security">Security</option>
-              <option value="policies">Policies</option>
-            </select>
+            <div className="notif-page__inbox-controls">
+              <div className="notif-page__search-wrap">
+                <span className="notif-page__search-icon">
+                  <Icon name="search" size={14} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search notifications..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search notifications"
+                  className="notif-page__search-input"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                    className="notif-page__search-clear"
+                  >
+                    <Icon name="x" size={12} />
+                  </button>
+                )}
+              </div>
+              <select
+                className="notif-page__category-select"
+                value={categorySelectValue}
+                onChange={handleCategorySelect}
+                aria-label="Filter by category"
+              >
+                <option value="all">All categories</option>
+                <option value="access">Access</option>
+                <option value="security">Security</option>
+                <option value="policies">Policies</option>
+              </select>
+            </div>
           </div>
 
           {/* Notification feed */}
@@ -223,21 +227,11 @@ const NotificationsPage: React.FC = () => {
 
       </div>
 
-      {/* ── Role-specific bottom dock ── */}
+      {/* ── Role-specific bottom navigation ── */}
       {effectiveRole === 'employee' && <EmployeeBottomNav />}
 
       {effectiveRole === 'lead' && (
-        <FloatingDock
-          items={LEAD_DOCK_ITEMS}
-          activeId="notifications"
-        />
-      )}
-
-      {!location.pathname.startsWith('/security') && effectiveRole === 'admin' && (
-        <FloatingDock
-          items={SECURITY_DOCK_ITEMS}
-          activeId="alerts"
-        />
+        <LeadBottomNav activeId="notifications" />
       )}
     </main>
   );

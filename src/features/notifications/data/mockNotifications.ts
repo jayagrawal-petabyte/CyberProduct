@@ -91,6 +91,30 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
     actionUrl: '/employee/my-devices',
     actionLabel: 'View device',
   },
+  {
+    id: 'notif-emp-006',
+    title: 'Access request decision: AWS Console',
+    message: 'AR-2035 for AWS Console Administrator access was rejected due to policy restrictions.',
+    timestamp: daysAgo(2, 10, 30),
+    isRead: true,
+    priority: 'medium',
+    type: 'access',
+    targetRoles: ['employee'],
+    actionUrl: '/employee/access-requests',
+    actionLabel: 'View details',
+  },
+  {
+    id: 'notif-emp-007',
+    title: 'Security check passed',
+    message: 'New sign-in from Chrome on macOS verified with multi-factor authentication.',
+    timestamp: daysAgo(3, 8, 15),
+    isRead: true,
+    priority: 'low',
+    type: 'security',
+    targetRoles: ['employee'],
+    actionUrl: '/employee/profile',
+    actionLabel: 'Review session',
+  },
 
   // ── LEAD NOTIFICATIONS ──────────────────────────────────────────────────────
   {

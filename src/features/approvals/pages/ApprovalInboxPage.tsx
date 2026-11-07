@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { ApprovalFilters } from '../components/ApprovalFilters'
 import { ApprovalIcon } from '../components/ApprovalIcon'
 import { ApprovalPagination } from '../components/ApprovalPagination'
 import { ApprovalRequestsTable } from '../components/ApprovalRequestsTable'
+import { LeadBottomNav } from '../components/LeadBottomNav'
 import { approvalRequestsDataSource, listApprovalRequests } from '../services/approvalRequestsApi'
 import type { ApprovalFilters as ApprovalFiltersState, ApprovalRequest } from '../types/approvalRequest'
 import { filterApprovalRequests, getStatusCounts } from '../utils/approvalRequestFilters'
@@ -96,14 +97,7 @@ export default function ApprovalInboxPage() {
       </section>
     </div>
 
-    <nav className="approval-bottom-nav" aria-label="Primary navigation">
-      <Link to="/lead/dashboard" aria-label="Dashboard"><ApprovalIcon name="grid" size={23} /></Link>
-      <Link to="/lead/employee-activity" aria-label="Employee Activity"><ApprovalIcon name="monitor" size={23} /></Link>
-      <button type="button" disabled aria-label="Request access (not available yet)"><ApprovalIcon name="plus" size={23} /></button>
-      <Link className="approval-bottom-nav__active" to={basePath} aria-current="page" aria-label="Access requests"><ApprovalIcon name="clipboard" size={23} /></Link>
-      <Link to="/lead/notifications" aria-label="Notifications"><ApprovalIcon name="bell" size={23} /></Link>
-      <Link to="/lead/profile" aria-label="Profile"><ApprovalIcon name="user" size={23} /></Link>
-    </nav>
+    <LeadBottomNav />
   </main>
 }
 

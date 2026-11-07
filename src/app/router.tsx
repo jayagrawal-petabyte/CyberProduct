@@ -12,19 +12,16 @@ import ApprovalInboxPage from '../features/approvals/pages/ApprovalInboxPage';
 import ApprovalDetailPage from '../features/approvals/pages/ApprovalDetailPage';
 import ApprovalHistoryPage from '../features/approvals/pages/ApprovalHistoryPage';
 import LeadEmployeeActivityPage from '../features/approvals/pages/LeadEmployeeActivityPage';
-import LeadNotificationsPage from '../features/approvals/pages/LeadNotificationsPage';
-import LeadProfilePage from '../features/approvals/pages/LeadProfilePage';
 import TeamLeadDashboardPage from '../features/dashboard/pages/TeamLeadDashboardPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import NotFoundPage from './NotFoundPage';
 import EmployeeDashboardPage from '../features/employee/pages/EmployeeDashboardPage';
-import MyProfilePage from '../features/employee/pages/MyProfilePage';
 import MyDevicesPage from '../features/employee/pages/MyDevicesPage';
 import RequestAccessPage from '../features/employee/pages/RequestAccessPage';
 import MyPoliciesPage from '../features/employee/pages/MyPoliciesPage';
 import MyRequestsPage from '../features/employee/pages/MyRequestsPage';
-
-import SecurityProfilePage from '../features/security/pages/SecurityProfilePage';
+import { ProfilePage } from '../features/profile';
+import { NotificationsPage } from '../features/notifications';
 import { SecurityDashboardPage } from '../features/security/pages/SecurityDashboardPage';
 import { SecurityAlertsPage } from '../features/security/pages/SecurityAlertsPage';
 import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditLogsPage';
@@ -38,8 +35,6 @@ import {
   DeviceManagementPage,
   SecurityUsersPage,
 } from '../features/security-management';
-import { NotificationsPage } from '../features/notifications';
-import EmployeeNotificationsPage from '../features/employee/pages/EmployeeNotificationsPage';
 
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
@@ -167,7 +162,7 @@ export const router = createBrowserRouter([
     path: '/lead/notifications',
     element: (
       <ProtectedRoute allowedRoles={['lead', 'admin']}>
-        <LeadNotificationsPage />
+        <NotificationsPage />
       </ProtectedRoute>
     ),
   },
@@ -175,7 +170,7 @@ export const router = createBrowserRouter([
     path: '/lead/profile',
     element: (
       <ProtectedRoute allowedRoles={['lead', 'admin']}>
-        <LeadProfilePage />
+        <ProfilePage />
       </ProtectedRoute>
     ),
   },
@@ -193,7 +188,7 @@ export const router = createBrowserRouter([
     path: '/employee/profile',
     element: (
       <ProtectedRoute allowedRoles={['employee']}>
-        <MyProfilePage />
+        <ProfilePage />
       </ProtectedRoute>
     ),
   },
@@ -224,10 +219,10 @@ export const router = createBrowserRouter([
   {
     path: '/employee/notifications',
     element: (
-       <ProtectedRoute allowedRoles={['employee']}>
-        <EmployeeNotificationsPage />
-       </ProtectedRoute>
-   ),
+      <ProtectedRoute allowedRoles={['employee']}>
+        <NotificationsPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/employee/my-policies',
@@ -300,7 +295,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        element: <SecurityProfilePage />,
+        element: <ProfilePage />,
       },
       {
         path: 'employee-activity',

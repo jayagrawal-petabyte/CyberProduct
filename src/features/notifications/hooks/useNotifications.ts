@@ -164,7 +164,7 @@ export function useNotifications(role: UserRole, userId: string): UseNotificatio
         result = result.filter((n) => n.type === 'access');
         break;
       case 'security':
-        result = result.filter((n) => n.type === 'security');
+        result = result.filter((n) => n.type === 'security' || n.type === 'device');
         break;
       case 'policies':
         result = result.filter((n) => n.type === 'policies');

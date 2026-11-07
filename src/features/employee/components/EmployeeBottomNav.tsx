@@ -17,7 +17,7 @@ interface EmployeeNavItem {
 const employeeNavItems: EmployeeNavItem[] = [
   { id: 'dashboard', label: 'Dashboard', path: '/employee', icon: 'house', end: true },
   { id: 'devices', label: 'My Devices', path: '/employee/my-devices', icon: 'devices' },
-  { id: 'request-access', label: 'Request Access', path: '/employee/access-requests/new', icon: 'diamond-plus' },
+  { id: 'request-access', label: 'Request Access', path: '/employee/access-requests', icon: 'diamond-plus' },
   { id: 'policies', label: 'Policies', icon: 'file-check', disabled: true, comingSoon: true },
   { id: 'notifications', label: 'Notifications', path: '/employee/notifications', icon: 'bell' },
   { id: 'profile', label: 'Profile', path: '/employee/profile', icon: 'user-circle' },

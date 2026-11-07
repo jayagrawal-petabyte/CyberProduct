@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ApprovalIcon } from '../components/ApprovalIcon'
 import { RequestStatusBadge } from '../components/RequestStatusBadge'
+import { LeadBottomNav } from '../components/LeadBottomNav'
 import { listApprovalRequests } from '../services/approvalRequestsApi'
 import type { ApprovalRequest } from '../types/approvalRequest'
 import '../styles/approvalInbox.css'
@@ -446,31 +447,7 @@ export default function ApprovalHistoryPage() {
       </div>
 
       {/* Floating Bottom Nav */}
-      <nav className="approval-bottom-nav" aria-label="Primary navigation">
-        <Link to="/lead/dashboard" aria-label="Dashboard">
-          <ApprovalIcon name="grid" size={23} />
-        </Link>
-        <Link to="/lead/employee-activity" aria-label="Employee Activity">
-          <ApprovalIcon name="monitor" size={23} />
-        </Link>
-        <button type="button" disabled aria-label="Request access (not available yet)">
-          <ApprovalIcon name="plus" size={23} />
-        </button>
-        <Link
-          className="approval-bottom-nav__active"
-          to="/lead/approval-history"
-          aria-current="page"
-          aria-label="Approval History"
-        >
-          <ApprovalIcon name="clipboard" size={23} />
-        </Link>
-        <Link to="/lead/notifications" aria-label="Notifications">
-          <ApprovalIcon name="bell" size={23} />
-        </Link>
-        <Link to="/lead/profile" aria-label="Profile">
-          <ApprovalIcon name="user" size={23} />
-        </Link>
-      </nav>
+      <LeadBottomNav />
     </main>
   )
 }

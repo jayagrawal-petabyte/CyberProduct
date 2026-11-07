@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { DashboardIcon } from '../components/DashboardIcon'
 import { DashboardSummaryCards } from '../components/DashboardSummaryCards'
 import { PendingRequestsCard } from '../components/PendingRequestsCard'
@@ -7,6 +6,7 @@ import { RecentTeamActivityCard } from '../components/RecentTeamActivityCard'
 import { TeamSecurityOverviewCard } from '../components/TeamSecurityOverviewCard'
 import { getDashboardData } from '../services/dashboardApi'
 import type { DashboardData } from '../types/dashboard'
+import { LeadBottomNav } from '../../approvals/components/LeadBottomNav'
 import '../styles/teamLeadDashboard.css'
 
 export default function TeamLeadDashboardPage() {
@@ -129,44 +129,7 @@ export default function TeamLeadDashboardPage() {
       </main>
 
       {/* Floating Bottom Navigation Dock matching Figma/reference */}
-      <nav className="dashboard-bottom-nav" aria-label="Primary navigation">
-        <Link
-          className="dashboard-bottom-nav__active"
-          to="/lead/dashboard"
-          aria-current="page"
-          aria-label="Dashboard"
-        >
-          <DashboardIcon name="home" size={29} strokeWidth={1.8} />
-        </Link>
-        <Link
-          to="/lead/employee-activity"
-          aria-label="Employee Activity"
-          title="Employee Activity"
-        >
-          <DashboardIcon name="monitor" size={29} strokeWidth={1.8} />
-        </Link>
-        <button
-          type="button"
-          disabled
-          aria-label="Request access (not available yet)"
-          title="Request access — not implemented in this workspace"
-        >
-          <DashboardIcon name="plus" size={29} strokeWidth={1.8} />
-        </button>
-        <Link to="/lead/approvals" aria-label="Access requests">
-          <DashboardIcon name="clipboard" size={29} strokeWidth={1.8} />
-        </Link>
-        <Link to="/lead/notifications" aria-label="Notifications">
-          <DashboardIcon name="bell" size={29} strokeWidth={1.8} />
-        </Link>
-        <Link
-          to="/lead/profile"
-          aria-label="Profile"
-          title="Profile"
-        >
-          <DashboardIcon name="user" size={29} strokeWidth={1.8} />
-        </Link>
-      </nav>
+      <LeadBottomNav />
     </div>
   )
 }

@@ -199,6 +199,24 @@ export const Icon: React.FC<IconProps> = ({
         </svg>
       );
 
+    case 'bell-ring':
+      return (
+        <svg {...commonProps}>
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          <path d="M4 2C2.8 3.7 2 5.7 2 8" />
+          <path d="M22 8c0-2.3-.8-4.3-2-6" />
+        </svg>
+      );
+
+    case 'messages-square':
+      return (
+        <svg {...commonProps}>
+          <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z" />
+          <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
+        </svg>
+      );
+
     case 'user':
       return (
         <svg {...commonProps}>
@@ -235,6 +253,25 @@ export const Icon: React.FC<IconProps> = ({
         </svg>
       );
 
+    case 'history':
+    case 'approval-history':
+      return (
+        <svg {...commonProps}>
+          <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.24" />
+          <path d="M21 3v5h-5" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+      );
+
+    case 'line-chart':
+    case 'chart-line':
+      return (
+        <svg {...commonProps}>
+          <path d="M3 3v16a2 2 0 0 0 2 2h16" />
+          <path d="m19 9-5 5-4-4-3 3" />
+        </svg>
+      );
+
     case 'network':
       return (
         <svg {...commonProps}>
@@ -255,6 +292,15 @@ export const Icon: React.FC<IconProps> = ({
           <path d="M12 16h4" />
           <path d="M8 11h.01" />
           <path d="M8 16h.01" />
+        </svg>
+      );
+
+    case 'clipboard-check':
+      return (
+        <svg {...commonProps}>
+          <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <path d="m9 14 2 2 4-4" />
         </svg>
       );
 

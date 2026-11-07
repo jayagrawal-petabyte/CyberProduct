@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ApprovalIcon } from '../components/ApprovalIcon'
+import { LeadBottomNav } from '../components/LeadBottomNav'
 import { mockEmployeeActivity } from '../data/mockEmployeeActivity'
 import type { EmployeeAccessActivityEvent } from '../types/employeeActivity'
 import '../styles/approvalInbox.css'
@@ -556,31 +557,7 @@ export default function LeadEmployeeActivityPage() {
       )}
 
       {/* Floating Bottom Nav */}
-      <nav className="approval-bottom-nav" aria-label="Primary navigation">
-        <Link to="/lead/dashboard" aria-label="Dashboard">
-          <ApprovalIcon name="grid" size={23} />
-        </Link>
-        <Link
-          className="approval-bottom-nav__active"
-          to="/lead/employee-activity"
-          aria-current="page"
-          aria-label="Employee Activity"
-        >
-          <ApprovalIcon name="monitor" size={23} />
-        </Link>
-        <button type="button" disabled aria-label="Request access (not available yet)">
-          <ApprovalIcon name="plus" size={23} />
-        </button>
-        <Link to="/lead/approvals" aria-label="Access requests">
-          <ApprovalIcon name="clipboard" size={23} />
-        </Link>
-        <Link to="/lead/notifications" aria-label="Notifications">
-          <ApprovalIcon name="bell" size={23} />
-        </Link>
-        <Link to="/lead/profile" aria-label="Profile">
-          <ApprovalIcon name="user" size={23} />
-        </Link>
-      </nav>
+      <LeadBottomNav />
     </main>
   )
 }
