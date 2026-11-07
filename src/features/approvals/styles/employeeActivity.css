@@ -1,161 +1,42 @@
-/* Lead Employee Access Activity Styles */
-.activity-status-badge {
+/* BrainMint Employee Access Activity Styles - Matching New UI Design */
+
+.activity-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.65rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.76rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.activity-status-badge__dot {
-  width: 0.32rem;
-  height: 0.32rem;
+.activity-badge__dot {
+  width: 0.38rem;
+  height: 0.38rem;
   border-radius: 50%;
   background: currentColor;
 }
 
-.activity-status-badge--successful {
-  color: #00834d;
-  background: #ecfdf3;
+.activity-badge--allowed {
+  background: #dcfce7;
+  color: #15803d;
 }
 
-.activity-status-badge--flagged {
-  color: #b42318;
-  background: #fef3f2;
+.activity-badge--blocked {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-.activity-status-badge--denied {
-  color: #b42318;
-  background: #fef3f2;
-}
-
-.activity-status-badge--pending {
-  color: #b54708;
-  background: #fffaeb;
-}
-
-.activity-status-badge--updated {
-  color: #1d4ed8;
-  background: #eff6ff;
-}
-
-/* Security Alert Bottom Card */
-.activity-security-alert-card {
-  margin-top: 1.15rem;
-  background: var(--approval-surface, #fff5f5);
-  border-radius: 0.75rem;
-  padding: 1.25rem 1.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.activity-security-alert-card__header {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--approval-text, #32154f);
-  margin-bottom: 0.75rem;
-}
-
-.activity-security-alert-card__subtitle {
-  color: #b54708;
-  font-weight: 400;
-  font-size: 0.8rem;
-}
-
-.activity-security-alert-card__content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.25rem;
-}
-
-.activity-security-alert-card__left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.activity-security-alert-card__icon {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.5rem;
-  background: #fffaeb;
-  color: #b54708;
-}
-
-.activity-security-alert-card__text strong {
-  display: block;
-  font-size: 0.88rem;
-  color: #1e293b;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-
-.activity-security-alert-card__text p {
-  margin: 0;
-  font-size: 0.78rem;
-  color: #64748b;
-}
-
-.activity-security-alert-card__btn {
-  padding: 0.45rem 1rem;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--approval-text, #32154f);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.activity-security-alert-card__btn:hover {
-  background: #f8fafc;
-}
-
-/* Event Details Modal */
-.activity-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.activity-modal-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.activity-modal-item span {
-  font-size: 0.75rem;
-  color: #64748b;
-}
-
-.activity-modal-item strong {
-  font-size: 0.88rem;
-  color: #1e293b;
-}
-
-.activity-modal-full {
-  grid-column: span 2;
-}
-
-.activity-modal-full p {
-  margin: 0.25rem 0 0;
+.activity-event-text {
   font-size: 0.84rem;
-  color: #334155;
-  line-height: 1.5;
-  background: #f8fafc;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.45rem;
-  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 500;
 }
 
+.activity-time-text {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  font-weight: 500;
+}

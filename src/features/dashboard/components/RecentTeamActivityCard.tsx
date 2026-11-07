@@ -64,7 +64,7 @@ export function RecentTeamActivityCard({ activity, activityDate }: RecentTeamAct
             Review Access Requests
           </Link>
           <Link
-            to="/lead/approvals?status=approved"
+            to="/lead/approval-history"
             className="button button--peach"
             aria-label="View Approval History"
           >

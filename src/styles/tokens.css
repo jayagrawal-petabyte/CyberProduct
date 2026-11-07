@@ -34,12 +34,18 @@
   --color-brand-wave-blue: #7296b4;
 
   /* ── 2. Backgrounds & Surfaces ───────────────────────────────────── */
-  --color-bg-page: #f6ebf1;
+  --color-bg-page: #fee3d8;
   --color-bg-page-gradient: linear-gradient(
-    135deg,
-    #faf0f4 0%,
-    #f3e6ee 50%,
-    #ece0eb 100%
+    180deg,
+    #fee3d8 0%,
+    #f1d3ca 15%,
+    #e5c3bc 30%,
+    #d6b0ab 48%,
+    #ae7f8a 62%,
+    #804968 76%,
+    #592d5d 86%,
+    #260c42 95%,
+    #1a0019 100%
   );
 
   --color-bg-card: #ffffff;

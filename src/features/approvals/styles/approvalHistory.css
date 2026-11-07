@@ -1,86 +1,43 @@
-/* Lead Approval History Styles */
-.approval-history-details-card {
-  margin-top: 1.15rem;
-  background: var(--approval-surface, #fff5f5);
-  border-radius: 0.75rem;
-  padding: 1.25rem 1.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
+/* BrainMint Approval History Styles - Matching New UI Design */
 
-.approval-history-details-card__header {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  margin-bottom: 0.6rem;
-}
-
-.approval-history-details-card__title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--approval-text, #32154f);
-}
-
-.approval-history-details-card__subtitle {
-  font-size: 0.78rem;
-  color: #64748b;
-}
-
-.approval-history-notes-list {
-  display: flex;
-  flex-direction: column;
+.history-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 0.35rem;
-  font-size: 0.83rem;
-  line-height: 1.5;
-}
-
-.approval-history-note-item {
-  color: #334155;
-}
-
-.approval-history-note-item strong {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.76rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.approval-history-note-item--approved strong {
-  color: #00834d;
+.history-badge__dot {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: currentColor;
 }
 
-.approval-history-note-item--rejected strong {
-  color: #dc2626;
+.history-badge--approved {
+  background: #dcfce7;
+  color: #15803d;
 }
 
-.approval-history-table th:nth-child(1) { width: 17%; }
-.approval-history-table th:nth-child(2) { width: 18%; }
-.approval-history-table th:nth-child(3) { width: 12%; }
-.approval-history-table th:nth-child(4) { width: 11%; }
-.approval-history-table th:nth-child(5) { width: 14%; }
-.approval-history-table th:nth-child(6) { width: 15%; }
-.approval-history-table th:nth-child(7) { width: 13%; }
+.history-badge--rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
-.reviewer-name {
+.history-table-reason {
   font-size: 0.82rem;
-  color: #1e293b;
+  color: #334155;
+  line-height: 1.4;
+  max-width: 320px;
+}
+
+.history-table-time {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
   font-weight: 500;
 }
-
-.approval-history-clear-btn {
-  color: #2563eb;
-  font-weight: 500;
-  font-size: 0.8rem;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-}
-
-.approval-history-clear-btn:hover {
-  text-decoration: underline;
-}
-
-.approval-history-clear-btn:disabled {
-  color: #94a3b8;
-  cursor: not-allowed;
-  text-decoration: none;
-}
-

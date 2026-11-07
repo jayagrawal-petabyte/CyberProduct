@@ -1,76 +1,54 @@
 import { mockApprovalRequests } from '../../approvals/data/mockApprovalRequests'
-import type { ApprovalRequest } from '../../approvals/types/approvalRequest'
-import type { DashboardData, RecentActivityItem } from '../types/dashboard'
+import type { DashboardData } from '../types/dashboard'
 
-/**
- * Development mock activity records matching the Team Lead Dashboard design.
- * In production, these should be supplied by an audit/activity logging service.
- */
-const mockRecentActivity: RecentActivityItem[] = [
-  {
-    id: 'ACT-101',
-    type: 'request_submitted',
-    title: 'Access request submitted',
-    description: 'Jordan Ellis requested GitHub write access.',
-    time: '08:42',
-    timestamp: '2026-10-24T08:42:00Z',
-  },
-  {
-    id: 'ACT-102',
-    type: 'request_approved',
-    title: 'Request approved',
-    description: "Alex Morgan approved Liam Parker's Jira access.",
-    time: '08:20',
-    timestamp: '2026-10-24T08:20:00Z',
-  },
-  {
-    id: 'ACT-103',
-    type: 'compliance_alert',
-    title: 'Device compliance alert',
-    description: "Maya Chen's laptop requires a security update.",
-    time: '08:05',
-    timestamp: '2026-10-24T08:05:00Z',
-  },
-]
-
-export const dashboardDataSource = 'development mock data'
-
-/**
- * Service boundary for the Team Lead Dashboard.
- * Fetches dashboard aggregates, pending requests awaiting review,
- * security compliance metrics, and recent team activity.
- */
 export async function getDashboardData(): Promise<DashboardData> {
-  // Simulate network latency
-  await new Promise((resolve) => window.setTimeout(resolve, 350))
-
-  const pendingRequests = mockApprovalRequests
-    .filter((req: ApprovalRequest) => req.status === 'pending')
-    .sort((a: ApprovalRequest, b: ApprovalRequest) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime())
-    .slice(0, 5)
-
-  const pendingApprovalsCount = mockApprovalRequests.filter((r: ApprovalRequest) => r.status === 'pending').length
-  const approvedRequestsCount = mockApprovalRequests.filter((r: ApprovalRequest) => r.status === 'approved').length
-  const rejectedRequestsCount = mockApprovalRequests.filter((r: ApprovalRequest) => r.status === 'rejected').length
-  const teamMembersCount = 12
+  await new Promise((resolve) => window.setTimeout(resolve, 150))
 
   return {
     summary: {
-      pendingApprovalsCount,
-      approvedRequestsCount,
-      rejectedRequestsCount,
-      teamMembersCount,
+      pendingCount: '05',
+      pendingSlaText: '2 requests nearing review SLA',
+      approvedWeekCount: 18,
+      approvedWeekDiff: '+4 compared with last week',
+      avgReviewTime: '2.4h',
+      avgReviewTarget: 'Target: under 4 business hours',
+      teamMembersCount: 24,
+      teamName: 'Data & Insights',
+      pendingApprovalsCount: 5,
+      approvedRequestsCount: 18,
+      rejectedRequestsCount: 2,
+      reviewSlaHours: 4,
     },
-    pendingRequests,
-    securityOverview: {
-      compliancePercentage: 83,
-      totalMembers: teamMembersCount,
-      compliantDevicesCount: 10,
-      attentionDevicesCount: 2,
-      lastAssessedDate: '2026-10-24T09:00:00Z',
+    priorityRequests: mockApprovalRequests.slice(0, 3),
+    requestVolume: [
+      { day: '18 Oct', approved: 28, submitted: 20 },
+      { day: '19 Oct', approved: 45, submitted: 32 },
+      { day: '20 Oct', approved: 35, submitted: 25 },
+      { day: '21 Oct', approved: 72, submitted: 54 },
+      { day: '22 Oct', approved: 50, submitted: 42 },
+      { day: '23 Oct', approved: 85, submitted: 60 },
+      { day: '24 Oct', approved: 65, submitted: 48 },
+    ],
+    latestDecision: {
+      title: 'GitHub · Insights approved for Maya Chen',
+      subtitle: 'AR-2047 · Contributor · 7 days · Access active',
+      time: '23 Oct, 14:10 UTC',
     },
-    recentActivity: mockRecentActivity.map((item) => ({ ...item })),
-    activityDate: '24 Oct 2026 · UTC',
-    dataSource: dashboardDataSource,
+    teamActivity: [
+      {
+        id: 'ACT-01',
+        title: 'Access renewed for Elena Rossi',
+        description: 'Looker viewer access · 90 days',
+        time: '10:12 UTC',
+        icon: 'key',
+      },
+      {
+        id: 'ACT-02',
+        title: "Noah's device is non-compliant",
+        description: 'Access restricted until updates complete.',
+        time: '09:50 UTC',
+        icon: 'monitor',
+      },
+    ],
   }
 }

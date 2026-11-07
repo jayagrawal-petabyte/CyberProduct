@@ -1,83 +1,291 @@
 import type { ApprovalRequest } from '../types/approvalRequest'
 
-type MockRow = [
-  string, // employeeName
-  string, // resourceName
-  string, // resourceDescription
-  string, // accessLevel
-  string, // requestedAt
-  ApprovalRequest['status'], // status
-  string?, // department
-  string?, // role
-  string?, // justification
-  string?, // duration
-]
-
-const rows: MockRow[] = [
-  ['Jordan Lee', 'GitHub', 'Engineering organization', 'Read and Write', '2026-10-24T08:42:00Z', 'pending', 'Engineering', 'Software Engineer', 'I need repository access to contribute to the security integration project.', '30 days'],
-  ['Maya Chen', 'AWS Console', 'Development environment', 'Read-only', '2026-10-24T08:15:00Z', 'pending', 'Data & Analytics', 'Cloud Data Engineer', 'Need access to test model inference pipelines in development environment.', '14 days'],
-  ['Noah Bennett', 'Jira', 'Platform project', 'Project admin', '2026-10-23T16:30:00Z', 'pending', 'Platform Engineering', 'Systems Lead', 'Required to configure project board workflows and issue permissions for team.', '60 days'],
-  ['Sofia Reed', 'Confluence', 'Engineering space', 'Editor', '2026-10-23T14:10:00Z', 'pending', 'Engineering', 'Technical Writer', 'Documentation updates for the upcoming Q4 architecture revision.', '90 days'],
-  ['Ethan Brooks', 'GitHub', 'Infrastructure repository', 'Read-only', '2026-10-23T11:05:00Z', 'pending', 'DevOps', 'DevOps Specialist', 'Auditing deployment scripts and Terraform manifests.', '30 days'],
-  ['Liam Parker', 'Jira', 'Platform project', 'Contributor', '2026-10-31T15:20:00Z', 'approved', 'Platform Engineering', 'Backend Engineer', 'Access required for assigned sprint issues.', '30 days'],
-  ['Avery Collins', 'Confluence', 'Product knowledge base', 'Viewer', '2026-10-31T10:35:00Z', 'approved', 'Product Operations', 'Associate Analyst', 'Reading release notes and roadmap specs.', '180 days'],
-  ['Riley Hayes', 'AWS Console', 'Production environment', 'Administrator', '2026-10-30T16:45:00Z', 'rejected', 'Infrastructure', 'Junior Engineer', 'Emergency maintenance request.', '7 days'],
-  ['Maya Patel', 'GitHub', 'Security repository', 'Write', '2026-10-30T12:00:00Z', 'approved', 'Security Operations', 'Security Engineer', 'Implementing zero-trust access hooks.', '90 days'],
-  ['Daniel Brooks', 'AWS Console', 'Analytics environment', 'Read-only', '2026-10-29T10:00:00Z', 'approved', 'Data Science', 'Data Scientist', 'Querying aggregated audit telemetry.', '30 days'],
-  ['Aisha Rahman', 'Jira', 'Security project', 'Contributor', '2026-10-29T09:30:00Z', 'approved', 'InfoSec', 'Compliance Analyst', 'Tracking vulnerability remediation tasks.', '60 days'],
-  ['Leo Martinez', 'Confluence', 'Operations space', 'Editor', '2026-10-28T14:00:00Z', 'approved', 'Operations', 'Operations Coordinator', 'Updating team runbooks and on-call schedules.', '90 days'],
-  ['Priya Nair', 'GitHub', 'Incident response repository', 'Read-only', '2026-10-28T13:45:00Z', 'approved', 'Security Operations', 'SOC Analyst', 'Reference during active drills.', '45 days'],
-  ['Owen Wright', 'AWS Console', 'Staging environment', 'Read-only', '2026-10-27T11:00:00Z', 'approved', 'QA Engineering', 'QA Automation Engineer', 'End-to-end integration validation.', '30 days'],
-  ['Alex Morgan', 'Jira', 'Operations project', 'Contributor', '2026-10-27T10:15:00Z', 'approved', 'Product Operations', 'Team Lead', 'Managing quarterly roadmap milestones.', '90 days'],
-  ['Emma Wilson', 'Confluence', 'Engineering space', 'Viewer', '2026-10-26T15:30:00Z', 'approved', 'Design', 'Product Designer', 'Reviewing component specs.', '60 days'],
-  ['Lucas James', 'GitHub', 'Platform repository', 'Write', '2026-10-26T11:45:00Z', 'approved', 'Core Platform', 'Senior Software Engineer', 'Merging core authentication refactor.', '30 days'],
-  ['Olivia Stone', 'AWS Console', 'Development environment', 'Read-only', '2026-10-25T16:00:00Z', 'approved', 'Data Platform', 'Data Analyst', 'Developing dashboard queries.', '14 days'],
-  ['Zoe Carter', 'Jira', 'Platform project', 'Contributor', '2026-10-25T09:00:00Z', 'approved', 'Platform Engineering', 'Software Engineer', 'Bug triage and fixes.', '30 days'],
-  ['Sam Taylor', 'Confluence', 'Product knowledge base', 'Viewer', '2026-10-24T12:15:00Z', 'approved', 'Support', 'Support Specialist', 'Customer issue verification.', '90 days'],
-  ['Nina Shah', 'GitHub', 'Security repository', 'Write', '2026-10-24T08:30:00Z', 'approved', 'SecOps', 'Security Architect', 'Reviewing cryptography standards.', '60 days'],
-  ['Max Turner', 'AWS Console', 'Staging environment', 'Read-only', '2026-10-23T14:20:00Z', 'approved', 'Platform', 'DevOps Engineer', 'Cluster upgrade verification.', '30 days'],
-  ['Aria Lewis', 'Jira', 'Operations project', 'Contributor', '2026-10-23T10:10:00Z', 'approved', 'Operations', 'Business Analyst', 'Process mapping.', '60 days'],
-  ['Ben Clark', 'Confluence', 'Engineering space', 'Editor', '2026-10-22T09:45:00Z', 'approved', 'Engineering', 'Tech Lead', 'Documenting API specs.', '180 days'],
-  ['Isla Martin', 'AWS Console', 'Production environment', 'Administrator', '2026-10-21T16:30:00Z', 'rejected', 'DevOps', 'Contractor', 'Unplanned maintenance.', '3 days'],
-]
-
-const emailFrom = (name: string) => `${name.toLowerCase().replace(/\s+/g, '.')}@cyberproduct.io`
-
-export const initialMockApprovalRequests: ApprovalRequest[] = rows.map(
-  ([employeeName, resourceName, resourceDescription, accessLevel, requestedAt, status, department, role, justification, duration], index) => {
-    const num = 1048 - index
-    return {
-      id: `ACP-2026-${num}`,
-      employeeName,
-      employeeEmail: emailFrom(employeeName),
-      department: department ?? 'Engineering',
-      role: role ?? 'Software Engineer',
-      manager: 'Alex Morgan',
-      resourceName,
-      resourceDescription: resourceDescription ?? 'Corporate resource',
-      accessLevel: accessLevel ?? 'Read-only',
-      duration: duration ?? '30 days',
-      businessJustification: justification ?? 'Access required for assigned business objectives.',
-      requestedAt,
-      status,
-      mfaStatus: 'Enabled',
-      deviceCompliance: 'Compliant',
-      policyCheck: 'Passed',
-      reviewedBy: status !== 'pending' ? 'Alex Morgan' : undefined,
-      reviewedAt: status !== 'pending' ? requestedAt : undefined,
-      decisionNotes:
-        status === 'approved'
-          ? 'Access required for the assigned project.'
-          : status === 'rejected'
-            ? 'Requested permissions exceeded the stated business need.'
-            : undefined,
-    }
+export const initialMockApprovalRequests: ApprovalRequest[] = [
+  {
+    id: 'AR-2043',
+    employeeName: 'Omar Haddad',
+    employeeId: 'EMP-1038',
+    employeeEmail: 'omar.haddad@acme.com',
+    department: 'Data & Insights',
+    role: 'Data Engineer',
+    manager: 'Daniel Brooks',
+    resourceName: 'AWS · Staging',
+    resourceDescription: 'Development & staging infrastructure',
+    accessLevel: 'Developer',
+    duration: '7 days',
+    compliance: 'Compliant',
+    deviceCompliance: 'Compliant',
+    mfaStatus: 'Enabled',
+    policyCheck: 'Passed',
+    requestedAt: '2026-10-24T07:12:00Z',
+    submittedTimeText: 'Today, 07:12',
+    status: 'pending',
+    businessJustification: 'Staging deployment and pipeline testing for Data Platform sprint tasks.',
   },
-)
+  {
+    id: 'AR-2045',
+    employeeName: 'Aisha Patel',
+    employeeId: 'EMP-1040',
+    employeeEmail: 'aisha.patel@acme.com',
+    department: 'Data & Insights',
+    role: 'UX Researcher',
+    manager: 'Daniel Brooks',
+    resourceName: 'Snowflake Analytics',
+    resourceDescription: 'Curated analytics views',
+    accessLevel: 'Read-only',
+    duration: '7 days',
+    compliance: 'Compliant',
+    deviceCompliance: 'Compliant',
+    mfaStatus: 'Enabled',
+    policyCheck: 'Passed',
+    requestedAt: '2026-10-24T07:35:00Z',
+    submittedTimeText: 'Today, 07:35',
+    status: 'pending',
+    businessJustification: 'Querying product adoption funnels and user cohort telemetry for UX study.',
+  },
+  {
+    id: 'AR-2048',
+    employeeName: 'Maya Chen',
+    employeeId: 'EMP-1042',
+    employeeEmail: 'maya.chen@acme.com',
+    department: 'Data & Insights',
+    role: 'Product Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'Snowflake Analytics',
+    resourceDescription: 'Read-only access · 7 days',
+    resourceOwner: 'Elena Rossi · Data Platform',
+    projectReference: 'DATA-482 · Q4 revenue validation',
+    accessLevel: 'Read-only',
+    duration: '7 days',
+    requestedPermission: 'Read-only · Curated analytics views',
+    expiration: 'Automatically, 7 days after approval',
+    compliance: 'Compliant',
+    deviceInfo: 'MBP-MCHEN-01 · MacBook Pro 14"',
+    osInfo: 'macOS 15.6 · Managed by Jamf',
+    postureChecks: ['FileVault on', 'EDR up to date', 'MFA verified', 'Trusted VPN'],
+    deviceCompliance: 'Compliant',
+    mfaStatus: 'Enabled',
+    policyCheck: 'Passed',
+    requestedAt: '2026-10-24T09:18:00Z',
+    submittedTimeText: 'Today, 09:18',
+    status: 'pending',
+    businessJustification:
+      'I need read-only access to validate Q4 revenue metrics for the Finance reporting review. Access is required to reconcile dashboard totals against the analytics warehouse.',
+  },
+  {
+    id: 'AR-2049',
+    employeeName: 'Noah Williams',
+    employeeId: 'EMP-1045',
+    employeeEmail: 'noah.williams@acme.com',
+    department: 'Data & Insights',
+    role: 'Analytics Engineer',
+    manager: 'Daniel Brooks',
+    resourceName: 'GitHub · Insights',
+    resourceDescription: 'Insights core repository',
+    accessLevel: 'Contributor',
+    duration: '30 days',
+    compliance: 'At risk',
+    deviceCompliance: 'Non-compliant',
+    mfaStatus: 'Enabled',
+    policyCheck: 'Passed',
+    requestedAt: '2026-10-24T09:42:00Z',
+    submittedTimeText: 'Today, 09:42',
+    status: 'pending',
+    businessJustification: 'PR reviews and contribution to the automated dbt transformation pipeline.',
+  },
+  {
+    id: 'AR-2050',
+    employeeName: 'Sophie Turner',
+    employeeId: 'EMP-1049',
+    employeeEmail: 'sophie.turner@acme.com',
+    department: 'Data & Insights',
+    role: 'Business Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'Looker',
+    resourceDescription: 'Enterprise Business Intelligence',
+    accessLevel: 'Viewer',
+    duration: '90 days',
+    compliance: 'Compliant',
+    deviceCompliance: 'Compliant',
+    mfaStatus: 'Enabled',
+    policyCheck: 'Passed',
+    requestedAt: '2026-10-24T10:06:00Z',
+    submittedTimeText: 'Today, 10:06',
+    status: 'pending',
+    businessJustification: 'Quarterly OKR reporting dashboard viewing for business stakeholders.',
+  },
+]
 
-// Active in-memory store so changes persist across the session
 export let mockApprovalRequests: ApprovalRequest[] = [...initialMockApprovalRequests]
 
 export function setMockApprovalRequests(requests: ApprovalRequest[]) {
   mockApprovalRequests = requests
+}
+
+// 37 Decisions for Approval History matching Lead Approval History.png (32 approved, 5 rejected)
+export const initialMockApprovalHistory: ApprovalRequest[] = [
+  {
+    id: 'AR-2046',
+    employeeName: 'Elena Rossi',
+    employeeId: 'EMP-1036',
+    employeeEmail: 'elena.rossi@acme.com',
+    department: 'Data & Insights',
+    role: 'Data Platform Engineer',
+    manager: 'Daniel Brooks',
+    resourceName: 'Looker',
+    resourceDescription: 'Enterprise BI',
+    accessLevel: 'Viewer',
+    duration: '90 days',
+    requestedAt: '2026-10-24T10:12:00Z',
+    status: 'approved',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-24T10:12:00Z',
+    decisionReason: 'Quarterly reporting renewal',
+    submittedTimeText: '24 Oct, 10:12',
+  },
+  {
+    id: 'AR-2044',
+    employeeName: 'Lucas Martin',
+    employeeId: 'EMP-1044',
+    employeeEmail: 'lucas.martin@acme.com',
+    department: 'Data & Insights',
+    role: 'Junior Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'Production database',
+    resourceDescription: 'Customer OLTP database',
+    accessLevel: 'Direct access',
+    duration: '14 days',
+    requestedAt: '2026-10-24T09:55:00Z',
+    status: 'rejected',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-24T09:55:00Z',
+    decisionReason: 'Use curated analytics views',
+    submittedTimeText: '24 Oct, 09:55',
+  },
+  {
+    id: 'AR-2042',
+    employeeName: 'Aisha Patel',
+    employeeId: 'EMP-1040',
+    employeeEmail: 'aisha.patel@acme.com',
+    department: 'Data & Insights',
+    role: 'UX Researcher',
+    manager: 'Daniel Brooks',
+    resourceName: 'Figma · Analytics',
+    resourceDescription: 'UX design spaces',
+    accessLevel: 'Editor',
+    duration: '30 days',
+    requestedAt: '2026-10-24T08:50:00Z',
+    status: 'approved',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-24T08:50:00Z',
+    decisionReason: 'Design review collaboration',
+    submittedTimeText: '24 Oct, 08:50',
+  },
+  {
+    id: 'AR-2047',
+    employeeName: 'Maya Chen',
+    employeeId: 'EMP-1042',
+    employeeEmail: 'maya.chen@acme.com',
+    department: 'Data & Insights',
+    role: 'Product Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'GitHub · Insights',
+    resourceDescription: 'Insights core repository',
+    accessLevel: 'Contributor',
+    duration: '7 days',
+    requestedAt: '2026-10-23T14:10:00Z',
+    status: 'approved',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-23T14:10:00Z',
+    decisionReason: 'Insights pipeline contribution',
+    submittedTimeText: '23 Oct, 14:10',
+  },
+  {
+    id: 'AR-2040',
+    employeeName: 'Omar Haddad',
+    employeeId: 'EMP-1038',
+    employeeEmail: 'omar.haddad@acme.com',
+    department: 'Data & Insights',
+    role: 'Data Engineer',
+    manager: 'Daniel Brooks',
+    resourceName: 'Jira · Data Platform',
+    resourceDescription: 'Platform board',
+    accessLevel: 'Contributor',
+    duration: '30 days',
+    requestedAt: '2026-10-22T15:20:00Z',
+    status: 'approved',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-22T15:20:00Z',
+    decisionReason: 'Sprint planning and delivery',
+    submittedTimeText: '22 Oct, 15:20',
+  },
+  {
+    id: 'AR-2039',
+    employeeName: 'Maya Chen',
+    employeeId: 'EMP-1042',
+    employeeEmail: 'maya.chen@acme.com',
+    department: 'Data & Insights',
+    role: 'Product Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'Looker',
+    resourceDescription: 'Enterprise BI',
+    accessLevel: 'Viewer',
+    duration: '30 days',
+    requestedAt: '2026-10-21T11:05:00Z',
+    status: 'approved',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-21T11:05:00Z',
+    decisionReason: 'Q4 dashboard validation',
+    submittedTimeText: '21 Oct, 11:05',
+  },
+  {
+    id: 'AR-2004',
+    employeeName: 'Maya Chen',
+    employeeId: 'EMP-1042',
+    employeeEmail: 'maya.chen@acme.com',
+    department: 'Data & Insights',
+    role: 'Product Analyst',
+    manager: 'Daniel Brooks',
+    resourceName: 'Production database',
+    resourceDescription: 'Customer OLTP database',
+    accessLevel: 'Direct write',
+    duration: '7 days',
+    requestedAt: '2026-10-14T12:08:00Z',
+    status: 'rejected',
+    reviewedBy: 'Daniel Brooks',
+    reviewedAt: '2026-10-14T12:08:00Z',
+    decisionReason: 'Restricted to platform engineers',
+    submittedTimeText: '14 Oct, 12:08',
+  },
+  // Additional 30 records to bring total decisions to 37 (32 approved, 5 rejected)
+  ...Array.from({ length: 30 }, (_, i) => {
+    const isRejected = i === 5 || i === 12 || i === 22
+    const num = 2003 - i
+    const day = Math.max(1, 20 - Math.floor(i / 2))
+    const employeeNames = ['Noah Williams', 'Sophie Turner', 'Lucas Martin', 'Elena Rossi', 'Aisha Patel']
+    const employeeIds = ['EMP-1045', 'EMP-1049', 'EMP-1044', 'EMP-1036', 'EMP-1040']
+    return {
+      id: `AR-${num}`,
+      employeeName: employeeNames[i % 5],
+      employeeId: employeeIds[i % 5],
+      department: 'Data & Insights',
+      role: 'Team Member',
+      manager: 'Daniel Brooks',
+      resourceName: ['Snowflake Analytics', 'GitHub · Insights', 'Looker', 'Jira · Data Platform'][i % 4],
+      accessLevel: isRejected ? 'Administrator' : 'Read-only',
+      duration: '30 days',
+      requestedAt: `2026-10-${day < 10 ? '0' : ''}${day}T10:00:00Z`,
+      status: isRejected ? 'rejected' : 'approved',
+      reviewedBy: 'Daniel Brooks',
+      reviewedAt: `2026-10-${day < 10 ? '0' : ''}${day}T10:00:00Z`,
+      decisionReason: isRejected ? 'Policy restricts privilege escalation' : 'Approved based on team project scope',
+      submittedTimeText: `${day} Oct, 10:00`,
+    } as ApprovalRequest
+  }),
+]
+
+export let mockApprovalHistory: ApprovalRequest[] = [...initialMockApprovalHistory]
+
+export function setMockApprovalHistory(history: ApprovalRequest[]) {
+  mockApprovalHistory = history
 }

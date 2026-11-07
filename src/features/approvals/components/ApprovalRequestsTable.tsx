@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import type { ApprovalRequest } from '../types/approvalRequest'
-import { ApprovalIcon } from './ApprovalIcon'
 import { RequestStatusBadge } from './RequestStatusBadge'
 
 const dateFormatter = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })
@@ -28,6 +27,5 @@ export function ApprovalRequestsTable({ requests, basePath }: { requests: Approv
         </tr>
       })}</tbody>
     </table>
-    <div className="approval-table-note"><ApprovalIcon name="clipboard" size={16} />Development mock data</div>
   </div>
 }

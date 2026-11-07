@@ -38,7 +38,7 @@ export const LEAD_NAV_ITEMS: LeadNavItem[] = [
     id: 'dashboard',
     label: 'Lead Dashboard',
     icon: 'house',
-    href: '/lead',
+    href: '/lead/dashboard',
     matchPaths: ['/lead', '/lead/dashboard'],
   },
   {

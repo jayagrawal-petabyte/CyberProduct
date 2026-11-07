@@ -36,6 +36,34 @@ export const LeadBottomNav: React.FC<LeadBottomNavProps> = ({
       );
     }
 
+    if (item.id === 'history') {
+      return (
+        currentPath === '/lead/approval-history' ||
+        currentPath.startsWith('/lead/approval-history/')
+      );
+    }
+
+    if (item.id === 'activity') {
+      return (
+        currentPath === '/lead/employee-activity' ||
+        currentPath.startsWith('/lead/employee-activity/')
+      );
+    }
+
+    if (item.id === 'notifications') {
+      return (
+        currentPath === '/lead/notifications' ||
+        currentPath.startsWith('/lead/notifications/')
+      );
+    }
+
+    if (item.id === 'profile') {
+      return (
+        currentPath === '/lead/profile' ||
+        currentPath.startsWith('/lead/profile/')
+      );
+    }
+
     if (item.matchPaths && item.matchPaths.some((p) => currentPath === p || currentPath.startsWith(`${p}/`))) {
       return true;
     }

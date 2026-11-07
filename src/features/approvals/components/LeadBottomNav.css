@@ -66,13 +66,13 @@
 
 .lead-bottom-nav__item--active {
   background-color: #f6c4a7;
-  color: #ffffff;
+  color: #281a3c;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .lead-bottom-nav__item--active:hover {
   background-color: #fad2bb;
-  color: #ffffff;
+  color: #281a3c;
 }
 
 .lead-bottom-nav__item:focus-visible {
