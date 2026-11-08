@@ -99,3 +99,161 @@
     align-items: flex-start;
   }
 }
+
+/* Register Device Button */
+
+.device-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.register-device-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #40204e;
+  border-radius: 8px;
+  background: #40204e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.register-device-btn:hover {
+  background: #593267;
+}
+
+/* Registration Modal */
+
+.device-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(40, 26, 60, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.device-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 26px;
+  border: 1px solid #eee5f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(40, 26, 60, 0.25);
+}
+
+.device-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.device-modal-header h2 {
+  margin: 0;
+  color: #30233e;
+  font-size: 21px;
+}
+
+.device-modal-header p {
+  margin: 7px 0 0;
+  color: #817487;
+  font-size: 13px;
+}
+
+.device-modal-header > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: #f5eef5;
+  color: #51445e;
+  cursor: pointer;
+}
+
+.device-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.device-modal form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #40334f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.device-modal form input,
+.device-modal form select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #e5dce9;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #30233e;
+  font-size: 13px;
+}
+
+.device-modal form input:focus,
+.device-modal form select:focus {
+  border-color: #80558d;
+  box-shadow: 0 0 0 3px rgba(128, 85, 141, 0.1);
+}
+
+.device-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.device-cancel-btn {
+  padding: 10px 17px;
+  border: 1px solid #e5dce9;
+  border-radius: 8px;
+  background: #fff;
+  color: #51445e;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.device-cancel-btn:hover {
+  background: #f8f4f8;
+}
+
+@media (max-width: 560px) {
+  .device-heading-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .device-modal {
+    padding: 20px;
+  }
+
+  .device-modal-actions {
+    flex-wrap: wrap;
+  }
+}
