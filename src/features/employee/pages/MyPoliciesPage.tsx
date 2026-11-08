@@ -98,6 +98,15 @@ export default function MyPoliciesPage() {
 
   const acknowledgedCount = policies.length - pendingCount;
 
+  const compliancePercentage =
+    policies.length > 0
+      ? Math.round((acknowledgedCount / policies.length) * 100)
+      : 0;
+
+  const nextPendingPolicy = policies.find(
+    (policy) => policy.status === 'Pending'
+  );
+
   return (
     <main className="employee-page">
       <div className="employee-page__content">
@@ -118,14 +127,20 @@ export default function MyPoliciesPage() {
         </header>
 
         <div className="employee-policies">
+          {/* Page Heading */}
           <div className="policies-header">
             <div>
-              <p className="employee-welcome__eyebrow">EMPLOYEE PORTAL</p>
+              <p className="employee-welcome__eyebrow">
+                EMPLOYEE PORTAL
+              </p>
               <h1>My Policies</h1>
-              <p>Review company policies and manage your acknowledgements.</p>
+              <p>
+                Review company policies and manage your acknowledgements.
+              </p>
             </div>
           </div>
 
+          {/* Statistics */}
           <div className="policies-stats">
             <Card>
               <div className="policy-stat">
@@ -164,78 +179,167 @@ export default function MyPoliciesPage() {
             </Card>
           </div>
 
-          <Card>
-            <div className="policies-toolbar">
-              <div className="policies-search">
-                <Icon name="search" />
-                <input
-                  type="text"
-                  placeholder="Search policies..."
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
+          {/* Main Policy List + Right Sidebar */}
+          <div className="policies-layout">
+
+            {/* Main Policy List */}
+            <Card>
+              <div className="policies-toolbar">
+                <div className="policies-search">
+                  <Icon name="search" />
+                  <input
+                    type="text"
+                    placeholder="Search policies..."
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </div>
+
+                <select
+                  value={category}
+                  onChange={(event) => setCategory(event.target.value)}
+                  aria-label="Filter by category"
+                >
+                  {categories.map((item) => (
+                    <option key={item} value={item}>
+                      {item === 'All' ? 'All Categories' : item}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <select
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                aria-label="Filter by category"
-              >
-                {categories.map((item) => (
-                  <option key={item} value={item}>
-                    {item === 'All' ? 'All Categories' : item}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="policies-list">
-              {filteredPolicies.length > 0 ? (
-                filteredPolicies.map((policy) => (
-                  <div className="policy-item" key={policy.id}>
-                    <div className="policy-document-icon">
-                      <Icon name="file-text" />
-                    </div>
-
-                    <div className="policy-content">
-                      <div className="policy-title-row">
-                        <h3>{policy.title}</h3>
-                        <StatusBadge
-                          status={
-                            policy.status === 'Pending'
-                              ? 'pending'
-                              : 'success'
-                          }
-                        />
+              <div className="policies-list">
+                {filteredPolicies.length > 0 ? (
+                  filteredPolicies.map((policy) => (
+                    <div className="policy-item" key={policy.id}>
+                      <div className="policy-document-icon">
+                        <Icon name="file-text" />
                       </div>
 
-                      <p>{policy.description}</p>
+                      <div className="policy-content">
+                        <div className="policy-title-row">
+                          <h3>{policy.title}</h3>
+                          <StatusBadge
+                            status={
+                              policy.status === 'Pending'
+                                ? 'pending'
+                                : 'success'
+                            }
+                          />
+                        </div>
 
-                      <div className="policy-meta">
-                        <span>{policy.category}</span>
-                        <span>Updated {policy.updated}</span>
+                        <p>{policy.description}</p>
+
+                        <div className="policy-meta">
+                          <span>{policy.category}</span>
+                          <span>Updated {policy.updated}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedPolicy(policy)}
-                    >
-                      View Details
-                    </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPolicy(policy)}
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="policies-empty">
+                    <Icon name="file-text" />
+                    <h3>No policies found</h3>
+                    <p>Try changing your search or category filter.</p>
                   </div>
-                ))
-              ) : (
-                <div className="policies-empty">
-                  <Icon name="file-text" />
-                  <h3>No policies found</h3>
-                  <p>Try changing your search or category filter.</p>
-                </div>
-              )}
-            </div>
-          </Card>
+                )}
+              </div>
+            </Card>
 
+            {/* Right Sidebar */}
+            <aside className="policies-sidebar">
+
+              {/* Policy Compliance */}
+              <Card>
+                <div className="sidebar-card">
+                  <h3>Policy Compliance</h3>
+
+                  <div className="compliance-chart">
+                    <div
+                      className="compliance-circle"
+                      style={{
+                        background: `conic-gradient(#593267 ${compliancePercentage * 3.6}deg, #eee5f0 0deg)`,
+                      }}
+                    >
+                      <div className="compliance-circle-inner">
+                        <strong>{compliancePercentage}%</strong>
+                        <span>compliant</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="compliance-summary">
+                    {acknowledgedCount} of {policies.length} policies acknowledged
+                  </p>
+
+                  <small>As of today</small>
+                </div>
+              </Card>
+
+              {/* What's Next */}
+              <Card>
+                <div className="sidebar-card">
+                  <div className="sidebar-heading">
+                    <Icon name="alert-triangle" size={17} />
+                    <h3>What's Next</h3>
+                  </div>
+
+                  {pendingCount > 0 ? (
+                    <>
+                      <strong className="sidebar-pending-count">
+                        {pendingCount} policies require attention.
+                      </strong>
+
+                      <p>
+                        Review your pending policies and complete the
+                        required acknowledgements.
+                      </p>
+
+                      {nextPendingPolicy && (
+                        <button
+                          type="button"
+                          className="sidebar-action"
+                          onClick={() => setSelectedPolicy(nextPendingPolicy)}
+                        >
+                          Review {nextPendingPolicy.title}
+                          <Icon name="arrow-right" size={14} />
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p>
+                      All policies have been acknowledged. You're up to date!
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              {/* Need Help */}
+              <Card>
+                <div className="sidebar-card">
+                  <h3>Need Help</h3>
+                  <p>
+                    Have a question about a policy? Your IT team can help.
+                  </p>
+                  <div className="sidebar-help-note">
+                    Contact your IT support team for policy-related assistance.
+                  </div>
+                </div>
+              </Card>
+
+            </aside>
+          </div>
+
+          {/* Policy Details Modal */}
           {selectedPolicy && (
             <div
               className="policy-modal-overlay"
@@ -264,6 +368,7 @@ export default function MyPoliciesPage() {
 
                 <div className="policy-modal-body">
                   <p>{selectedPolicy.description}</p>
+
                   <p>
                     <strong>Last Updated:</strong> {selectedPolicy.updated}
                   </p>

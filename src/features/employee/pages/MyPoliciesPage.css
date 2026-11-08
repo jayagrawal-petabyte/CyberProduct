@@ -1,11 +1,17 @@
 
+/* =========================================
+   EMPLOYEE MY POLICIES PAGE
+========================================= */
+
 .employee-policies {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
   padding: 0;
   margin-bottom: 7rem;
   color: #281a3c;
+  box-sizing: border-box;
 }
 
 .policies-header {
@@ -28,10 +34,19 @@
   line-height: 1.5;
 }
 
+/* =========================================
+   POLICY STATISTICS
+========================================= */
+
 .policies-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  width: 100%;
+}
+
+.policies-stats > * {
+  min-width: 0;
 }
 
 .policy-stat {
@@ -76,6 +91,26 @@
   font-size: 13px;
 }
 
+/* =========================================
+   TWO COLUMN POLICY LAYOUT
+========================================= */
+
+.policies-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+}
+
+.policies-layout > * {
+  min-width: 0;
+}
+
+/* =========================================
+   POLICY SEARCH AND FILTER
+========================================= */
+
 .policies-toolbar {
   display: flex;
   justify-content: space-between;
@@ -90,6 +125,7 @@
   gap: 10px;
   flex: 1;
   max-width: 420px;
+  min-width: 0;
   padding: 10px 14px;
   border: 1px solid #e8e0eb;
   border-radius: 9px;
@@ -99,6 +135,7 @@
 
 .policies-search input {
   width: 100%;
+  min-width: 0;
   border: none;
   outline: none;
   background: transparent;
@@ -121,9 +158,14 @@
   cursor: pointer;
 }
 
+/* =========================================
+   POLICY LIST
+========================================= */
+
 .policies-list {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .policy-item {
@@ -203,7 +245,144 @@
   font-size: 13px;
 }
 
-/* Policy details modal */
+/* =========================================
+   RIGHT SIDEBAR
+========================================= */
+
+.policies-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.policies-sidebar > * {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.sidebar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #30233e;
+}
+
+.sidebar-card h3 {
+  margin: 0;
+  color: #30233e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sidebar-card > p {
+  margin: 0;
+  color: #796b80;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   CIRCULAR COMPLIANCE CHART
+========================================= */
+
+.compliance-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.compliance-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 116px;
+  height: 116px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.compliance-circle-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 94px;
+  height: 94px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.compliance-circle-inner strong {
+  color: #30233e;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.compliance-circle-inner span {
+  margin-top: 2px;
+  color: #817487;
+  font-size: 11px;
+}
+
+.compliance-summary {
+  margin: 0;
+  color: #51445e;
+  font-size: 12px;
+  text-align: center;
+}
+
+.sidebar-card > small {
+  color: #95889a;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* =========================================
+   WHAT'S NEXT CARD
+========================================= */
+
+.sidebar-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-heading svg {
+  color: #e47735;
+}
+
+.sidebar-pending-count {
+  color: #d66a2b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sidebar-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 0 0;
+  border: none;
+  background: transparent;
+  color: #593267;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-action:hover {
+  color: #80558d;
+}
+
+/* =========================================
+   POLICY DETAILS MODAL
+========================================= */
 
 .policy-modal-overlay {
   position: fixed;
@@ -296,10 +475,52 @@
   border-top: 1px solid #f0ebf1;
 }
 
-@media (max-width: 768px) {
+/* =========================================
+   TABLET RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) and (min-width: 641px) {
+  .policies-layout {
+    grid-template-columns: minmax(0, 1fr) 230px;
+    gap: 12px;
+  }
+
+  .policies-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .policy-item {
+    gap: 10px;
+  }
+
+  .policy-title-row h3 {
+    font-size: 12px;
+  }
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 640px) {
   .policies-stats {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .policies-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .policies-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .policies-sidebar > *:last-child {
+    grid-column: 1 / -1;
   }
 
   .policies-toolbar {
@@ -324,6 +545,14 @@
 @media (max-width: 480px) {
   .policies-header h1 {
     font-size: 1.4rem;
+  }
+
+  .policies-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .policies-sidebar > *:last-child {
+    grid-column: auto;
   }
 
   .policy-item {
