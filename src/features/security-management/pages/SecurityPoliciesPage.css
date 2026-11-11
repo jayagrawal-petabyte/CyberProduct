@@ -1,0 +1,770 @@
+/* ============================================================
+   BrainMint Design System — Security Policies Page
+   src/features/security-management/pages/SecurityPoliciesPage.css
+   Owner: Ishaan Gupta (Security Management module)
+
+   Visual reference: approved Security Policies screenshot +
+   SecurityProfilePage.css conventions (tokens, radius, shadows).
+   Scoped to secpol-* only.
+   ============================================================ */
+
+/* ── 1. Page shell (original approved background) ───────── */
+.secpol-page {
+  min-height: 100vh;
+  /*
+   * DOCK OVERLAP GUARD — mirrors the admin-suite convention (10rem desktop
+   * / 11rem mobile): guarantees the reminder banner and pagination never
+   * sit under the fixed dock.
+   */
+  padding-bottom: 10rem;
+  color: #32154f;
+  background-color: var(--color-bg-page, #f6ebf1);
+  background-image:
+    radial-gradient(ellipse at 88% 118%, #7d3f66 0%, #93507c 16%, rgba(147, 80, 124, 0) 44%),
+    radial-gradient(ellipse at -4% 122%, #5e2b57 0%, #7a3a67 24%, rgba(122, 58, 103, 0) 52%),
+    linear-gradient(160deg, #f6e0da 0%, #f1d3d9 42%, #c78fa8 100%);
+  overflow: hidden;
+  position: relative;
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+}
+
+/* Concentric ring decoration, bottom-left (as in the approved reference) */
+.secpol-page::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 30rem;
+  height: 30rem;
+  left: -13rem;
+  bottom: -14rem;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2.75rem rgba(255, 255, 255, 0.1),
+    0 0 0 5.5rem rgba(255, 255, 255, 0.07),
+    0 0 0 8.25rem rgba(255, 255, 255, 0.05);
+}
+
+/* Small plum accent dot, right edge of the header row */
+.secpol-accent-dot {
+  position: absolute;
+  top: 7rem;
+  right: 2.2rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: #5b3260;
+  opacity: 0.85;
+  z-index: 0;
+}
+
+.secpol-brand-header,
+.secpol-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 2. Skip link ───────────────────────────────────────── */
+.secpol-skip-link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.secpol-skip-link:focus {
+  z-index: 60;
+  top: 0.75rem;
+  left: 1rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  color: #fff;
+  background: var(--color-brand-primary, #281a3c);
+  border-radius: 0.6rem;
+  clip: auto;
+}
+
+.secpol-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+}
+
+/* ── 3. Brand header (Admin Dashboard exact) ────────────── */
+.secpol-brand-header {
+  height: 5.375rem;
+  padding: 1.1875rem 1.25rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.secpol-brand-header img {
+  width: 14.5rem;
+  height: 4.1875rem;
+  object-fit: contain;
+  object-position: left top;
+}
+
+.secpol-profile-button {
+  display: none;
+}
+
+/* ── 4. Content wrapper + page header (Admin Dashboard exact) ── */
+.secpol-content {
+  padding: 0 2.35% 0 2.22%;
+}
+
+.secpol-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 4.7rem;
+  margin-bottom: 1.4rem;
+}
+
+.secpol-page-header h1 {
+  margin: 0;
+  color: #2a104b; /* BrainMint deep plum */
+  font-size: 2.3rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.18;
+}
+
+.secpol-page-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: #6b5d70;
+}
+
+.secpol-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.15rem;
+}
+
+.secpol-page-actions > span {
+  padding: 0.3rem 0.55rem;
+  color: #60446c;
+  background: #fff5f5aa;
+  border-radius: 1rem;
+  font-size: 0.67rem;
+  white-space: nowrap;
+}
+
+.secpol-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  height: 2rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 1rem;
+  background: #2a104b;
+  color: #ffe5d7;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease), transform var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secpol-btn-primary:hover { background: #3a1a5e; transform: translateY(-1px); }
+.secpol-btn-primary:active { background: var(--color-brand-primary-active, #1c122b); }
+
+.secpol-btn-primary:focus-visible,
+.secpol-btn-ghost:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: 2px;
+}
+
+.secpol-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.4rem;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #6f5d6b);
+  font: inherit;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secpol-btn-ghost:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+
+.secpol-btn-ghost--small { height: 2.2rem; padding: 0 0.85rem; font-size: 0.75rem; }
+
+/* ── 4. Feedback toast (create/edit/reminder confirm) ───── */
+.secpol-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--color-info-border, #e4ddfe);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-info-bg, #f3f0ff);
+  color: var(--color-info-text, #4f46e5);
+  font-size: 0.7813rem;
+  font-weight: 500;
+}
+
+/* ── 5. Summary metric cards ────────────────────────────── */
+.secpol-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.secpol-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-height: 7.25rem;
+  padding: 1.05rem 1.2rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid #dcc9e6;
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: var(--shadow-card, 0 4px 20px -2px rgba(74, 34, 64, 0.04));
+  transition: box-shadow var(--transition-fast, 150ms ease), transform var(--transition-fast, 150ms ease);
+}
+
+.secpol-metric:hover {
+  box-shadow: var(--shadow-card-hover, 0 10px 25px -4px rgba(74, 34, 64, 0.08));
+  transform: translateY(-1px);
+}
+
+.secpol-metric-label {
+  font-size: 0.7813rem;
+  color: var(--color-text-body, #2a1b38);
+}
+
+.secpol-metric-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.secpol-metric-sub {
+  margin-top: 0.25rem;
+  font-size: 0.7188rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  line-height: 1.4;
+}
+
+.secpol-metric-sub--success { color: var(--color-success-text, #059669); }
+.secpol-metric-sub--warning { color: var(--color-warning-text, #b45309); }
+
+/* ── 6. Policy library card ─────────────────────────────── */
+.secpol-library {
+  overflow: hidden;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid #dcc9e6;
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: var(--shadow-card, 0 4px 20px -2px rgba(74, 34, 64, 0.04));
+  /* DOCK OVERLAP GUARD — gap before the reminder banner/dock zone */
+  margin-bottom: 1.1rem;
+}
+
+.secpol-library-head {
+  padding: 1.1rem 1.35rem 0;
+}
+
+.secpol-library-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.secpol-library-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.7813rem;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+/* ── 7. Toolbar (search + filters + snapshot chip) ──────── */
+.secpol-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.35rem 1.1rem;
+}
+
+.secpol-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.secpol-search-icon {
+  position: absolute;
+  left: 0.7rem;
+  pointer-events: none;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-search-input {
+  height: 2.35rem;
+  width: 17rem;
+  max-width: 100%;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-input, #ffffff);
+  padding: 0 0.75rem 0 2.05rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary, #1e1229);
+  transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+}
+
+.secpol-search-input::placeholder { color: var(--color-text-placeholder, #a4939c); opacity: 1; }
+
+.secpol-search-input:focus,
+.secpol-form-field input:focus,
+.secpol-form-field select:focus,
+.secpol-form-field textarea:focus {
+  outline: none;
+  border-color: var(--color-brand-secondary, #4a355a);
+  box-shadow: var(--shadow-focus, 0 0 0 3px rgba(40, 26, 60, 0.14));
+}
+
+.secpol-filters-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2.35rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #6f5d6b);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secpol-filters-clear:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+.secpol-filters-clear:focus-visible { outline: 2px solid var(--color-border-focus, #281a3c); outline-offset: 2px; }
+
+.secpol-date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.35rem;
+  margin-left: auto;
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-body, #2a1b38);
+  font-size: 0.7813rem;
+  white-space: nowrap;
+}
+
+/* ── 8. Pagination ──────────────────────────────────────── */
+.secpol-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 1.35rem;
+  border-top: 1px solid var(--color-border-subtle, #f0dfe6);
+  flex-wrap: wrap;
+}
+
+.secpol-pagination__meta {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.secpol-pagination__controls > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  color: var(--color-text-body, #2a1b38);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+  white-space: nowrap;
+}
+
+.secpol-pagination__controls > button:hover:not(:disabled) { background: var(--color-bg-card-hover, #fdf5f8); }
+.secpol-pagination__controls > button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.secpol-pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.secpol-pagination__pages button {
+  min-width: 1.85rem;
+  height: 1.85rem;
+  border: 0;
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  color: var(--color-text-secondary, #6f5d6b);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.secpol-pagination__pages button:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+.secpol-pagination__pages button:focus-visible { outline: 2px solid var(--color-border-focus, #281a3c); outline-offset: 1px; }
+
+.secpol-pagination__page--current,
+.secpol-pagination__page--current:hover {
+  background: var(--color-brand-primary, #281a3c);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.secpol-pagination__gap {
+  color: var(--color-text-muted, #9e8c96);
+  font-size: 0.75rem;
+  padding: 0 0.2rem;
+}
+
+/* ── 9. Reminder / rollout banner ───────────────────────── */
+.secpol-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid #dcc9e6;
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-card, 0 4px 20px -2px rgba(74, 34, 64, 0.04));
+  flex-wrap: wrap;
+  /* DOCK OVERLAP GUARD — clearance above the fixed dock */
+  margin-bottom: 3rem;
+}
+
+.secpol-banner__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.secpol-banner__sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-banner__sub strong { color: var(--color-warning-text, #b45309); font-weight: 600; }
+
+/* ── 10. Details modal (inherits shared Modal) ──────────── */
+.secpol-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.secpol-modal-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-bg-card-subtle, #fff8fa);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  border-radius: var(--radius-lg, 16px);
+}
+
+.secpol-modal-identity__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.secpol-modal-identity__meta strong {
+  color: var(--color-text-primary, #1e1229);
+  font-size: 0.95rem;
+}
+
+.secpol-modal-identity__meta span {
+  color: var(--color-text-secondary, #6f5d6b);
+  font-size: 0.7188rem;
+  margin-top: 0.15rem;
+}
+
+.secpol-modal-desc {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: var(--line-height-normal, 1.5);
+  color: var(--color-text-body, #2a1b38);
+}
+
+.secpol-modal-details {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.secpol-modal-row {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 1rem;
+  padding: 0.5rem 0.2rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  align-items: center;
+}
+
+.secpol-modal-row:last-child { border-bottom: 0; }
+
+.secpol-modal-row dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-modal-row dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary, #1e1229);
+  overflow-wrap: anywhere;
+}
+
+.secpol-mono {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+}
+
+.secpol-ack-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-success-bg, #ebf9f1);
+  border: 1px solid var(--color-success-border, #d1f2de);
+  border-radius: var(--radius-md, 12px);
+}
+
+.secpol-ack-box__head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  color: var(--color-success-text, #059669);
+}
+
+.secpol-ack-bar {
+  height: 0.45rem;
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--color-border-subtle, #f0dfe6);
+  overflow: hidden;
+}
+
+.secpol-ack-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-success, #10b981);
+}
+
+.secpol-ack-box small {
+  font-size: 0.7188rem;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+/* ── 11. Create/Edit form ───────────────────────────────── */
+.secpol-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.secpol-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.secpol-form-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-body, #2a1b38);
+}
+
+.secpol-form-field input,
+.secpol-form-field textarea {
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-input, #ffffff);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary, #1e1229);
+  transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+}
+
+.secpol-form-field textarea { resize: vertical; min-height: 4.5rem; }
+
+.secpol-form-field input[aria-invalid='true'],
+.secpol-form-field select[aria-invalid='true'],
+.secpol-form-field textarea[aria-invalid='true'] {
+  border-color: var(--color-danger, #ef4444);
+}
+
+.secpol-form-error {
+  margin: 0;
+  font-size: 0.7188rem;
+  font-weight: 600;
+  color: var(--color-danger-text, #b91c1c);
+}
+
+.secpol-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+/* Form selects share the toolbar select chassis */
+.secpol-form-field select {
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-input, #ffffff);
+  padding: 0.55rem 2rem 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary, #1e1229);
+  appearance: none;
+  cursor: pointer;
+}
+
+.secpol-select-wrap { position: relative; display: inline-flex; align-items: center; min-width: 0; }
+
+.secpol-filter-select {
+  height: 2.35rem;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-bg-input, #ffffff);
+  padding: 0 2rem 0 0.75rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text-primary, #1e1229);
+  appearance: none;
+  cursor: pointer;
+  min-width: 10.5rem;
+}
+
+.secpol-filter-select:focus { outline: none; border-color: var(--color-brand-secondary, #4a355a); box-shadow: var(--shadow-focus, 0 0 0 3px rgba(40, 26, 60, 0.14)); }
+
+.secpol-select-chevron {
+  position: absolute;
+  right: 0.65rem;
+  pointer-events: none;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.secpol-form-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.65rem 0.8rem;
+  background: var(--color-warning-bg, #fef7ed);
+  border: 1px solid var(--color-warning-border, #fce7c9);
+  border-radius: var(--radius-md, 12px);
+  font-size: 0.7188rem;
+  line-height: 1.45;
+  color: var(--color-warning-text, #b45309);
+}
+
+.secpol-form-note svg { flex-shrink: 0; margin-top: 0.08rem; }
+
+.secpol-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.25rem;
+}
+
+/* ── 12. Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .secpol-page { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .secpol-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  /* Dock is full-width on mobile → keep generous clearance below it. */
+  .secpol-page { padding-bottom: 11rem; }
+  .secpol-brand-header { height: 5.5rem; padding-left: 1rem; }
+  .secpol-brand-header img { width: 13rem; }
+  .secpol-content { padding: 0 1rem; }
+  .secpol-page-header { display: block; min-height: 0; margin-bottom: 1rem; }
+  .secpol-page-header h1 { font-size: 1.85rem; }
+  .secpol-page-actions { justify-content: space-between; margin-top: 0.55rem; flex-wrap: wrap; }
+  .secpol-summary { grid-template-columns: 1fr; gap: 0.65rem; }
+  .secpol-metric { min-height: 6.5rem; }
+  .secpol-search-input { width: 100%; }
+  .secpol-date-chip { margin-left: 0; }
+  .secpol-banner { margin-bottom: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secpol-page, .secpol-page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

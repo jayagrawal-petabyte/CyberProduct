@@ -1,0 +1,149 @@
+/**
+ * BrainMint NotificationCard — Styles
+ * CyberProduct Platform
+ * Owner: Shivam Kumar (Frontend Lead)
+ */
+
+/* ── Card container ───────────────────────────────────────────────────────── */
+.notif-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  position: relative;
+  cursor: default;
+  outline: none;
+  transition: background-color var(--transition-fast, 150ms ease);
+}
+
+.notif-card:last-child {
+  border-bottom: none;
+}
+
+.notif-card--unread {
+  cursor: pointer;
+}
+
+.notif-card--unread:hover,
+.notif-card--unread:focus-visible {
+  background-color: var(--color-bg-card-hover, #fdf5f8);
+}
+
+/* ── Left icon ────────────────────────────────────────────────────────────── */
+.notif-card__icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  line-height: 1;
+}
+
+.notif-card__icon--warning   { color: var(--color-warning, #f59e0b); }
+.notif-card__icon--security  { color: var(--color-warning, #f59e0b); }
+.notif-card__icon--access    { color: var(--color-text-secondary, #6f5d6b); }
+.notif-card__icon--policies  { color: var(--color-info, #6366f1); }
+.notif-card__icon--device    { color: var(--color-text-secondary, #6f5d6b); }
+.notif-card__icon--system    { color: var(--color-text-muted, #9e8c96); }
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.notif-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Unread indicator dot */
+.notif-card__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.notif-card__dot--info    { background-color: var(--color-info, #6366f1); }
+.notif-card__dot--warning { background-color: var(--color-warning, #f59e0b); }
+
+.notif-card__title {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #1e1229);
+  line-height: var(--line-height-tight, 1.25);
+}
+
+.notif-card__message {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm, 0.8125rem);
+  color: var(--color-text-secondary, #6f5d6b);
+  line-height: var(--line-height-normal, 1.5);
+  margin: 0 0 0.3rem;
+}
+
+.notif-card__meta {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9e8c96);
+  margin: 0 0 0.35rem;
+}
+
+.notif-card__action {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm, 0.8125rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-info-text, #4f46e5);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.notif-card__action:hover {
+  text-decoration: underline;
+}
+
+/* ── Hover controls (mark read / dismiss) ─────────────────────────────────── */
+.notif-card__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast, 150ms ease);
+  margin-top: 0.1rem;
+}
+
+.notif-card--unread:hover .notif-card__controls,
+.notif-card--unread:focus-within .notif-card__controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notif-card__ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-text-secondary, #6f5d6b);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.notif-card__ctrl-btn:hover {
+  background-color: var(--color-accent-pink, #f4dee5);
+  color: var(--color-brand-primary, #281a3c);
+}
+
+.notif-card__ctrl-btn--delete:hover {
+  background-color: var(--color-danger-bg, #fdf2f2);
+  color: var(--color-danger, #ef4444);
+  border-color: var(--color-danger-border, #f8d7da);
+}

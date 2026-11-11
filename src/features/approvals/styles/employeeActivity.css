@@ -1,0 +1,42 @@
+/* BrainMint Employee Access Activity Styles - Matching New UI Design */
+
+.activity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.activity-badge__dot {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.activity-badge--allowed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.activity-badge--blocked {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.activity-event-text {
+  font-size: 0.84rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.activity-time-text {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  font-weight: 500;
+}

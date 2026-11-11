@@ -1,0 +1,590 @@
+/**
+ * BrainMint Shared Profile Page Styles
+ * CyberProduct Platform
+ * Unified implementation across Employee, Team Lead, and Security roles.
+ */
+
+.security-profile-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 1.5rem 2rem 7rem;
+  background-color: var(--color-bg-page, #f6ebf1);
+  background-image: var(
+    --color-bg-page-gradient,
+    linear-gradient(135deg, #faf0f4 0%, #f3e6ee 50%, #ece0eb 100%)
+  );
+  overflow-x: hidden;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  color: var(--color-text-primary, #1e1229);
+}
+
+/* ── Decorative ambient background curves ─────────────────────────────── */
+.security-profile-decorations {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.security-profile-wave-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 520px;
+  height: 420px;
+  opacity: 0.85;
+}
+
+.security-profile-accent-dot {
+  position: absolute;
+  top: 140px;
+  right: 48px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #5b3260;
+  opacity: 0.85;
+}
+
+.security-profile-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ── Top Header ──────────────────────────────────────────────────────── */
+.security-profile-header {
+  margin-bottom: 1.5rem;
+}
+
+.security-profile-logo-wrap {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.security-profile-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary, #1e1229);
+  margin: 0 0 0.35rem 0;
+  line-height: 1.2;
+}
+
+.security-profile-subtitle {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin: 0;
+}
+
+/* ── Identity Card (Top Card) ────────────────────────────────────────── */
+.security-identity-card {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  border-radius: var(--radius-card, 16px);
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 4px 20px -2px rgba(74, 34, 64, 0.04), 0 2px 6px -1px rgba(74, 34, 64, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.security-identity-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.security-avatar-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid #eff6ff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+  overflow: hidden;
+}
+
+.security-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.security-identity-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.security-identity-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.security-identity-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1e1229);
+  line-height: 1.2;
+}
+
+.security-identity-role {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin: 0;
+}
+
+.security-identity-sub {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #9e8c96);
+  margin: 0;
+}
+
+.security-change-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 10px);
+  padding: 0.5rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-text-body, #2a1b38);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.security-change-photo-btn:hover {
+  background: #faf5f8;
+  border-color: #d5bfc9;
+}
+
+/* ── Tabs Navigation Bar ─────────────────────────────────────────────── */
+.security-profile-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.security-profile-tab {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.25rem 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6f5d6b);
+  cursor: pointer;
+  position: relative;
+  transition: color 150ms ease;
+  font-family: inherit;
+}
+
+.security-profile-tab:hover {
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-profile-tab--active {
+  color: #2563eb !important;
+  font-weight: 600;
+}
+
+.security-profile-tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #2563eb;
+  border-radius: 2px;
+}
+
+/* ── Main Two-Column Layout ─────────────────────────────────────────── */
+.security-profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.security-profile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Card Primitives ─────────────────────────────────────────────────── */
+.security-panel-card {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  border-radius: var(--radius-card, 16px);
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 4px 20px -2px rgba(74, 34, 64, 0.04), 0 2px 6px -1px rgba(74, 34, 64, 0.02);
+}
+
+.security-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1e1229);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.security-card-subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin: 0 0 1.25rem 0;
+}
+
+.security-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Form Rows & Inputs ──────────────────────────────────────────────── */
+.security-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.security-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.security-form-group--full {
+  grid-column: span 2;
+}
+
+.security-form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-form-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 0.85rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--color-text-body, #2a1b38);
+  background-color: var(--color-bg-input, #ffffff);
+  border: 1px solid var(--color-border-input, #e6d5dc);
+  border-radius: var(--radius-md, 10px);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  box-sizing: border-box;
+}
+
+.security-form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.security-form-input:disabled {
+  background-color: #faf6f8;
+  color: #6f5d6b;
+  cursor: not-allowed;
+  border-color: #eee2e7;
+}
+
+.security-form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236f5d6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+.security-form-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #8c7b88);
+  margin-top: 0.25rem;
+}
+
+.security-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 1.25rem;
+}
+
+.security-btn-primary {
+  height: 40px;
+  padding: 0 1.25rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md, 10px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.security-btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.security-btn-primary:active {
+  background-color: #1e40af;
+}
+
+.security-btn-secondary {
+  height: 40px;
+  padding: 0 1.25rem;
+  background-color: #ffffff;
+  color: var(--color-text-body, #2a1b38);
+  border: 1px solid var(--color-border-default, #e6d5dc);
+  border-radius: var(--radius-md, 10px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.security-btn-secondary:hover {
+  background-color: #faf5f8;
+  border-color: #d5bfc9;
+}
+
+/* ── Organization & Access Card ──────────────────────────────────────── */
+.security-org-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.security-org-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.security-org-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6f5d6b);
+}
+
+.security-org-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-org-scope {
+  font-size: 0.875rem;
+  color: var(--color-text-body, #2a1b38);
+  margin-top: 0.25rem;
+}
+
+/* ── Security Overview Card ──────────────────────────────────────────── */
+.security-overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.security-overview-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.security-overview-icon {
+  color: #10b981;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.security-overview-text strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-overview-text span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin-top: 0.15rem;
+}
+
+/* ── Current Session Card ────────────────────────────────────────────── */
+.security-session-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.security-session-field-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin-bottom: 0.15rem;
+}
+
+.security-session-field-val {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-vpn-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: #059669;
+  margin-top: 0.25rem;
+}
+
+.security-vpn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+
+.security-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  height: 38px;
+  padding: 0 1rem;
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 150ms ease;
+}
+
+.security-logout-btn:hover {
+  background-color: #dc2626;
+}
+
+/* ── Notification Settings Card ──────────────────────────────────────── */
+.security-notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.security-notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.security-notification-info strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+}
+
+.security-notification-info span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  margin-top: 0.15rem;
+}
+
+/* ── Toast / Feedback Alert ──────────────────────────────────────────── */
+.security-feedback-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive adjustments ─────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .security-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .security-profile-page {
+    padding: 1.25rem 1rem 7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .security-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .security-form-group--full {
+    grid-column: span 1;
+  }
+
+  .security-org-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .security-identity-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .security-change-photo-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
