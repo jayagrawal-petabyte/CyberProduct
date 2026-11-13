@@ -1,9 +1,10 @@
 
 const { createClient } = require("@supabase/supabase-js");
+const { config } = require("./env");
 
 function createUserSupabaseClient(accessToken) {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  const supabaseUrl = config?.supabase?.url || process.env.SUPABASE_URL;
+  const supabaseAnonKey = config?.supabase?.anonKey || process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase environment variables are missing");
@@ -28,8 +29,8 @@ function createUserSupabaseClient(accessToken) {
 }
 
 function createServiceSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = config?.supabase?.url || process.env.SUPABASE_URL;
+  const serviceRoleKey = config?.supabase?.serviceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error("Supabase service-role environment variables are missing");
