@@ -8,6 +8,9 @@ const cors = require("cors");
 const accessRequestRoutes =
   require("./access-requests/accessRequest.routes");
 
+const approvalRoutes =
+  require("./approvals/approval.routes");
+
 const app = express();
 
 app.use(helmet());
@@ -24,6 +27,11 @@ app.get("/health", (req, res) => {
 app.use(
   "/api/v1/access-requests",
   accessRequestRoutes
+);
+
+app.use(
+  "/api/v1/approvals",
+  approvalRoutes
 );
 
 const PORT = process.env.PORT || 3000;
