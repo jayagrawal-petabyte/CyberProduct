@@ -8,10 +8,7 @@ const validateDepartment = (data) => {
     return ["Request body must be a valid object"];
   }
 
-  if (
-    typeof data.name !== "string" ||
-    data.name.trim().length === 0
-  ) {
+  if (typeof data.name !== "string" || !data.name.trim()) {
     errors.push("Department name is required");
   } else if (data.name.trim().length > 100) {
     errors.push("Department name cannot exceed 100 characters");
@@ -30,9 +27,7 @@ const validateDepartment = (data) => {
   );
 
   if (unexpectedFields.length > 0) {
-    errors.push(
-      `Unexpected fields: ${unexpectedFields.join(", ")}`
-    );
+    errors.push(`Unexpected fields: ${unexpectedFields.join(", ")}`);
   }
 
   return errors;
@@ -54,18 +49,20 @@ const validateDepartmentUpdate = (data) => {
   );
 
   if (unexpectedFields.length > 0) {
-    errors.push(
-      `Unexpected fields: ${unexpectedFields.join(", ")}`
-    );
+    errors.push(`Unexpected fields: ${unexpectedFields.join(", ")}`);
   }
 
   if (
     data.name !== undefined &&
-    (typeof data.name !== "string" ||
-      data.name.trim().length === 0 ||
-      data.name.trim().length > 100)
+    (
+      typeof data.name !== "string" ||
+      !data.name.trim() ||
+      data.name.trim().length > 100
+    )
   ) {
-    errors.push("Name must be a non-empty string of at most 100 characters");
+    errors.push(
+      "Name must be a non-empty string of at most 100 characters"
+    );
   }
 
   if (
@@ -81,5 +78,5 @@ const validateDepartmentUpdate = (data) => {
 
 module.exports = {
   validateDepartment,
-  validateDepartmentUpdate,
+  validateDepartmentUpdate
 };

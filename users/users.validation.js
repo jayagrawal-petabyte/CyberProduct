@@ -1,5 +1,4 @@
-
-const CREATE_FIELDS = [
+const ALLOWED_CREATE_FIELDS = [
   "full_name",
   "email",
   "employee_code",
@@ -8,7 +7,7 @@ const CREATE_FIELDS = [
   "job_title",
 ];
 
-const UPDATE_FIELDS = [
+const ALLOWED_UPDATE_FIELDS = [
   "full_name",
   "employee_code",
   "department_id",
@@ -17,7 +16,7 @@ const UPDATE_FIELDS = [
 ];
 
 const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const validateProfileCreate = (data) => {
   const errors = [];
@@ -28,59 +27,46 @@ const validateProfileCreate = (data) => {
 
   if (typeof data.full_name !== "string" || !data.full_name.trim()) {
     errors.push("Full name is required");
-  } else if (data.full_name.trim().length > 150) {
-    errors.push("Full name cannot exceed 150 characters");
   }
 
-  if (
-    typeof data.email !== "string" ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())
-  ) {
-    errors.push("A valid email address is required");
+  if (typeof data.email !== "string" || !data.email.trim()) {
+    errors.push("Email is required");
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.push("Invalid email format");
   }
 
   if (
     data.employee_code !== undefined &&
-    data.employee_code !== null &&
     (typeof data.employee_code !== "string" ||
-      data.employee_code.trim().length > 50)
+      !data.employee_code.trim())
   ) {
-    errors.push("Employee code must be a string of at most 50 characters");
+    errors.push("Employee code must be a non-empty string");
   }
 
-  if (
-    data.department_id !== undefined &&
-    data.department_id !== null &&
-    (typeof data.department_id !== "string" ||
-      !UUID_REGEX.test(data.department_id))
-  ) {
-    errors.push("Department ID must be a valid UUID");
-  }
-
-  if (
-    data.manager_id !== undefined &&
-    data.manager_id !== null &&
-    (typeof data.manager_id !== "string" ||
-      !UUID_REGEX.test(data.manager_id))
-  ) {
-    errors.push("Manager ID must be a valid UUID");
-  }
+  ["department_id", "manager_id"].forEach((field) => {
+    if (
+      data[field] !== undefined &&
+      data[field] !== null &&
+      !UUID_REGEX.test(data[field])
+    ) {
+      errors.push(`${field} must be a valid UUID`);
+    }
+  });
 
   if (
     data.job_title !== undefined &&
     data.job_title !== null &&
-    (typeof data.job_title !== "string" ||
-      data.job_title.trim().length > 100)
+    typeof data.job_title !== "string"
   ) {
-    errors.push("Job title must be a string of at most 100 characters");
+    errors.push("Job title must be a string");
   }
 
-  const unexpectedFields = Object.keys(data).filter(
-    (field) => !CREATE_FIELDS.includes(field)
+  const unexpected = Object.keys(data).filter(
+    (field) => !ALLOWED_CREATE_FIELDS.includes(field)
   );
 
-  if (unexpectedFields.length > 0) {
-    errors.push(`Unexpected fields: ${unexpectedFields.join(", ")}`);
+  if (unexpected.length) {
+    errors.push(`Unexpected fields: ${unexpected.join(", ")}`);
   }
 
   return errors;
@@ -97,57 +83,45 @@ const validateProfileUpdate = (data) => {
     errors.push("At least one field is required for update");
   }
 
-  const unexpectedFields = Object.keys(data).filter(
-    (field) => !UPDATE_FIELDS.includes(field)
+  const unexpected = Object.keys(data).filter(
+    (field) => !ALLOWED_UPDATE_FIELDS.includes(field)
   );
 
-  if (unexpectedFields.length > 0) {
-    errors.push(`Unexpected fields: ${unexpectedFields.join(", ")}`);
+  if (unexpected.length) {
+    errors.push(`Unexpected fields: ${unexpected.join(", ")}`);
   }
 
   if (
     data.full_name !== undefined &&
-    (typeof data.full_name !== "string" ||
-      !data.full_name.trim() ||
-      data.full_name.trim().length > 150)
+    (typeof data.full_name !== "string" || !data.full_name.trim())
   ) {
-    errors.push("Full name must be non-empty and at most 150 characters");
+    errors.push("Full name must be a non-empty string");
   }
 
   if (
     data.employee_code !== undefined &&
-    data.employee_code !== null &&
     (typeof data.employee_code !== "string" ||
-      data.employee_code.trim().length > 50)
+      !data.employee_code.trim())
   ) {
-    errors.push("Employee code must be a string of at most 50 characters");
+    errors.push("Employee code must be a non-empty string");
   }
 
-  if (
-    data.department_id !== undefined &&
-    data.department_id !== null &&
-    (typeof data.department_id !== "string" ||
-      !UUID_REGEX.test(data.department_id))
-  ) {
-    errors.push("Department ID must be a valid UUID");
-  }
-
-  if (
-    data.manager_id !== undefined &&
-    data.manager_id !== null &&
-    (typeof data.manager_id !== "string" ||
-      !UUID_REGEX.test(data.manager_id))
-  ) {
-    errors.push("Manager ID must be a valid UUID");
-  }
+  ["department_id", "manager_id"].forEach((field) => {
+    if (
+      data[field] !== undefined &&
+      data[field] !== null &&
+      !UUID_REGEX.test(data[field])
+    ) {
+      errors.push(`${field} must be a valid UUID`);
+    }
+  });
 
   if (
     data.job_title !== undefined &&
     data.job_title !== null &&
-    (typeof data.job_title !== "string" ||
-      data.job_title.trim().length > 100)
+    typeof data.job_title !== "string"
   ) {
-    errors.push("Job title must be a string of at most 100 characters");
+    errors.push("Job title must be a string");
   }
 
   return errors;
