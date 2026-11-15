@@ -292,7 +292,6 @@ import { SecurityAlertsPage } from '../features/security/pages/SecurityAlertsPag
 import { SecurityAuditLogsPage } from '../features/security/pages/SecurityAuditLogsPage';
 import { EmployeeAccessActivityPage } from '../features/security/pages/EmployeeAccessActivityPage';
 import { AccessDeniedPage } from '../features/security/pages/AccessDeniedPage';
-<<<<<<< HEAD
 import { SecurityLayout } from '../features/security';
 import {
   SecurityPoliciesPage,
@@ -301,10 +300,6 @@ import {
   DeviceManagementPage,
   SecurityUsersPage,
 } from '../features/security-management';
-=======
-import { NotificationsPage } from '../features/notifications';
-import { SecurityLayout } from '../features/security/components/SecurityLayout';
->>>>>>> c6de39b (fix(security): finalize layout and routing integration)
 
 export const router = createBrowserRouter([
   // ── 1. Root & Authentication Routes ─────────────────────────────────────────
@@ -513,7 +508,6 @@ export const router = createBrowserRouter([
   // ── 5. Security Module (Aarushi Srivastava) ────────────────────────────────
   {
     path: '/security',
-<<<<<<< HEAD
     element: (
       <ProtectedRoute allowedRoles={['security', 'admin']}>
         <SecurityLayout />
@@ -575,69 +569,6 @@ export const router = createBrowserRouter([
       {
         path: 'access-denied',
         element: <AccessDeniedPage />,
-=======
-    element: <SecurityLayout />,
-    children: [
-      {
-        path: 'dashboard',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <SecurityDashboardPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'alerts',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <SecurityAlertsPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'audit',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <SecurityAuditLogsPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'employee-activity',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <EmployeeAccessActivityPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'profile',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <SecurityProfilePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'notifications',
-        element: (
-          <ProtectedRoute allowedRoles={['security', 'admin']}>
-            <NotificationsPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'access-denied',
-        element: (
-          <ProtectedRoute>
-            <AccessDeniedPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        index: true,
-        element: <Navigate to="/security/dashboard" replace />,
->>>>>>> c6de39b (fix(security): finalize layout and routing integration)
       },
     ],
   },

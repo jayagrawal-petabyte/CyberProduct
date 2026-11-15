@@ -309,16 +309,6 @@ export const SecurityAuditLogsPage: React.FC = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <div style={{ padding: '2rem', paddingBottom: '6.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary, #0f172a)' }}>
-          System Audit Logs
-        </h1>
-        <p style={{ marginTop: '0.25rem', color: 'var(--color-text-secondary, #475569)', fontSize: '0.925rem' }}>
-          Complete historical record of access requests, approvals, blocks, and zero-trust violations.
-        </p>
-=======
     <div className="security-page audit-page">
       <div className="page-heading">
         <div>
@@ -332,7 +322,6 @@ export const SecurityAuditLogsPage: React.FC = () => {
         <button className="btn btn-primary" onClick={exportCsv}>
           ⇩ &nbsp; Export logs
         </button>
->>>>>>> c6de39b (fix(security): finalize layout and routing integration)
       </div>
 
       <div

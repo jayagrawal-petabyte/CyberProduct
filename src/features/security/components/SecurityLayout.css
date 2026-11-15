@@ -10,4 +10,13 @@
   flex-direction: column;
   padding-bottom: 6rem;
   box-sizing: border-box;
+  background: linear-gradient(
+    153deg,
+    #fff0e8 0%,
+    #f5ddd4 34%,
+    #b77fa0 59%,
+    #43205e 78%,
+    #170a3d 100%
+  );
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

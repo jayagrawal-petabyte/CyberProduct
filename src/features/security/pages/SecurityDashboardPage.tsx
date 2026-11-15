@@ -5,11 +5,7 @@ export const SecurityDashboardPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-<<<<<<< HEAD
-    <div style={{ padding: '2rem', paddingBottom: '6.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
-=======
     <div style={{ padding: '2.5rem 3rem', maxWidth: '1440px', margin: '0 auto', width: '100%', color: '#0f172a', fontFamily: 'Inter, system-ui, sans-serif' }}>
->>>>>>> c6de39b (fix(security): finalize layout and routing integration)
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
