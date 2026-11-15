@@ -16,6 +16,18 @@ export { NotificationBellBadge } from './components/NotificationBellBadge';
 // Hook
 export { useNotifications }     from './hooks/useNotifications';
 
+// Context & Provider
+export {
+  NotificationProvider,
+  NotificationContext,
+  useNotificationContext,
+} from './context/NotificationContext';
+export type {
+  NotificationContextValue,
+  NotificationProviderProps,
+  ConnectionMode,
+} from './context/NotificationContext';
+
 // Types
 export type {
   NotificationItem,

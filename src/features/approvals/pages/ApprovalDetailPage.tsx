@@ -65,10 +65,12 @@ export default function ApprovalDetailPage() {
         message: `Request ${request.id} has been ${decision} successfully.`,
       })
       setModalAction(null)
-    } catch {
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to update request. Please try again.'
       setFeedback({
         type: 'error',
-        message: `Failed to update request. Please try again.`,
+        message,
       })
     } finally {
       setProcessing(false)

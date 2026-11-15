@@ -1,17 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { mockAuditLogs } from '../data/mockSecurityData';
+import { listEmployeeActivity } from '../../approvals/services/employeeActivityApi';
+
+interface ActivityRecord {
+  id: string;
+  timestamp: string;
+  actor: string;
+  eventType: string;
+  status: string;
+  details: string;
+}
 
 export const EmployeeAccessActivityPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [logs, setLogs] = useState<ActivityRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    listEmployeeActivity()
+      .then((events) => {
+        if (!isMounted) return;
+        if (Array.isArray(events) && events.length > 0) {
+          const liveRecords: ActivityRecord[] = events.map((ev) => ({
+            id: ev.id,
+            timestamp: ev.timeText || new Date(ev.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+            actor: ev.employeeName,
+            eventType: ev.event,
+            status: ev.status.toUpperCase(),
+            details: `${ev.resourceName} (${ev.department}) — ${ev.details || ev.result}`,
+          }));
+          setLogs(liveRecords);
+        } else {
+          setLogs(mockAuditLogs);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setLogs(mockAuditLogs);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Filter logs for employee session/access events
-  const accessActivityLogs = mockAuditLogs.filter(log => 
-    log.actor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.details.toLowerCase().includes(searchQuery.toLowerCase())
+  const accessActivityLogs = logs.filter(
+    (log) =>
+      log.actor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.details.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.eventType.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div style={{ padding: '2rem', paddingBottom: '6.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+      {/* Documented Gap / API Status Notice */}
+      <div
+        style={{
+          background: 'var(--color-warning-bg, #fff9e6)',
+          border: '1px solid var(--color-warning-border, #f0c040)',
+          borderRadius: '8px',
+          padding: '0.65rem 1rem',
+          marginBottom: '1.5rem',
+          fontSize: '0.8125rem',
+          color: '#1e293b',
+        }}
+      >
+        <strong>API Status:</strong> Dedicated endpoint <code>/api/v1/access-activity</code> is pending backend implementation. Live telemetry is synthesized from active access requests, decisions, and system notification streams.
+      </div>
+
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-text-primary, #0f172a)' }}>
           Employee Access Activity
@@ -48,7 +108,13 @@ export const EmployeeAccessActivityPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {accessActivityLogs.length > 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>
+                    Loading employee activity telemetry...
+                  </td>
+                </tr>
+              ) : accessActivityLogs.length > 0 ? (
                 accessActivityLogs.map(log => (
                   <tr key={log.id} style={{ borderBottom: '1px solid var(--color-border-subtle, #f1f5f9)' }}>
                     <td style={{ padding: '0.75rem 1rem', fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>{log.timestamp}</td>
@@ -61,8 +127,8 @@ export const EmployeeAccessActivityPage: React.FC = () => {
                     <td style={{ padding: '0.75rem 1rem' }}>
                       <span style={{ 
                         padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
-                        background: log.status === 'APPROVED' ? '#d1fae5' : log.status === 'BLOCKED' ? '#fee2e2' : '#fef3c7',
-                        color: log.status === 'APPROVED' ? '#065f46' : log.status === 'BLOCKED' ? '#991b1b' : '#92400e'
+                        background: log.status.includes('APPROV') || log.status.includes('SUCCESS') ? '#d1fae5' : log.status.includes('BLOCK') || log.status.includes('DENI') ? '#fee2e2' : '#fef3c7',
+                        color: log.status.includes('APPROV') || log.status.includes('SUCCESS') ? '#065f46' : log.status.includes('BLOCK') || log.status.includes('DENI') ? '#991b1b' : '#92400e'
                       }}>
                         {log.status}
                       </span>

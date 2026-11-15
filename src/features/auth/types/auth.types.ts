@@ -25,4 +25,8 @@ export interface AuthUser {
   name: string;
   email: string;
   role: UserRole;
+  companyId?: string;
+  departmentId?: string | null;
+  jobTitle?: string | null;
+  status?: string;
 }

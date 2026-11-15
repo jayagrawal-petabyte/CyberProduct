@@ -183,7 +183,8 @@
 // export default SecurityAlertsPage;
 
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { listSecurityAlerts } from "../../../services/api/securityApi";
 
 type Alert = {
   id: string;
@@ -297,6 +298,28 @@ export const SecurityAlertsPage: React.FC = () => {
     "Open" | "Investigating" | "Resolved" | "All alerts"
   >("Open");
 
+  useEffect(() => {
+    listSecurityAlerts()
+      .then((items) => {
+        if (items.length > 0) {
+          const mapped: Alert[] = items.map((item) => ({
+            id: `ALT-${item.id.slice(0, 4).toUpperCase()}`,
+            title: item.title,
+            user: 'Workforce Identity',
+            severity: item.priority === 'critical' || item.priority === 'high' ? 'High' : item.priority === 'low' ? 'Low' : 'Medium',
+            time: new Date(item.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+            assignedTo: 'Security Operations',
+            ip: 'Protected Network',
+            rule: item.type,
+            description: item.message,
+            status: 'Open',
+          }));
+          setAlerts((prev) => [...mapped, ...prev]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const selected =
     alerts.find((alert) => alert.id === selectedId) ?? alerts[0];
 
@@ -318,6 +341,21 @@ export const SecurityAlertsPage: React.FC = () => {
 
   return (
     <div className="security-page alerts-page">
+      {/* Gap notice */}
+      <div
+        style={{
+          background: 'var(--color-warning-bg, #fff9e6)',
+          border: '1px solid var(--color-warning-border, #f0c040)',
+          borderRadius: '8px',
+          padding: '0.65rem 1rem',
+          marginBottom: '1rem',
+          fontSize: '0.8125rem',
+          color: '#1e293b',
+        }}
+      >
+        <strong>API Status:</strong> Dedicated <code>/api/v1/alerts</code> endpoint is not registered on the backend. Displaying live threat notifications from <code>/api/v1/notifications</code> alongside security posture baselines.
+      </div>
+
       <div className="page-heading">
         <div>
           <h1>Security Alerts</h1>

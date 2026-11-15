@@ -3,47 +3,26 @@
  * CyberProduct Platform
  * Owner: Shivam Kumar (Frontend Lead)
  *
- * Manages notification state with:
- * - Role-filtered data loading from mock/API
- * - localStorage persistence of read/unread state across navigation
- * - Tab filtering (all, unread, access, security, policies) + search
- * - Per-user, per-role storage isolation to prevent state leakage
+ * Consumes global NotificationContext when mounted within NotificationProvider
+ * for real-time SSE push updates, synchronized unread counts, and cross-tab/view consistency.
+ *
+ * Provides graceful fallback to local storage / REST API when used standalone.
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useContext } from 'react';
 import type { NotificationItem, NotificationFilterTab } from '../types/notification.types';
 import type { UserRole } from '../../auth/types/auth.types';
+import {
+  NotificationContext,
+  getStorageKey,
+  readFromStorage,
+  writeToStorage,
+} from '../context/NotificationContext';
 import {
   listNotifications,
   apiMarkNotificationRead,
   apiMarkAllNotificationsRead,
 } from '../../../services/api/notificationsApi';
-
-/** Namespace key: isolates notifications per role + user so users never see each other's state */
-function storageKey(role: UserRole, userId: string): string {
-  return `cyberproduct_notifications_${role}_${userId}`;
-}
-
-function readFromStorage(key: string): NotificationItem[] {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      const parsed: unknown = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed as NotificationItem[];
-    }
-  } catch {
-    /* ignore parse / storage errors */
-  }
-  return [];
-}
-
-function writeToStorage(key: string, items: NotificationItem[]): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(items));
-  } catch {
-    /* ignore storage quota / security errors */
-  }
-}
 
 export interface UseNotificationsReturn {
   /** Filtered + sorted notification list for display */
@@ -63,10 +42,36 @@ export interface UseNotificationsReturn {
   refresh: () => Promise<void>;
 }
 
-export function useNotifications(role: UserRole, userId: string): UseNotificationsReturn {
-  const key = storageKey(role, userId);
+export function useNotifications(role?: UserRole, userId?: string): UseNotificationsReturn {
+  const context = useContext(NotificationContext);
 
-  // Initialise from localStorage so read-states survive navigation
+  // If running inside NotificationProvider, delegate to global real-time context
+  if (context) {
+    return {
+      notifications: context.notifications,
+      unreadCount: context.unreadCount,
+      isLoading: context.isLoading,
+      hasLoaded: context.hasLoaded,
+      error: context.error,
+      activeFilter: context.activeFilter,
+      setActiveFilter: context.setActiveFilter,
+      searchQuery: context.searchQuery,
+      setSearchQuery: context.setSearchQuery,
+      markAsRead: context.markAsRead,
+      markAllAsRead: context.markAllAsRead,
+      deleteNotification: context.deleteNotification,
+      refresh: context.refresh,
+    };
+  }
+
+  // Fallback standalone implementation for test environments or isolated trees
+  return useStandaloneNotifications(role || 'employee', userId || 'anon');
+}
+
+/** Standalone fallback implementation */
+function useStandaloneNotifications(role: UserRole, userId: string): UseNotificationsReturn {
+  const key = getStorageKey(role, userId);
+
   const [notifications, setNotifications] = useState<NotificationItem[]>(() =>
     readFromStorage(key),
   );
@@ -77,7 +82,6 @@ export function useNotifications(role: UserRole, userId: string): UseNotificatio
   const [activeFilter, setActiveFilter] = useState<NotificationFilterTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  /** Persist to both React state and localStorage atomically */
   const persist = useCallback(
     (updater: (prev: NotificationItem[]) => NotificationItem[]) => {
       setNotifications((prev) => {
@@ -89,17 +93,12 @@ export function useNotifications(role: UserRole, userId: string): UseNotificatio
     [key],
   );
 
-  /**
-   * Fetches fresh data from the API (or mock) and merges with stored read-states.
-   * Skips the loading skeleton when cached data is already present.
-   */
   const refresh = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const loaded = await listNotifications(role);
       persist((prev) => {
-        // Preserve existing read states so a refresh doesn't reset the inbox
         const readIds = new Set(prev.filter((n) => n.isRead).map((n) => n.id));
         return loaded.map((n) => ({ ...n, isRead: readIds.has(n.id) ? true : n.isRead }));
       });
@@ -111,36 +110,31 @@ export function useNotifications(role: UserRole, userId: string): UseNotificatio
     }
   }, [role, persist]);
 
-  // Load data on mount — silent if localStorage already has content
   useEffect(() => {
     void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Intentional: run only once on mount to load initial data
+  }, [refresh]);
 
-  /** Marks a single item read and fires the API call (no-op in mock mode). */
   const markAsRead = useCallback(
     async (id: string) => {
       persist((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
       try {
         await apiMarkNotificationRead(id);
       } catch {
-        /* ignore — state already updated locally */
+        /* optimistic update */
       }
     },
     [persist],
   );
 
-  /** Marks all items read and fires the API call (no-op in mock mode). */
   const markAllAsRead = useCallback(async () => {
     persist((prev) => prev.map((n) => ({ ...n, isRead: true })));
     try {
       await apiMarkAllNotificationsRead();
     } catch {
-      /* ignore — state already updated locally */
+      /* optimistic update */
     }
   }, [persist]);
 
-  /** Removes a single notification from the list (dismiss). */
   const deleteNotification = useCallback(
     (id: string) => {
       persist((prev) => prev.filter((n) => n.id !== id));
@@ -181,7 +175,6 @@ export function useNotifications(role: UserRole, userId: string): UseNotificatio
       );
     }
 
-    // Newest first
     return result.sort(
       (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );

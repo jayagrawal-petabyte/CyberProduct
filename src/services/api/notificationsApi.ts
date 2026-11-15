@@ -4,70 +4,88 @@
  * Owner: Shivam Kumar (Frontend Lead)
  *
  * Service layer for the in-app notification system.
- * All operations are currently MOCK-BASED (no real backend endpoint exists).
+ * Communicates with real backend endpoints:
+ *   GET  /api/v1/notifications            → { success, data, unreadCount }
+ *   PATCH /api/v1/notifications/:id/read  → marks single notification read
+ *   POST /api/v1/notifications/mark-all-read → { markedCount }
  *
- * When VITE_API_URL is configured and the backend /api/notifications
- * endpoint is ready, uncomment the fetch() calls and remove mock fallbacks.
- *
- * API CONTRACT (future):
- *   GET  /api/notifications         → NotificationItem[]
- *   PATCH /api/notifications/:id/read → void
- *   POST /api/notifications/mark-all-read → void
+ * Falls back gracefully: on API error the hook retains whatever state it has.
  */
 
-import { MOCK_NOTIFICATIONS } from '../../features/notifications/data/mockNotifications';
-import type { NotificationItem } from '../../features/notifications/types/notification.types';
+import { apiGet, apiPatch, apiPost } from './apiClient';
+import type { NotificationItem, NotificationType } from '../../features/notifications/types/notification.types';
 import type { UserRole } from '../../features/auth/types/auth.types';
 
 /** Indicates the current data source for display in development UIs */
-export const notificationsDataSource = 'development mock data';
+export const notificationsDataSource = 'live backend API';
+
+interface BackendNotification {
+  id: string;
+  title: string;
+  message: string;
+  body?: string;
+  timestamp: string;
+  isRead: boolean;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  type: NotificationType;
+  event_type?: string;
+  channel?: string;
+  related_type?: string;
+  related_id?: string;
+  targetRoles?: UserRole[];
+  targetUserId?: string;
+  actionUrl?: string;
+  actionLabel?: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface NotificationsResponse {
+  success: boolean;
+  data: BackendNotification[];
+  unreadCount: number;
+}
 
 /**
- * Fetches notifications for the given role.
- *
- * MOCK: Returns role-filtered records from MOCK_NOTIFICATIONS with a
- * simulated 300ms network delay.
- *
- * FUTURE (backend ready):
- *   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
- *     credentials: 'include',
- *   });
- *   return res.json() as Promise<NotificationItem[]>;
+ * Fetches notifications for the authenticated user.
+ * The `role` parameter is kept for API compatibility with the hook signature
+ * but backend filtering is done server-side by the authenticated user's role.
  */
-export async function listNotifications(role: UserRole): Promise<NotificationItem[]> {
-  await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
-  return MOCK_NOTIFICATIONS.filter((n) => n.targetRoles.includes(role)).map((n) => ({ ...n }));
+export async function listNotifications(_role: UserRole): Promise<NotificationItem[]> {
+  const result = await apiGet<NotificationsResponse>('/api/v1/notifications');
+  const items = result.data ?? [];
+  return items.map((n) => ({
+    id: n.id,
+    title: n.title,
+    message: n.message || n.body || '',
+    timestamp: n.timestamp,
+    isRead: n.isRead,
+    priority: n.priority,
+    type: n.type,
+    targetRoles: n.targetRoles ?? [],
+    targetUserId: n.targetUserId,
+    actionUrl: n.actionUrl,
+    actionLabel: n.actionLabel,
+    metadata: {
+      event_type: n.event_type,
+      channel: n.channel,
+      related_type: n.related_type,
+      related_id: n.related_id,
+      ...n.metadata,
+    },
+  }));
 }
 
 /**
  * Marks a single notification as read by id.
- *
- * MOCK: No-op — read state is persisted locally in the hook via localStorage.
- *
- * FUTURE (backend ready):
- *   await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {
- *     method: 'PATCH',
- *     credentials: 'include',
- *   });
  */
 export async function apiMarkNotificationRead(id: string): Promise<void> {
-  // No-op in mock mode — localStorage handles persistence
-  void id;
-  await Promise.resolve();
+  await apiPatch(`/api/v1/notifications/${id}/read`, {});
 }
 
 /**
  * Marks all notifications for the current user as read.
- *
- * MOCK: No-op — read state is persisted locally in the hook via localStorage.
- *
- * FUTURE (backend ready):
- *   await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read`, {
- *     method: 'POST',
- *     credentials: 'include',
- *   });
+ * Returns the count of notifications marked.
  */
 export async function apiMarkAllNotificationsRead(): Promise<void> {
-  // No-op in mock mode — localStorage handles persistence
-  await Promise.resolve();
+  await apiPost('/api/v1/notifications/mark-all-read', {});
 }

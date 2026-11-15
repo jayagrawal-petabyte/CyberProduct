@@ -12,8 +12,8 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   isBackendReady: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
+  login: (credentials: LoginCredentials) => Promise<AuthUser>;
+  logout: () => Promise<void>;
   setUser: (user: AuthUser | null) => void;
 }
 

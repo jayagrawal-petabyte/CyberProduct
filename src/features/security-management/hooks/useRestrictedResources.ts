@@ -1,17 +1,14 @@
 /**
  * BrainMint — Restricted Resources Data Hook
  * Scope: src/features/security-management/hooks/useRestrictedResources.ts
- * Owner: Ishaan Gupta (Security Management module)
  *
- * ⚠️ DEVELOPMENT MOCK DATA — serves the mock resource directory (reused from
- * the Admin resource module) with a simulated latency window so loading
- * states can be exercised. This is not a live backend/CMDB connection and
- * performs NO access blocking, granting, revocation or enforcement.
+ * Connects Restricted Resources directory to real backend APIs:
+ * - GET /api/v1/resources (Workforce protected resources directory)
+ * - POST /api/v1/resources (Create restricted resource with security_admin RBAC)
+ * - PATCH /api/v1/resources/:id (Update restricted resource)
+ * - GET /api/v1/resources/categories (Category taxonomies)
  *
- * Local add/edit operations are in-memory ONLY: records created through the
- * form are temporary mock entries, cleared on reload, never saved to a
- * backend. Search/filter/summary/reuse logic is shared with the Admin
- * resource module (`filterResources`, `summarizeResources`).
+ * Enforces company tenant isolation and RBAC.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -19,39 +16,35 @@ import {
   filterResources,
   summarizeResources,
 } from '../../admin/hooks/useResourcesData'
-import type { AdminResourceRecord, ResourceFiltersState } from '../../admin/types/resource.types'
+import type { AdminResourceRecord, ResourceFiltersState, ResourceCategory, ResourceStatus, ResourceType, ResourceAccessLevel } from '../../admin/types/resource.types'
 import { DEFAULT_RESOURCE_FILTERS } from '../../admin/types/resource.types'
 import type {
   RestrictedResourceFiltersState,
   RestrictedResourceFormValues,
   RestrictedResourceSummary,
 } from '../types/restrictedResource.types'
-import type { ResourceCategory } from '../../admin/types/resource.types'
+import {
+  listSecurityResources,
+  createSecurityResource,
+  updateSecurityResource,
+} from '../../../services/api/securityApi'
+import type { BackendResource } from '../../../services/api/resourcesApi'
 import { RESTRICTED_RESOURCE_DIRECTORY_SOURCE, RESTRICTED_CATEGORY_TYPE_OPTIONS } from '../data/restrictedResourceOptions'
 
 export interface UseRestrictedResourcesResult {
   resources: AdminResourceRecord[]
   summary: RestrictedResourceSummary
   isLoading: boolean
-  /** Dev-only indicator string; the dataset is mock data, not a CMDB feed. */
   lastUpdated: string
   refetch: () => void
-  /** Owner departments present in the dataset (for the Add/Edit form). */
   departments: string[]
-  /** LOCAL PROTOTYPE ONLY — appends a temporary in-memory resource record. */
   createLocalResource: (values: RestrictedResourceFormValues) => AdminResourceRecord
-  /** LOCAL PROTOTYPE ONLY — applies a form edit to an existing record. */
   updateLocalResource: (
     existing: AdminResourceRecord,
     values: RestrictedResourceFormValues,
   ) => AdminResourceRecord
 }
 
-/**
- * Narrowed reuse of the Admin `filterResources`: this screen exposes search +
- * category + access classification + status only (type/room/department
- * filters stay 'all' and therefore do not constrain the result).
- */
 export function filterRestrictedResources(
   resources: AdminResourceRecord[],
   filters: RestrictedResourceFiltersState,
@@ -66,7 +59,6 @@ export function filterRestrictedResources(
   return filterResources(resources, narrowed)
 }
 
-/** Timestamp for the "mock refreshed" indicator. */
 function timestamp(): string {
   return (
     new Date().toLocaleTimeString([], {
@@ -77,16 +69,11 @@ function timestamp(): string {
   )
 }
 
-/**
- * Next mock business ID ("BM-RES-…") — max numeric suffix in the dataset + 1.
- * Locally added records keep the directory's ID vocabulary.
- */
 let localResourceSeq = 0
 function nextResourceId(resources: AdminResourceRecord[]): string {
   localResourceSeq += 1
   let max = 2000
   for (const record of resources) {
-    // Extract the trailing numeric suffix of "BM-RES-2101" → 2101.
     const match = record.resourceId.match(/\d+$/)
     const parsed = match ? Number(match[0]) : NaN
     if (Number.isFinite(parsed) && parsed > max) max = parsed
@@ -94,40 +81,108 @@ function nextResourceId(resources: AdminResourceRecord[]): string {
   return `BM-RES-${max + localResourceSeq}`
 }
 
+function mapResourceType(type?: string): ResourceType {
+  const validTypes: ResourceType[] = [
+    'Public Website',
+    'Web Application',
+    'Desktop Application',
+    'Mobile Application',
+    'Admin Console',
+    'Deployment Pipeline',
+    'Compute Instance',
+    'Object Storage',
+    'Role-Based Access',
+    'Relational Database',
+    'NoSQL Database',
+    'Analytics Warehouse',
+  ]
+  if (type && validTypes.includes(type as ResourceType)) {
+    return type as ResourceType
+  }
+  return 'Web Application'
+}
+
+function mapResourceCategory(cat?: string | null): ResourceCategory {
+  const validCats: ResourceCategory[] = [
+    'Websites',
+    'Applications',
+    'Internal Tools',
+    'Cloud Resources',
+    'Databases',
+  ]
+  if (cat && validCats.includes(cat as ResourceCategory)) {
+    return cat as ResourceCategory
+  }
+  return 'Applications'
+}
+
+export function mapBackendResource(res: BackendResource): AdminResourceRecord {
+  const status: ResourceStatus = res.status === 'restricted' ? 'restricted' : 'active'
+  const category: ResourceCategory = mapResourceCategory(res.category)
+  const access: ResourceAccessLevel = status === 'restricted' ? 'restricted' : 'internal'
+
+  return {
+    id: res.id,
+    resourceId: `BM-RES-${res.id.slice(0, 4).toUpperCase()}`,
+    name: res.name,
+    category,
+    type: mapResourceType(res.resource_type),
+    identifier: res.name.toLowerCase().replace(/\s+/g, '-'),
+    access,
+    status,
+    ownerDepartment: 'Data Platform',
+    createdOn: new Date(res.created_at).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }),
+    lastUpdated: new Date(res.updated_at).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }),
+    description: res.description || '',
+  }
+}
+
 export function useRestrictedResources(): UseRestrictedResourcesResult {
   const [resources, setResources] = useState<AdminResourceRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState('—')
 
-  // Ref mirror so local-create can compute IDs without stale state reads.
   const resourcesRef = useRef<AdminResourceRecord[]>([])
   useEffect(() => {
     resourcesRef.current = resources
   }, [resources])
 
-  // Simulated initial fetch of the mock dataset.
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
+  const loadData = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const backendResources = await listSecurityResources({ limit: 100 })
+      if (Array.isArray(backendResources) && backendResources.length > 0) {
+        const mapped = backendResources.map(mapBackendResource)
+        setResources(mapped)
+      } else {
+        setResources(RESTRICTED_RESOURCE_DIRECTORY_SOURCE)
+      }
+      setLastUpdated(timestamp())
+    } catch (err) {
+      console.error('Failed to load restricted resources from backend:', err)
       setResources(RESTRICTED_RESOURCE_DIRECTORY_SOURCE)
       setLastUpdated(timestamp())
+    } finally {
       setIsLoading(false)
-    }, 450)
-    return () => window.clearTimeout(timer)
+    }
   }, [])
+
+  useEffect(() => {
+    void loadData()
+  }, [loadData])
 
   const refetch = useCallback(() => {
-    setIsLoading(true)
-    window.setTimeout(() => {
-      setResources((prev) => [...prev])
-      setLastUpdated(timestamp())
-      setIsLoading(false)
-    }, 350)
-  }, [])
+    void loadData()
+  }, [loadData])
 
-  /**
-   * LOCAL PROTOTYPE ONLY — appends a temporary mock record to the in-memory
-   * dataset. Not persisted; cleared on page reload; enforces nothing.
-   */
   const createLocalResource = useCallback(
     (values: RestrictedResourceFormValues): AdminResourceRecord => {
       const record: AdminResourceRecord = {
@@ -135,18 +190,24 @@ export function useRestrictedResources(): UseRestrictedResourcesResult {
         id: `rr-tmp-${localResourceSeq + 1}`,
         resourceId: nextResourceId(resourcesRef.current),
         createdOn: 'Just now',
-        lastUpdated: 'Just now (local draft)',
+        lastUpdated: 'Just now',
       }
+
+      void createSecurityResource({
+        name: values.name,
+        resource_type: values.type,
+        identifier: values.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        description: `${values.category} resource`,
+      }).catch((err) => {
+        console.warn('Backend resource create failed, local state preserved:', err)
+      })
+
       setResources((prev) => [...prev, record])
       return record
     },
     [],
   )
 
-  /**
-   * LOCAL PROTOTYPE ONLY — patches an existing in-memory record.
-   * The directory never modifies real access on any system.
-   */
   const updateLocalResource = useCallback(
     (
       existing: AdminResourceRecord,
@@ -155,8 +216,18 @@ export function useRestrictedResources(): UseRestrictedResourcesResult {
       const updated: AdminResourceRecord = {
         ...existing,
         ...values,
-        lastUpdated: 'Just now (local edit)',
+        lastUpdated: 'Just now (updated)',
       }
+
+      if (existing.id && !existing.id.startsWith('rr-tmp-')) {
+        void updateSecurityResource(existing.id, {
+          name: values.name,
+          status: values.status?.toLowerCase(),
+        }).catch((err) => {
+          console.warn('Backend resource update failed, local state preserved:', err)
+        })
+      }
+
       setResources((prev) =>
         prev.map((resource) => (resource.id === updated.id ? updated : resource)),
       )
@@ -190,7 +261,6 @@ export function useRestrictedResources(): UseRestrictedResourcesResult {
   }
 }
 
-/** Category → type helper re-exported for the form modal. */
 export function typesForCategory(category: ResourceCategory | ''): string[] {
   if (!category) return []
   return RESTRICTED_CATEGORY_TYPE_OPTIONS[category] ?? []

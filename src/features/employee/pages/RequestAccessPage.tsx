@@ -1,38 +1,87 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '../../../components/ui';
 import EmployeeBottomNav from '../components/EmployeeBottomNav';
-import { addAccessRequest } from '../services/accessRequestsStore';
+import { getResources, type BackendResource } from '../../../services/api/resourcesApi';
+import { submitAccessRequest } from '../../../services/api/accessRequestsApi';
+import { ApiError } from '../../../services/api/apiClient';
 import './RequestAccessPage.css';
+
+/** Convert "7 days" / "30 days" / "90 days" labels to minutes */
+function durationToMinutes(label: string): number | undefined {
+  if (label === '7 days') return 7 * 24 * 60;
+  if (label === '30 days') return 30 * 24 * 60;
+  if (label === '90 days') return 90 * 24 * 60;
+  return undefined; // "Permanent"
+}
+
+const DURATION_OPTIONS = ['7 days', '30 days', '90 days', 'Permanent (requires justification)'];
+const MAX_REASON_LENGTH = 1000;
 
 const RequestAccessPage: React.FC = () => {
   const navigate = useNavigate();
-  const [resource, setResource] = useState('');
-  const [accessLevel, setAccessLevel] = useState('Read-only');
-  const [duration, setDuration] = useState('7 days');
-  const [businessReason, setBusinessReason] = useState('');
-  const [additionalDetails, setAdditionalDetails] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Resources
+  const [resources, setResources] = useState<BackendResource[]>([]);
+  const [resourcesLoading, setResourcesLoading] = useState(true);
+  const [resourcesError, setResourcesError] = useState<string | null>(null);
+
+  // Form state
+  const [resourceId, setResourceId] = useState('');
+  const [duration, setDuration] = useState('7 days');
+  const [reason, setReason] = useState('');
+  const [additionalDetails, setAdditionalDetails] = useState('');
+
+  // Submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setResourcesLoading(true);
+    setResourcesError(null);
+    getResources()
+      .then((data) => {
+        setResources(data);
+      })
+      .catch((err) => {
+        setResourcesError(
+          err instanceof ApiError ? err.message : 'Could not load resources.',
+        );
+      })
+      .finally(() => setResourcesLoading(false));
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!resource || !businessReason.trim()) return;
+    const trimmedReason = reason.trim();
+    if (!resourceId || !trimmedReason) return;
+    if (trimmedReason.length > MAX_REASON_LENGTH) {
+      setSubmitError(`Reason must be at most ${MAX_REASON_LENGTH} characters.`);
+      return;
+    }
 
-    addAccessRequest({
-      resource,
-      accessLevel,
-      duration,
-      businessReason,
-      additionalDetails,
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitAccessRequest({
+        resource_id: resourceId,
+        reason: trimmedReason,
+        requested_duration_minutes: durationToMinutes(duration),
+      });
 
-    setSubmitted(true);
-    navigate('/employee/access-requests', {
-      state: {
-        submittedSuccess: true,
-      },
-    });
+      navigate('/employee/access-requests', {
+        state: { submittedSuccess: true },
+      });
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setSubmitError('You already have a pending request for this resource.');
+      } else {
+        setSubmitError(err instanceof ApiError ? err.message : 'Failed to submit request. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,151 +117,141 @@ const RequestAccessPage: React.FC = () => {
           </Link>
         </section>
 
-        {submitted ? (
-          <section className="employee-panel request-success">
-            <Icon name="check-circle" size={42} />
-            <h2>Request submitted successfully</h2>
-            <p>
-              Your access request has been recorded in this demo interface.
-              No approval workflow or backend submission is connected yet.
-            </p>
-            <Link to="/employee/access-requests">
-              View My Requests →
-            </Link>
-            <button
-              type="button"
-              className="request-secondary-button"
-              onClick={() => {
-                setSubmitted(false);
-                setResource('');
-                setAccessLevel('Read-only');
-                setDuration('7 days');
-                setBusinessReason('');
-                setAdditionalDetails('');
-              }}
-            >
-              Submit another request
-            </button>
-          </section>
-        ) : (
-          <div className="request-layout">
-            <form className="employee-panel request-form" onSubmit={handleSubmit}>
-              <div className="request-form__heading">
-                <h2>Access request details</h2>
-                <p>Fields marked with * are required.</p>
-              </div>
+        <div className="request-layout">
+          <form className="employee-panel request-form" onSubmit={(e) => void handleSubmit(e)}>
+            <div className="request-form__heading">
+              <h2>Access request details</h2>
+              <p>Fields marked with * are required.</p>
+            </div>
 
-              <label htmlFor="resource">
-                Resource or application <span>*</span>
-              </label>
+            {submitError && (
+              <div
+                role="alert"
+                style={{
+                  color: 'var(--color-danger, #c0392b)',
+                  background: 'var(--color-danger-bg, #fdf3f2)',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0.5rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {submitError}
+              </div>
+            )}
+
+            <label htmlFor="resource">
+              Resource or application <span>*</span>
+            </label>
+            {resourcesLoading ? (
+              <select id="resource" disabled>
+                <option>Loading resources…</option>
+              </select>
+            ) : resourcesError ? (
+              <div style={{ color: 'var(--color-danger, #c0392b)', fontSize: '0.875rem' }}>
+                {resourcesError}
+              </div>
+            ) : (
               <select
                 id="resource"
-                value={resource}
-                onChange={(event) => setResource(event.target.value)}
+                value={resourceId}
+                onChange={(event) => setResourceId(event.target.value)}
                 required
               >
                 <option value="">Select a resource</option>
-                <option value="GitHub Repository">GitHub Repository</option>
-                <option value="AWS Console">AWS Console</option>
-                <option value="Snowflake Analytics">Snowflake Analytics</option>
-                <option value="Jira Workspace">Jira Workspace</option>
-                <option value="Looker">Looker</option>
+                {resources.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}{r.category ? ` (${r.category})` : ''}
+                  </option>
+                ))}
               </select>
+            )}
 
-              <label htmlFor="access-level">
-                Required access level <span>*</span>
-              </label>
-              <select
-                id="access-level"
-                value={accessLevel}
-                onChange={(event) => setAccessLevel(event.target.value)}
-                required
+            <label htmlFor="duration">
+              Access duration <span>*</span>
+            </label>
+            <select
+              id="duration"
+              value={duration}
+              onChange={(event) => setDuration(event.target.value)}
+              required
+            >
+              {DURATION_OPTIONS.map((opt) => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </select>
+
+            <label htmlFor="business-reason">
+              Business justification <span>*</span>
+              <small style={{ float: 'right', fontWeight: 'normal' }}>
+                {reason.length}/{MAX_REASON_LENGTH}
+              </small>
+            </label>
+            <textarea
+              id="business-reason"
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              placeholder="Explain why you need this resource for your work..."
+              rows={4}
+              maxLength={MAX_REASON_LENGTH}
+              required
+            />
+
+            <label htmlFor="additional-details">
+              Additional details <small>(Optional)</small>
+            </label>
+            <textarea
+              id="additional-details"
+              value={additionalDetails}
+              onChange={(event) => setAdditionalDetails(event.target.value)}
+              placeholder="Add any additional information..."
+              rows={3}
+            />
+
+            <div className="request-form__actions">
+              <Link to="/employee/access-requests" className="request-cancel-button">
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                className="employee-primary-button"
+                disabled={isSubmitting || resourcesLoading}
               >
-                <option>Read-only</option>
-                <option>Contributor</option>
-                <option>Editor</option>
-                <option>Administrator</option>
-              </select>
+                <Icon name="arrow-right" size={16} />
+                {isSubmitting ? 'Submitting…' : 'Submit Request'}
+              </button>
+            </div>
+          </form>
 
-              <label htmlFor="duration">
-                Access duration <span>*</span>
-              </label>
-              <select
-                id="duration"
-                value={duration}
-                onChange={(event) => setDuration(event.target.value)}
-                required
-              >
-                <option>7 days</option>
-                <option>30 days</option>
-                <option>90 days</option>
-                <option>Permanent (requires justification)</option>
-              </select>
-
-              <label htmlFor="business-reason">
-                Business justification <span>*</span>
-              </label>
-              <textarea
-                id="business-reason"
-                value={businessReason}
-                onChange={(event) => setBusinessReason(event.target.value)}
-                placeholder="Explain why you need this resource for your work..."
-                rows={4}
-                required
-              />
-
-              <label htmlFor="additional-details">
-                Additional details <small>(Optional)</small>
-              </label>
-              <textarea
-                id="additional-details"
-                value={additionalDetails}
-                onChange={(event) => setAdditionalDetails(event.target.value)}
-                placeholder="Add any additional information..."
-                rows={3}
-              />
-
-              <div className="request-form__actions">
-                <Link to="/employee/access-requests" className="request-cancel-button">
-                  Cancel
-                </Link>
-                <button type="submit" className="employee-primary-button">
-                  <Icon name="arrow-right" size={16} />
-                  Submit Request
-                </button>
-              </div>
-            </form>
-
-            <aside className="employee-panel request-guidance">
-              <h2>Before you submit</h2>
-              <div>
-                <Icon name="shield-check" size={19} />
-                <section>
-                  <strong>Least privilege</strong>
-                  <p>Request only the access level necessary for your task.</p>
-                </section>
-              </div>
-              <div>
-                <Icon name="clock" size={19} />
-                <section>
-                  <strong>Time-bound access</strong>
-                  <p>Choose the shortest duration that meets your needs.</p>
-                </section>
-              </div>
-              <div>
-                <Icon name="file-text" size={19} />
-                <section>
-                  <strong>Clear justification</strong>
-                  <p>Explain the work task that requires this resource.</p>
-                </section>
-              </div>
-              <p className="request-guidance__note">
-                Your request will require approval according to your
-                organization's access policy.
-              </p>
-            </aside>
-          </div>
-        )}
+          <aside className="employee-panel request-guidance">
+            <h2>Before you submit</h2>
+            <div>
+              <Icon name="shield-check" size={19} />
+              <section>
+                <strong>Least privilege</strong>
+                <p>Request only the access level necessary for your task.</p>
+              </section>
+            </div>
+            <div>
+              <Icon name="clock" size={19} />
+              <section>
+                <strong>Time-bound access</strong>
+                <p>Choose the shortest duration that meets your needs.</p>
+              </section>
+            </div>
+            <div>
+              <Icon name="file-text" size={19} />
+              <section>
+                <strong>Clear justification</strong>
+                <p>Explain the work task that requires this resource.</p>
+              </section>
+            </div>
+            <p className="request-guidance__note">
+              Your request will require approval according to your
+              organization's access policy.
+            </p>
+          </aside>
+        </div>
       </div>
 
       <EmployeeBottomNav />

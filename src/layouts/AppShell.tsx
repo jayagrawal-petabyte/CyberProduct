@@ -15,6 +15,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { PageLayout } from '../components/shared/PageLayout';
 import { Avatar } from '../components/ui/Avatar';
 import { useAuth } from '../features/auth/hooks/useAuth';
+import { NotificationBellBadge, useNotifications } from '../features/notifications';
 import { getNavItemsForRole } from './navigation';
 
 export interface AppShellProps {
@@ -25,6 +26,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications(user?.role, user?.id);
 
   const dockItems = getNavItemsForRole(user?.role);
 
@@ -53,10 +55,25 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {user ? (
             <>
+              <NotificationBellBadge
+                unreadCount={unreadCount}
+                onClick={() => {
+                  if (user.role === 'lead') {
+                    navigate('/lead/notifications');
+                  } else if (user.role === 'security' || user.role === 'admin') {
+                    navigate('/security/notifications');
+                  } else {
+                    navigate('/employee/notifications');
+                  }
+                }}
+              />
               <Avatar name={user.name} online size="md" />
               <button
                 type="button"
-                onClick={logout}
+                onClick={async () => {
+                  await logout();
+                  navigate('/login', { replace: true });
+                }}
                 style={{
                   background: 'none',
                   border: 'none',

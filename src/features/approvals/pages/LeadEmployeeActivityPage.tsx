@@ -1,14 +1,33 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ApprovalIcon } from '../components/ApprovalIcon'
 import { LeadBottomNav } from '../components/LeadBottomNav'
-import { mockEmployeeActivity } from '../data/mockEmployeeActivity'
+import { listEmployeeActivity } from '../services/employeeActivityApi'
 import type { EmployeeAccessActivityEvent } from '../types/employeeActivity'
 import '../styles/approvalInbox.css'
 import '../styles/employeeActivity.css'
 
 export default function LeadEmployeeActivityPage() {
-  const [events] = useState<EmployeeAccessActivityEvent[]>(mockEmployeeActivity)
+  const [events, setEvents] = useState<EmployeeAccessActivityEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchEvents = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await listEmployeeActivity()
+      setEvents(data)
+    } catch {
+      setError('Unable to load employee access activity.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetchEvents()
+  }, [fetchEvents])
 
   // Filters state
   const [search, setSearch] = useState('')
@@ -81,6 +100,12 @@ export default function LeadEmployeeActivityPage() {
             <span>Export activity</span>
           </button>
         </header>
+
+        {error && (
+          <div className="approval-card" style={{ marginBottom: '1.25rem', color: '#b91c1c' }}>
+            <p style={{ margin: 0 }}>{error}</p>
+          </div>
+        )}
 
         {/* 4 Summary Stat Cards */}
         <section className="approval-summary" aria-label="Employee Access Activity summary">
@@ -177,7 +202,13 @@ export default function LeadEmployeeActivityPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedEvents.length === 0 ? (
+              {loading && events.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>
+                    Loading employee access events...
+                  </td>
+                </tr>
+              ) : paginatedEvents.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                     No access events found matching your filter criteria.

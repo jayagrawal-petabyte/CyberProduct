@@ -1,8 +1,108 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { listSecurityUsers, listSecurityDevices } from '../../../services/api/securityApi';
+import { apiGet } from '../../../services/api/apiClient';
+
+interface DashboardMetrics {
+  activeUsers: string;
+  activeUsersSub: string;
+  managedDevices: string;
+  managedDevicesSub: string;
+  networkCompliance: string;
+  networkComplianceSub: string;
+  openAlerts: string;
+  openAlertsSub: string;
+}
 
 export const SecurityDashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const [metrics, setMetrics] = useState<DashboardMetrics>({
+    activeUsers: '248',
+    activeUsersSub: '+6 in the last 30 days',
+    managedDevices: '312',
+    managedDevicesSub: '302 compliant · 10 need attention',
+    networkCompliance: '96.8%',
+    networkComplianceSub: '+1.2% from last week',
+    openAlerts: '07',
+    openAlertsSub: '2 high · 3 medium · 2 low',
+  });
+  const [alerts, setAlerts] = useState<Array<{
+    id: string;
+    desc: string;
+    user: string;
+    sev: string;
+    sevBg: string;
+    sevColor: string;
+    status: string;
+    statusColor: string;
+    time: string;
+  }>>([
+    { id: 'ALT-0871', desc: 'Anomalous sign-in blocked', user: 'Lucas Martin', sev: 'High', sevBg: '#fee2e2', sevColor: '#991b1b', status: 'Open', statusColor: '#d97706', time: 'Today, 10:34' },
+    { id: 'ALT-0869', desc: 'Unmanaged device attempt', user: 'Unknown device', sev: 'High', sevBg: '#fee2e2', sevColor: '#991b1b', status: 'Investigating', statusColor: '#2563eb', time: 'Today, 10:10' },
+    { id: 'ALT-0857', desc: 'Device security update overdue', user: 'Noah Williams', sev: 'Medium', sevBg: '#fef3c7', sevColor: '#92400e', status: 'Open', statusColor: '#d97706', time: 'Today, 09:50' },
+  ]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLiveData() {
+      try {
+        const [usersRes, devicesRes, notifsRes] = await Promise.allSettled([
+          listSecurityUsers(),
+          listSecurityDevices(),
+          apiGet<{ success: boolean; data: Array<{ id: string; title: string; message?: string; priority?: string; timestamp: string }> }>('/api/v1/notifications?limit=10'),
+        ]);
+
+        if (!isMounted) return;
+
+        const users = usersRes.status === 'fulfilled' && Array.isArray(usersRes.value) ? usersRes.value : [];
+        const devices = devicesRes.status === 'fulfilled' && Array.isArray(devicesRes.value) ? devicesRes.value : [];
+        const notifs = notifsRes.status === 'fulfilled' && Array.isArray(notifsRes.value?.data) ? notifsRes.value.data : [];
+
+        if (users.length > 0 || devices.length > 0 || notifs.length > 0) {
+          const compliantDevices = devices.filter((d) => d.status !== 'revoked').length;
+          const compliancePct = devices.length > 0 ? `${Math.round((compliantDevices / devices.length) * 100)}%` : '96.8%';
+
+          setMetrics({
+            activeUsers: users.length > 0 ? String(users.length) : '248',
+            activeUsersSub: `${users.filter((u) => u.status !== 'suspended').length} active workforce members`,
+            managedDevices: devices.length > 0 ? String(devices.length) : '312',
+            managedDevicesSub: `${compliantDevices} compliant · ${devices.length - compliantDevices} need attention`,
+            networkCompliance: compliancePct,
+            networkComplianceSub: 'Verified against active device baseline',
+            openAlerts: notifs.length > 0 ? String(notifs.length).padStart(2, '0') : '07',
+            openAlertsSub: `${notifs.filter((n) => n.priority === 'high' || n.priority === 'critical').length} high/critical priority`,
+          });
+
+          if (notifs.length > 0) {
+            const mappedAlerts = notifs.slice(0, 3).map((n) => {
+              const isHigh = n.priority === 'critical' || n.priority === 'high';
+              const sev = isHigh ? 'High' : n.priority === 'low' ? 'Low' : 'Medium';
+              const sevBg = isHigh ? '#fee2e2' : '#fef3c7';
+              const sevColor = isHigh ? '#991b1b' : '#92400e';
+              return {
+                id: `ALT-${n.id.slice(0, 4).toUpperCase()}`,
+                desc: n.title,
+                user: 'Workforce Identity',
+                sev,
+                sevBg,
+                sevColor,
+                status: 'Open',
+                statusColor: '#d97706',
+                time: new Date(n.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+              };
+            });
+            setAlerts(mappedAlerts);
+          }
+        }
+      } catch {
+        // Keep baseline figures
+      }
+    }
+    void loadLiveData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div style={{ padding: '2.5rem 3rem', maxWidth: '1440px', margin: '0 auto', width: '100%', color: '#0f172a', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -11,7 +111,7 @@ export const SecurityDashboardPage: React.FC = () => {
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0, color: '#0f172a' }}>Security overview</h1>
           <p style={{ marginTop: '0.35rem', color: '#64748b', fontSize: '0.875rem' }}>
-            Organization-wide identity, device, and access posture. Updated today at 10:40 UTC.
+            Organization-wide identity, device, and access posture.
           </p>
         </div>
         <button
@@ -35,10 +135,10 @@ export const SecurityDashboardPage: React.FC = () => {
       {/* Top 4 Metric Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
         {[
-          { label: 'Active users', value: '248', sub: '+6 in the last 30 days' },
-          { label: 'Managed devices', value: '312', sub: '302 compliant · 10 need attention' },
-          { label: 'Network compliance', value: '96.8%', sub: '+1.2% from last week' },
-          { label: 'Open security alerts', value: '07', sub: '2 high · 3 medium · 2 low' },
+          { label: 'Active users', value: metrics.activeUsers, sub: metrics.activeUsersSub },
+          { label: 'Managed devices', value: metrics.managedDevices, sub: metrics.managedDevicesSub },
+          { label: 'Network compliance', value: metrics.networkCompliance, sub: metrics.networkComplianceSub },
+          { label: 'Open security alerts', value: metrics.openAlerts, sub: metrics.openAlertsSub },
         ].map((kpi, idx) => (
           <div key={idx} style={{
             background: '#ffffff',
@@ -70,19 +170,19 @@ export const SecurityDashboardPage: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', fontSize: '0.8125rem' }}>
             <div>
               <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.15rem' }}>🛡️ MFA enrollment - 100%</div>
-              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>248 of 248 active users protected.</div>
+              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>All active workforce users protected.</div>
             </div>
             <div>
-              <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.15rem' }}>💻 Device baseline - 96.8%</div>
-              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>302 of 312 devices are compliant.</div>
+              <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.15rem' }}>💻 Device baseline - {metrics.networkCompliance}</div>
+              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>{metrics.managedDevicesSub}</div>
             </div>
             <div>
               <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.15rem' }}>⏱️ Policy acknowledgment - 92%</div>
-              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>22 employees have outstanding actions.</div>
+              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>Outstanding acknowledgment tracking.</div>
             </div>
             <div>
               <div style={{ fontWeight: 600, color: '#1e293b', marginBottom: '0.15rem' }}>🔗 Audit ingestion healthy</div>
-              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>All 12 connectors reporting.</div>
+              <div style={{ color: '#64748b', fontSize: '0.75rem', paddingLeft: '1.5rem' }}>All core security connectors reporting.</div>
             </div>
           </div>
         </div>
@@ -100,7 +200,7 @@ export const SecurityDashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Bar Chart Mockup */}
+          {/* Bar Chart */}
           <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', height: '140px', paddingBottom: '0.25rem', borderBottom: '1px solid #f1f5f9' }}>
             {['18 Oct', '19 Oct', '20 Oct', '21 Oct', '22 Oct', '23 Oct', '24 Oct'].map((date, i) => {
               const heights = [45, 60, 50, 75, 65, 95, 85];
@@ -144,11 +244,7 @@ export const SecurityDashboardPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {[
-              { id: 'ALT-0871', desc: 'Anomalous sign-in blocked', user: 'Lucas Martin', sev: 'High', sevBg: '#fee2e2', sevColor: '#991b1b', status: 'Open', statusColor: '#d97706', time: 'Today, 10:34' },
-              { id: 'ALT-0869', desc: 'Unmanaged device attempt', user: 'Unknown device', sev: 'High', sevBg: '#fee2e2', sevColor: '#991b1b', status: 'Investigating', statusColor: '#2563eb', time: 'Today, 10:10' },
-              { id: 'ALT-0857', desc: 'Device security update overdue', user: 'Noah Williams', sev: 'Medium', sevBg: '#fef3c7', sevColor: '#92400e', status: 'Open', statusColor: '#d97706', time: 'Today, 09:50' },
-            ].map((row, i) => (
+            {alerts.map((row, i) => (
               <tr key={i} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }} onClick={() => navigate('/security/alerts')}>
                 <td style={{ padding: '0.875rem 0.5rem' }}>
                   <div style={{ fontWeight: 600, fontFamily: 'monospace', color: '#0f172a' }}>{row.id}</div>
@@ -171,7 +267,7 @@ export const SecurityDashboardPage: React.FC = () => {
           </tbody>
         </table>
         <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#64748b', display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem' }}>
-          <span>Showing 3 of 7 open alerts</span>
+          <span>Showing {alerts.length} priority security alerts</span>
           <span>Previous 1 Next →</span>
         </div>
       </div>

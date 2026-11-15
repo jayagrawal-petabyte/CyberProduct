@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LeadBottomNav } from '../../approvals/components/LeadBottomNav'
 import { ApprovalIcon } from '../../approvals/components/ApprovalIcon'
+import { useAuth } from '../../auth/hooks/useAuth'
 import { getDashboardData } from '../services/dashboardApi'
 import type { DashboardData } from '../types/dashboard'
 import '../styles/teamLeadDashboard.css'
 
 export default function TeamLeadDashboardPage() {
+  const { user } = useAuth()
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Daniel'
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -49,7 +52,7 @@ export default function TeamLeadDashboardPage() {
         {/* Page Greeting & Quick Action */}
         <header className="dashboard-page-header">
           <div>
-            <h1>Good morning, Daniel</h1>
+            <h1>Good morning, {firstName}</h1>
             <p className="dashboard-page-subtitle">
               Here&apos;s the access picture for your Data &amp; Insights team.
             </p>
@@ -136,36 +139,47 @@ export default function TeamLeadDashboardPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.priorityRequests.map((req) => (
-                        <tr key={req.id}>
-                          <td>
-                            <div className="priority-employee-cell">
-                              <span className="priority-employee-name">{req.employeeName}</span>
-                              <span className="priority-employee-id">{req.id}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="priority-resource-cell">{req.resourceName}</span>
-                          </td>
-                          <td>
-                            <span className="priority-submitted-cell">{req.submittedTimeText || 'Today'}</span>
-                          </td>
-                          <td>
-                            <Link
-                              to={`/lead/approvals/${req.id}`}
-                              className="priority-review-link"
-                              aria-label={`Review request ${req.id} for ${req.employeeName}`}
-                            >
-                              Review →
-                            </Link>
+                      {data.priorityRequests.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
+                            No pending requests requiring review.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        data.priorityRequests.map((req) => (
+                          <tr key={req.id}>
+                            <td>
+                              <div className="priority-employee-cell">
+                                <span className="priority-employee-name">{req.employeeName}</span>
+                                <span className="priority-employee-id">{req.id}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <span className="priority-resource-cell">{req.resourceName}</span>
+                            </td>
+                            <td>
+                              <span className="priority-submitted-cell">{req.submittedTimeText || 'Today'}</span>
+                            </td>
+                            <td>
+                              <Link
+                                to={`/lead/approvals/${req.id}`}
+                                className="priority-review-link"
+                                aria-label={`Review request ${req.id} for ${req.employeeName}`}
+                              >
+                                Review →
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
 
                   <div className="priority-table-footer">
-                    <span>Showing 3 of 5 pending requests</span>
+                    <span>
+                      Showing {data.priorityRequests.length} pending request
+                      {data.priorityRequests.length === 1 ? '' : 's'}
+                    </span>
                     <div className="priority-pagination">
                       <span>← Previous</span>
                       <span className="priority-pagination__active">1</span>

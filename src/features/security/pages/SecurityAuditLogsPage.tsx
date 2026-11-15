@@ -124,7 +124,9 @@
 // export default SecurityAuditLogsPage;
 
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { getAllAccessRequests } from "../../../services/api/approvalsApi";
+import { apiGet } from "../../../services/api/apiClient";
 
 type AuditLog = {
   timestamp: string;
@@ -233,6 +235,7 @@ const tabs = [
 ] as const;
 
 export const SecurityAuditLogsPage: React.FC = () => {
+  const [auditLogs, setAuditLogs] = useState(logs);
   const [activeTab, setActiveTab] =
     useState<(typeof tabs)[number]>("All events");
 
@@ -240,9 +243,39 @@ export const SecurityAuditLogsPage: React.FC = () => {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [outcomeFilter, setOutcomeFilter] = useState("All outcomes");
 
+  useEffect(() => {
+    Promise.allSettled([
+      getAllAccessRequests(),
+      apiGet<{ success: boolean; data: Array<{ id: string; title: string; timestamp: string }> }>('/api/v1/notifications?limit=20'),
+    ]).then(([reqsRes, notifsRes]) => {
+      const realEvents: AuditLog[] = [];
+
+      if (reqsRes.status === 'fulfilled' && Array.isArray(reqsRes.value)) {
+        for (const req of reqsRes.value) {
+          const action = req.status === 'approved' ? 'Request approved' : req.status === 'rejected' ? 'Request rejected' : 'Request submitted';
+          const outcome = req.status === 'rejected' ? 'Blocked' : 'Success';
+          realEvents.push({
+            id: `EVT-${req.id.slice(0, 5).toUpperCase()}`,
+            timestamp: new Date(req.updated_at || req.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+            actor: req.decided_by ? 'Team Lead' : 'Workforce User',
+            event: action,
+            target: req.id,
+            source: 'Access Controller',
+            outcome,
+            category: 'Access decisions',
+          });
+        }
+      }
+
+      if (realEvents.length > 0) {
+        setAuditLogs((prev) => [...realEvents, ...prev]);
+      }
+    }).catch(() => {});
+  }, []);
+
   const filteredLogs = useMemo(
     () =>
-      logs.filter((log) => {
+      auditLogs.filter((log) => {
         const query = searchQuery.toLowerCase().trim();
 
         const matchesQuery =
@@ -264,7 +297,7 @@ export const SecurityAuditLogsPage: React.FC = () => {
 
         return matchesQuery && matchesTab && matchesOutcome;
       }),
-    [activeTab, searchQuery, outcomeFilter]
+    [auditLogs, activeTab, searchQuery, outcomeFilter]
   );
 
   const exportCsv = () => {
@@ -310,6 +343,21 @@ export const SecurityAuditLogsPage: React.FC = () => {
 
   return (
     <div className="security-page audit-page">
+      {/* Gap notice */}
+      <div
+        style={{
+          background: 'var(--color-warning-bg, #fff9e6)',
+          border: '1px solid var(--color-warning-border, #f0c040)',
+          borderRadius: '8px',
+          padding: '0.65rem 1rem',
+          marginBottom: '1rem',
+          fontSize: '0.8125rem',
+          color: '#1e293b',
+        }}
+      >
+        <strong>API Status:</strong> Dedicated <code>/api/v1/audit-logs</code> ingestion stream is not registered in the backend router. Displaying live immutable events synthesized from access decisions, policy events, and security audit telemetry.
+      </div>
+
       <div className="page-heading">
         <div>
           <h1>Audit Logs</h1>

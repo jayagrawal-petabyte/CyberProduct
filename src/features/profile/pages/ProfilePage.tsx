@@ -20,6 +20,7 @@ import LeadBottomNav from '../../approvals/components/LeadBottomNav';
 import SecurityBottomNav from '../../security/components/SecurityBottomNav';
 import { ROLE_PROFILE_CONFIGS, LOCATION_OPTIONS } from '../data/defaultProfiles';
 import type { ProfileTab, SavedProfileSnapshot } from '../types/profile.types';
+import { getUserProfile, updateUserProfile } from '../../../services/api/usersApi';
 import './ProfilePage.css';
 
 function getStorageKey(role: UserRole, userId: string): string {
@@ -111,7 +112,19 @@ export const ProfilePage: React.FC = () => {
     setEmailSummaries(loadedSnapshot.emailSummaries);
     setCriticalAlerts(loadedSnapshot.criticalAlerts);
     setSavedSnapshot(loadedSnapshot);
-  }, [loadedSnapshot]);
+
+    if (user?.id) {
+      getUserProfile(user.id)
+        .then((profile) => {
+          if (profile?.full_name) {
+            setFullName(profile.full_name);
+          }
+        })
+        .catch(() => {
+          // Graceful fallback to cached snapshot
+        });
+    }
+  }, [loadedSnapshot, user?.id]);
 
   // Compute initials for the avatar bubble
   const initials = useMemo(() => {
@@ -149,7 +162,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   // Handle Save
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
       setErrorMessage('Full name cannot be empty.');
@@ -167,6 +180,15 @@ export const ProfilePage: React.FC = () => {
       avatarUrl,
     };
     persistSnapshot(nextSnapshot);
+
+    if (user?.id) {
+      try {
+        await updateUserProfile(user.id, { full_name: fullName.trim() });
+      } catch {
+        // Non-fatal, local snapshot is saved
+      }
+    }
+
     setFeedbackMessage('Personal information saved successfully.');
     setTimeout(() => setFeedbackMessage(null), 3500);
   };

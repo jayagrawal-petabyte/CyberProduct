@@ -5,6 +5,15 @@ import { Card, StatusBadge, Button, Icon } from '../../../components/ui';
 import EmployeeBottomNav from '../components/EmployeeBottomNav';
 import './MyPoliciesPage.css';
 
+/**
+ * API GAP (documented):
+ * GET /api/v1/policies requires the `security_admin` role.
+ * Employees cannot fetch live policies from this endpoint (returns 403).
+ * This page shows representative local policy data for acknowledgement tracking
+ * until a dedicated employee-facing policies endpoint is added to the backend.
+ * Required new endpoint: GET /api/v1/policies/employee (or policy_acknowledgements table)
+ */
+
 type Policy = {
   id: number;
   title: string;
@@ -127,6 +136,29 @@ export default function MyPoliciesPage() {
         </header>
 
         <div className="employee-policies">
+          {/* API Gap Notice */}
+          <div
+            style={{
+              background: 'var(--color-warning-bg, #fff9e6)',
+              border: '1px solid var(--color-warning-border, #f0c040)',
+              borderRadius: '0.5rem',
+              padding: '0.75rem 1rem',
+              marginBottom: '1rem',
+              fontSize: '0.875rem',
+              color: 'var(--color-text-primary)',
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'flex-start',
+            }}
+          >
+            <Icon name="alert-triangle" size={16} />
+            <span>
+              <strong>Note:</strong> Live company policies require a backend endpoint that is not yet
+              available for the employee role. The policies shown below are representative examples.
+              Contact your security administrator for official policy documents.
+            </span>
+          </div>
+
           {/* Page Heading */}
           <div className="policies-header">
             <div>

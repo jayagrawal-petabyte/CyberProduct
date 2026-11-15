@@ -1,23 +1,112 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../../../components/ui';
+import { useAuth } from '../../auth/hooks/useAuth';
 import EmployeeBottomNav from '../components/EmployeeBottomNav';
+import { getMyAccessRequests, type BackendAccessRequest } from '../../../services/api/accessRequestsApi';
+import { getMyDevices, type BackendDevice } from '../../../services/api/devicesApi';
+import { apiGet } from '../../../services/api/apiClient';
 import './EmployeeDashboardPage.css';
 
-const metrics = [
-  { title: 'Active Resource Access', value: '08', detail: '2 time-bound grants', icon: 'key' as const },
-  { title: 'Pending Requests', value: '01', detail: 'Awaiting approval', icon: 'clock' as const },
-  { title: 'Registered Devices', value: '02', detail: 'All devices compliant', icon: 'monitor' as const },
-  { title: 'Policy Acknowledgements', value: '4 / 5', detail: '1 acknowledgement due', icon: 'shield-check' as const },
-];
+interface NotificationsResponse {
+  success: boolean;
+  data: unknown[];
+  unreadCount: number;
+}
 
-const requests = [
-  { resource: 'Snowflake Analytics', access: 'Read-only · 7 days', id: 'AR-2048', status: 'Pending', date: 'Today, 09:18' },
-  { resource: 'GitHub - Insights', access: 'Contributor · 7 days', id: 'AR-2047', status: 'Approved', date: '23 Oct, 14:10' },
-  { resource: 'Looker', access: 'Viewer · 90 days', id: 'AR-2039', status: 'Approved', date: '21 Oct, 11:05' },
-];
+function formatDate(isoString: string): string {
+  try {
+    const date = new Date(isoString);
+    const now = new Date();
+    const isToday =
+      date.getFullYear() === now.getFullYear() &&
+      date.getMonth() === now.getMonth() &&
+      date.getDate() === now.getDate();
+    if (isToday) {
+      return `Today, ${date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch {
+    return isoString;
+  }
+}
+
+function statusClass(status: string): string {
+  switch (status.toLowerCase()) {
+    case 'approved': return 'approved';
+    case 'rejected': return 'rejected';
+    default: return 'pending';
+  }
+}
 
 const EmployeeDashboardPage: React.FC = () => {
+  const { user } = useAuth();
+  const firstName = user?.name?.split(' ')[0] ?? 'there';
+
+  const [requests, setRequests] = useState<BackendAccessRequest[]>([]);
+  const [deviceCount, setDeviceCount] = useState<number | null>(null);
+  const [unreadCount, setUnreadCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const [reqs, devices, notifs] = await Promise.allSettled([
+          getMyAccessRequests(),
+          getMyDevices(),
+          apiGet<NotificationsResponse>('/api/v1/notifications?limit=10'),
+        ]);
+
+        if (cancelled) return;
+
+        if (reqs.status === 'fulfilled') setRequests(reqs.value.slice(0, 3));
+        if (devices.status === 'fulfilled') setDeviceCount(devices.value.length);
+        if (notifs.status === 'fulfilled') setUnreadCount(notifs.value.unreadCount ?? 0);
+      } catch {
+        if (!cancelled) setError('Could not load dashboard data.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void load();
+    return () => { cancelled = true; };
+  }, []);
+
+  const pendingCount = requests.filter((r) => r.status === 'pending').length;
+
+  const metrics = [
+    {
+      title: 'Pending Requests',
+      value: loading ? '—' : String(pendingCount).padStart(2, '0'),
+      detail: 'Awaiting approval',
+      icon: 'clock' as const,
+    },
+    {
+      title: 'Registered Devices',
+      value: loading || deviceCount === null ? '—' : String(deviceCount).padStart(2, '0'),
+      detail: 'Devices on your account',
+      icon: 'monitor' as const,
+    },
+    {
+      title: 'Unread Notifications',
+      value: loading || unreadCount === null ? '—' : String(unreadCount).padStart(2, '0'),
+      detail: 'In your inbox',
+      icon: 'alert-triangle' as const,
+    },
+    {
+      title: 'Total Requests',
+      value: loading ? '—' : String(requests.length > 0 ? requests.length : '—'),
+      detail: 'All time',
+      icon: 'file-text' as const,
+    },
+  ];
+
   return (
     <main className="employee-page">
       <div className="employee-page__content">
@@ -35,7 +124,7 @@ const EmployeeDashboardPage: React.FC = () => {
         <section className="employee-welcome">
           <div>
             <p className="employee-welcome__eyebrow">EMPLOYEE PORTAL</p>
-            <h1>Good morning, Maya</h1>
+            <h1>Good morning, {firstName}</h1>
             <p>Your access, devices, and security tasks — all in one place.</p>
           </div>
           <Link className="employee-primary-button" to="/employee/access-requests/new">
@@ -43,6 +132,12 @@ const EmployeeDashboardPage: React.FC = () => {
             Request Access
           </Link>
         </section>
+
+        {error && (
+          <div className="employee-panel" style={{ color: 'var(--color-danger, #c0392b)', padding: '0.75rem 1rem' }}>
+            <Icon name="alert-triangle" size={16} /> {error}
+          </div>
+        )}
 
         <section className="employee-metrics" aria-label="Account overview">
           {metrics.map((metric) => (
@@ -68,37 +163,46 @@ const EmployeeDashboardPage: React.FC = () => {
             </div>
 
             <div className="employee-table-wrap">
-              <table className="employee-table">
-                <thead>
-                  <tr>
-                    <th>Resource</th>
-                    <th>Request</th>
-                    <th>Status</th>
-                    <th>Updated</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requests.map((request) => (
-                    <tr key={request.id}>
-                      <td>
-                        <strong>{request.resource}</strong>
-                        <small>{request.access}</small>
-                      </td>
-                      <td>{request.id}</td>
-                      <td>
-                        <span className={`employee-status employee-status--${request.status.toLowerCase()}`}>
-                          {request.status}
-                        </span>
-                      </td>
-                      <td>{request.date}</td>
+              {loading ? (
+                <p style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Loading…</p>
+              ) : requests.length === 0 ? (
+                <p style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>
+                  No requests yet.{' '}
+                  <Link to="/employee/access-requests/new">Submit your first request →</Link>
+                </p>
+              ) : (
+                <table className="employee-table">
+                  <thead>
+                    <tr>
+                      <th>Resource</th>
+                      <th>Reason</th>
+                      <th>Status</th>
+                      <th>Submitted</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {requests.map((req) => (
+                      <tr key={req.id}>
+                        <td>
+                          <strong>{req.resource?.name ?? 'Resource'}</strong>
+                          <small>{req.requested_duration_minutes ? `${req.requested_duration_minutes} min` : ''}</small>
+                        </td>
+                        <td>{req.reason.slice(0, 40)}{req.reason.length > 40 ? '…' : ''}</td>
+                        <td>
+                          <span className={`employee-status employee-status--${statusClass(req.status)}`}>
+                            {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                          </span>
+                        </td>
+                        <td>{formatDate(req.created_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             <div className="employee-panel__footer">
-              <span>3 recent requests · View all 12</span>
+              <span>{loading ? '…' : `${requests.length} recent requests`}</span>
               <Link to="/employee/access-requests">View all →</Link>
             </div>
           </section>
@@ -108,52 +212,54 @@ const EmployeeDashboardPage: React.FC = () => {
               <h2>Needs your attention</h2>
               <p className="employee-panel__description">Keep your account in good standing</p>
 
-              <div className="employee-attention-item">
-                <Icon name="alert-triangle" size={17} />
-                <div>
-                  <strong>Review Acceptable Use v3.2</strong>
-                  <p>Acknowledge the updated policy by 28 Oct.</p>
+              {pendingCount > 0 ? (
+                <div className="employee-attention-item">
+                  <Icon name="clock" size={17} />
+                  <div>
+                    <strong>{pendingCount} pending request{pendingCount !== 1 ? 's' : ''}</strong>
+                    <p>Awaiting approval from your manager.</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="employee-attention-item">
+                  <Icon name="check-circle" size={17} />
+                  <div>
+                    <strong>All caught up</strong>
+                    <p>No pending requests.</p>
+                  </div>
+                </div>
+              )}
 
-              <div className="employee-attention-item">
-                <Icon name="shield-check" size={17} />
-                <div>
-                  <strong>Recovery methods verified</strong>
-                  <p>Your security methods are ready.</p>
+              {(unreadCount ?? 0) > 0 && (
+                <div className="employee-attention-item">
+                  <Icon name="alert-triangle" size={17} />
+                  <div>
+                    <strong>{unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}</strong>
+                    <p><Link to="/employee/notifications">View inbox →</Link></p>
+                  </div>
                 </div>
-              </div>
+              )}
             </section>
 
             <section className="employee-panel">
-              <h2>Recent activity</h2>
+              <h2>Quick actions</h2>
               <div className="employee-activity-item">
-                <Icon name="arrow-right" size={17} />
+                <Icon name="plus" size={17} />
                 <div>
-                  <strong>Snowflake request submitted</strong>
-                  <p>Sent to Daniel Brooks for approval.</p>
-                  <small>09:18 UTC</small>
+                  <strong><Link to="/employee/access-requests/new">Request resource access</Link></strong>
+                  <p>Submit a new access request.</p>
                 </div>
               </div>
               <div className="employee-activity-item">
                 <Icon name="monitor" size={17} />
                 <div>
-                  <strong>MacBook compliance checked</strong>
-                  <p>All 8 security checks passed.</p>
-                  <small>08:45 UTC</small>
+                  <strong><Link to="/employee/devices">Manage my devices</Link></strong>
+                  <p>View or register devices.</p>
                 </div>
               </div>
             </section>
           </div>
         </div>
-
-        <section className="employee-expiry-banner">
-          <div>
-            <strong>Your GitHub access expires in 6 days</strong>
-            <p>Need more time on Insights? Submit a renewal before 30 Oct to avoid an interruption.</p>
-          </div>
-          <Link to="/employee/access-requests/new">Renew access →</Link>
-        </section>
       </div>
 
       <EmployeeBottomNav />

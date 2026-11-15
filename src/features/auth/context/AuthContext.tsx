@@ -3,72 +3,134 @@
  * CyberProduct Platform
  * Owner: Shivam Kumar (Frontend Lead)
  *
- * Implements an isolated, extensible authentication state container:
+ * Implements authentication state container integrated with the backend API:
  * - Follows zero fake authentication / no hardcoded credentials guidelines
- * - Maintains clean isolation for backend API integration
- * - Supports role state when user authorization info is present
- * - Exposes isBackendReady flag to manage transition to production auth
+ * - Maintains real backend authentication via /api/v1/auth/login, /me, /logout
+ * - Securely persists and restores sessions across page reloads
+ * - Verifies token validity on mount and handles expired sessions
+ * - Maps authenticated user profiles to Employee, Lead, and Security Administrator
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import type { AuthUser, LoginCredentials } from '../types/auth.types';
 import {
   AuthContext,
-  AUTH_STORAGE_KEY,
   type AuthContextValue,
   type AuthProviderProps,
 } from './authContextDef';
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  getCurrentUser as apiGetCurrentUser,
+  getStoredAccessToken,
+  getStoredUser,
+  saveAuthSession,
+  clearAuthSession,
+  mapBackendRole,
+} from '../../../services/api/auth';
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({
   children,
   initialUser = null,
   backendReady,
 }) => {
-  // Default to env variable if present, otherwise false (backend auth not ready)
-  const isBackendReady = backendReady ?? (import.meta.env.VITE_AUTH_READY === 'true');
+  // Real backend auth enforcement is active by default unless explicitly disabled
+  const isBackendReady = backendReady ?? (import.meta.env.VITE_AUTH_READY !== 'false');
 
   const [user, setUserState] = useState<AuthUser | null>(() => {
     if (initialUser) return initialUser;
-    try {
-      const stored = sessionStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored) as AuthUser;
-      }
-    } catch {
-      // In restricted storage environments, fallback to null
-    }
-    return null;
+    return getStoredUser<AuthUser>();
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Track initial token validation on application mount
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    // If a token exists in storage, start in loading state until verified
+    return Boolean(getStoredAccessToken());
+  });
+
+  // Verify and refresh session on application mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifySession = async () => {
+      const token = getStoredAccessToken();
+      if (!token) {
+        if (isMounted) setIsLoading(false);
+        return;
+      }
+
+      try {
+        const result = await apiGetCurrentUser(token);
+        if (isMounted && result?.user) {
+          const mappedUser: AuthUser = {
+            id: result.user.id,
+            name: result.user.full_name || result.user.email,
+            email: result.user.email,
+            role: mapBackendRole(result.user.role),
+            companyId: result.user.company_id,
+            departmentId: result.user.department_id,
+            jobTitle: result.user.job_title,
+            status: result.user.status,
+          };
+          setUserState(mappedUser);
+        }
+      } catch {
+        // Session expired or invalid: clear stored credentials
+        if (isMounted) {
+          clearAuthSession();
+          setUserState(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void verifySession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const setUser = useCallback((newUser: AuthUser | null) => {
     setUserState(newUser);
-    try {
-      if (newUser) {
-        sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newUser));
-      } else {
-        sessionStorage.removeItem(AUTH_STORAGE_KEY);
-      }
-    } catch {
-      // Ignore storage errors in sandbox
+    if (!newUser) {
+      clearAuthSession();
     }
   }, []);
 
   const login = useCallback(
-    async (credentials: LoginCredentials) => {
+    async (credentials: LoginCredentials): Promise<AuthUser> => {
       setIsLoading(true);
       try {
-        /**
-         * ──────────────────────────────────────────────────────────────────────────
-         * BACKEND INTEGRATION PLACEHOLDER
-         * ──────────────────────────────────────────────────────────────────────────
-         * When the real backend authentication service is deployed, invoke:
-         *   const response = await authApi.login(credentials);
-         *   setUser(response.user);
-         */
-        void credentials;
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        const result = await apiLogin({
+          email: credentials.emailOrUsername,
+          password: credentials.password,
+          rememberMe: credentials.rememberMe,
+        });
+
+        const mappedUser: AuthUser = {
+          id: result.user.id,
+          name: result.user.full_name || result.user.email,
+          email: result.user.email,
+          role: mapBackendRole(result.user.role),
+          companyId: result.user.company_id,
+          departmentId: result.user.department_id,
+          jobTitle: result.user.job_title,
+          status: result.user.status,
+        };
+
+        saveAuthSession(
+          result.session,
+          mappedUser,
+          result.company,
+          credentials.rememberMe
+        );
+
+        setUserState(mappedUser);
+        return mappedUser;
       } finally {
         setIsLoading(false);
       }
@@ -76,9 +138,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     []
   );
 
-  const logout = useCallback(() => {
-    setUser(null);
-  }, [setUser]);
+  const logout = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      await apiLogout();
+    } finally {
+      clearAuthSession();
+      setUserState(null);
+      setIsLoading(false);
+    }
+  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({

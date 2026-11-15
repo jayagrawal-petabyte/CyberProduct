@@ -33,6 +33,16 @@ export default function ApprovalInboxPage() {
     void fetchRequests()
   }, [fetchRequests])
 
+  const counts = useMemo(() => {
+    const pending = requests.filter((r) => r.status.toLowerCase() === 'pending').length
+    const atRisk = requests.filter((r) => r.compliance === 'At risk').length
+    return {
+      pending,
+      all: requests.length,
+      attention: atRisk,
+    }
+  }, [requests])
+
   const filteredRequests = useMemo(() => {
     return requests.filter((req) => {
       if (activeTab === 'attention' && req.compliance !== 'At risk') return false
@@ -92,26 +102,26 @@ export default function ApprovalInboxPage() {
         <section className="approval-summary" aria-label="Request summary">
           <article className="approval-summary-card">
             <span>Pending requests</span>
-            <strong>05</strong>
+            <strong>{isLoading ? '—' : String(counts.pending).padStart(2, '0')}</strong>
             <small>Requires your decision</small>
           </article>
 
           <article className="approval-summary-card">
             <span>Approaching SLA</span>
-            <strong>02</strong>
+            <strong>{isLoading ? '—' : String(Math.min(counts.pending, 2)).padStart(2, '0')}</strong>
             <small className="highlight-amber">Review within the next hour</small>
           </article>
 
           <article className="approval-summary-card">
             <span>Policy checks passed</span>
-            <strong>04</strong>
-            <small>1 device needs remediation</small>
+            <strong>{isLoading ? '—' : String(Math.max(0, counts.pending - counts.attention)).padStart(2, '0')}</strong>
+            <small>{counts.attention > 0 ? `${counts.attention} device needs remediation` : 'All checks passing'}</small>
           </article>
 
           <article className="approval-summary-card">
-            <span>Reviewed today</span>
-            <strong>03</strong>
-            <small>2 approved · 1 rejected</small>
+            <span>All requests</span>
+            <strong>{isLoading ? '—' : String(counts.all).padStart(2, '0')}</strong>
+            <small>Assigned to team</small>
           </article>
         </section>
 
@@ -124,7 +134,7 @@ export default function ApprovalInboxPage() {
             className={`approval-tab ${activeTab === 'pending' ? 'approval-tab--active' : ''}`}
             onClick={() => setActiveTab('pending')}
           >
-            Pending (5)
+            Pending ({counts.pending})
           </button>
           <button
             type="button"
@@ -133,7 +143,7 @@ export default function ApprovalInboxPage() {
             className={`approval-tab ${activeTab === 'all' ? 'approval-tab--active' : ''}`}
             onClick={() => setActiveTab('all')}
           >
-            All requests (42)
+            All requests ({counts.all})
           </button>
           <button
             type="button"
@@ -142,7 +152,7 @@ export default function ApprovalInboxPage() {
             className={`approval-tab ${activeTab === 'attention' ? 'approval-tab--active' : ''}`}
             onClick={() => setActiveTab('attention')}
           >
-            Needs attention (2)
+            Needs attention ({counts.attention})
           </button>
         </div>
 

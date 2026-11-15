@@ -13,9 +13,11 @@
  */
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, PasswordInput, Checkbox, Button, Icon } from '../../../components/ui';
 import type { LoginCredentials, LoginFormErrors, AuthStatus } from '../types/auth.types';
+import { useAuth } from '../hooks/useAuth';
+import { ROLE_HOME_ROUTES, isRouteAllowedForRole } from '../../../layouts/navigation';
 
 export interface LoginFormProps {
   onSuccess?: () => void;
@@ -25,6 +27,8 @@ export interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '', style }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
   const [credentials, setCredentials] = useState<LoginCredentials>({
     emailOrUsername: '',
@@ -68,22 +72,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, className = '',
     setStatus('loading');
 
     try {
-      /**
-       * ──────────────────────────────────────────────────────────────────────────
-       * BACKEND INTEGRATION PLACEHOLDER
-       * ──────────────────────────────────────────────────────────────────────────
-       * Replace this simulation with the real authentication service call once
-       * the backend auth endpoint is ready (e.g. authApi.login(credentials)).
-       */
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const loggedInUser = await login(credentials);
 
       setStatus('success');
 
       if (onSuccess) {
         onSuccess();
       } else {
-        // Default navigation to dashboard upon successful login
-        navigate('/dashboard');
+        const fromPath = (location.state as { from?: { pathname?: string } })?.from?.pathname;
+        const targetRoute =
+          fromPath && isRouteAllowedForRole(loggedInUser.role, fromPath)
+            ? fromPath
+            : ROLE_HOME_ROUTES[loggedInUser.role] || '/employee';
+        navigate(targetRoute, { replace: true });
       }
     } catch (err: unknown) {
       setStatus('error');

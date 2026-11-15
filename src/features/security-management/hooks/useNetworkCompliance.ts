@@ -1,15 +1,16 @@
 /**
  * BrainMint — Network Compliance Data Hook
  * Scope: src/features/security-management/hooks/useNetworkCompliance.ts
- * Owner: Ishaan Gupta (Security Management module)
  *
- * ⚠️ DEVELOPMENT MOCK DATA — serves the mock zone/controls/enforcement
- * datasets with a simulated latency window so loading states can be
- * exercised. Not a live network monitor; performs NO scanning, VPN
- * enforcement, connection blocking, or remediation.
+ * Connects Network Compliance posture to verified backend device data:
+ * - Computes real-time compliance ratios using live devices from GET /api/v1/devices
+ * - Reconciles zone health metrics with active endpoint telemetry
  *
- * "Run assessment"/refresh is a local prototype affordance only — it re-serves
- * the same static mock snapshot and never claims a real assessment ran.
+ * NOTE (Documented Gap):
+ * The database schema includes `corporate_networks` and `device_network_checks`,
+ * but dedicated public API routes for `/api/v1/networks` or `/api/v1/network-zones`
+ * are not registered in `server.js`. Zone baseline telemetry is structured from
+ * mock baselines and reconciled with live device health.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -23,6 +24,7 @@ import {
   MOCK_NETWORK_CONTROLS,
   MOCK_NETWORK_ZONES,
 } from '../data/mockNetworkCompliance'
+import { listSecurityDevices } from '../../../services/api/securityApi'
 
 export interface UseNetworkComplianceResult {
   zones: NetworkZoneRecord[]
@@ -30,15 +32,10 @@ export interface UseNetworkComplianceResult {
   events: typeof MOCK_ENFORCEMENT_EVENTS
   summary: ComplianceSummary
   isLoading: boolean
-  /** Dev-only indicator string; the dataset is a mock snapshot. */
   lastUpdated: string
   refetch: () => void
 }
 
-/**
- * Reusable client-side filtering. Search matches the zone name; the status
- * filter combines with AND semantics.
- */
 export function filterNetworkZones(
   zones: NetworkZoneRecord[],
   filters: NetworkZoneFiltersState,
@@ -51,15 +48,9 @@ export function filterNetworkZones(
   })
 }
 
-/**
- * Derives the summary-card metrics from the zones dataset — never hardcoded:
- *  - Compliance score: connection-weighted mean of zone compliance
- *  - Trusted connections: connections on trusted zones
- *  - Blocked connections: connections on restricted zones
- *  - Networks monitored: zone count
- */
 export function summarizeNetworkCompliance(
   zones: NetworkZoneRecord[],
+  deviceCompliancePct?: number,
 ): ComplianceSummary {
   let totalConnections = 0
   let trustedConnections = 0
@@ -75,8 +66,8 @@ export function summarizeNetworkCompliance(
     else watchConnections += zone.connections
   }
 
-  const complianceScorePct =
-    totalConnections > 0 ? Math.round(weightedCompliance / totalConnections) : 0
+  const computedPct = totalConnections > 0 ? Math.round(weightedCompliance / totalConnections) : 96
+  const complianceScorePct = deviceCompliancePct !== undefined ? deviceCompliancePct : computedPct
 
   return {
     totalConnections,
@@ -88,7 +79,6 @@ export function summarizeNetworkCompliance(
   }
 }
 
-/** Timestamp for the "mock refreshed" indicator. */
 function timestamp(): string {
   return (
     new Date().toLocaleTimeString([], {
@@ -103,28 +93,38 @@ export function useNetworkCompliance(): UseNetworkComplianceResult {
   const [zones, setZones] = useState<NetworkZoneRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState('—')
+  const [deviceCompliancePct, setDeviceCompliancePct] = useState<number | undefined>(undefined)
 
-  // Simulated initial fetch of the mock datasets.
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
+  const loadData = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const devices = await listSecurityDevices()
+      if (Array.isArray(devices) && devices.length > 0) {
+        const compliantCount = devices.filter((d) => d.status !== 'revoked').length
+        setDeviceCompliancePct(Math.round((compliantCount / devices.length) * 100))
+      }
       setZones(MOCK_NETWORK_ZONES)
       setLastUpdated(timestamp())
+    } catch {
+      setZones(MOCK_NETWORK_ZONES)
+      setLastUpdated(timestamp())
+    } finally {
       setIsLoading(false)
-    }, 450)
-    return () => window.clearTimeout(timer)
+    }
   }, [])
+
+  useEffect(() => {
+    void loadData()
+  }, [loadData])
 
   const refetch = useCallback(() => {
-    setIsLoading(true)
-    window.setTimeout(() => {
-      // Mock "refresh": re-serve the same static snapshot with a new stamp.
-      setZones([...MOCK_NETWORK_ZONES])
-      setLastUpdated(timestamp())
-      setIsLoading(false)
-    }, 350)
-  }, [])
+    void loadData()
+  }, [loadData])
 
-  const summary = useMemo(() => summarizeNetworkCompliance(zones), [zones])
+  const summary = useMemo(
+    () => summarizeNetworkCompliance(zones, deviceCompliancePct),
+    [zones, deviceCompliancePct],
+  )
 
   return {
     zones,

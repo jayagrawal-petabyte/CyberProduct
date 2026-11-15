@@ -11,11 +11,20 @@
  */
 
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { LoginBackground } from '../components/LoginBackground';
 import { LoginForm } from '../components/LoginForm';
 import { Card } from '../../../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { ROLE_HOME_ROUTES } from '../../../layouts/navigation';
 
 export const LoginPage: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  if (isAuthenticated && user) {
+    return <Navigate to={ROLE_HOME_ROUTES[user.role] || '/employee'} replace />;
+  }
+
   return (
     <main
       className="brainmint-login-page"

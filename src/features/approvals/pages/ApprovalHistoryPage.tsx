@@ -42,9 +42,9 @@ export default function ApprovalHistoryPage() {
     const approved = requests.filter((r) => r.status.toLowerCase() === 'approved').length
     const rejected = requests.filter((r) => r.status.toLowerCase() === 'rejected').length
     return {
-      total: requests.length || 37,
-      approved: approved || 32,
-      rejected: rejected || 5,
+      total: requests.length,
+      approved,
+      rejected,
     }
   }, [requests])
 
@@ -123,20 +123,28 @@ export default function ApprovalHistoryPage() {
         <section className="approval-summary" aria-label="Approval History summary">
           <article className="approval-summary-card">
             <span>Decisions this month</span>
-            <strong>37</strong>
+            <strong>{loading ? '—' : String(counts.total).padStart(2, '0')}</strong>
             <small>Data &amp; Insights team</small>
           </article>
 
           <article className="approval-summary-card">
             <span>Approved</span>
-            <strong>32</strong>
-            <small>86% approval rate</small>
+            <strong>{loading ? '—' : String(counts.approved).padStart(2, '0')}</strong>
+            <small>
+              {counts.total > 0
+                ? `${Math.round((counts.approved / counts.total) * 100)}% approval rate`
+                : 'No decisions yet'}
+            </small>
           </article>
 
           <article className="approval-summary-card">
             <span>Rejected</span>
-            <strong>05</strong>
-            <small>14% rejection rate</small>
+            <strong>{loading ? '—' : String(counts.rejected).padStart(2, '0')}</strong>
+            <small>
+              {counts.total > 0
+                ? `${Math.round((counts.rejected / counts.total) * 100)}% rejection rate`
+                : 'No decisions yet'}
+            </small>
           </article>
 
           <article className="approval-summary-card">

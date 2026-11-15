@@ -17,7 +17,7 @@ export default defineConfig({
       // Forward /api requests to the backend during development.
       // Set VITE_API_BASE_URL in your .env file.
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },
