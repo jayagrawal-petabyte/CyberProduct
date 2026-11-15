@@ -1,0 +1,261 @@
+/* ============================================================
+   BrainMint Design System — Restricted Resources · Table
+   src/features/security-management/components/RestrictedResourcesTable.css
+   Owner: Ishaan Gupta (Security Management module)
+
+   Column chassis mirrors PoliciesTable.css (BrainMint security
+   module), adapted to the 8-column resource directory grid.
+   Access badges / category chips follow the Admin Resources
+   convention. Scoped to secres-* only.
+   ============================================================ */
+
+.secres-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.secres-table {
+  width: 100%;
+  min-width: 62rem;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.secres-table th:nth-child(1) { width: 24%; } /* RESOURCE      */
+.secres-table th:nth-child(2) { width: 11%; } /* RESOURCE ID   */
+.secres-table th:nth-child(3) { width: 12%; } /* CATEGORY      */
+.secres-table th:nth-child(4) { width: 12%; } /* ACCESS        */
+.secres-table th:nth-child(5) { width: 12%; } /* STATUS        */
+.secres-table th:nth-child(6) { width: 10%; } /* OWNER         */
+.secres-table th:nth-child(7) { width: 11%; } /* UPDATED       */
+.secres-table th:nth-child(8) { width: 8%;  } /* ACTION        */
+
+.secres-table th {
+  height: 2.9rem;
+  padding: 0 1rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  background: transparent;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.secres-table td {
+  height: 4rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-border-subtle, #f0dfe6);
+  vertical-align: middle;
+}
+
+.secres-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Clickable rows (same interaction as the policy library) */
+.secres-row {
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.secres-row:hover { background: var(--color-bg-card-hover, #fdf5f8); }
+
+.secres-row:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: -2px;
+  background: var(--color-bg-card-hover, #fdf5f8);
+}
+
+/* Resource cell — category chip + name + identifier */
+.secres-resource-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.secres-category-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border-subtle, #f0dfe6);
+  background: var(--color-bg-card-subtle, #fff8fa);
+  color: #6b5d70;
+}
+
+.secres-resource-meta { min-width: 0; }
+
+.secres-resource-name {
+  display: block;
+  font-size: 0.8438rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e1229);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secres-resource-idline {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  color: var(--color-text-muted, #9e8c96);
+  white-space: nowrap;
+}
+
+/* Subtle category tint on the chip */
+.secres-category-chip--websites     { color: #3556b8; background: color-mix(in srgb, #3556b8 8%, #ffffff); }
+.secres-category-chip--applications { color: #6b3fa0; background: color-mix(in srgb, #6b3fa0 9%, #ffffff); }
+.secres-category-chip--tools        { color: #7a4457; background: color-mix(in srgb, #7a4457 8%, #ffffff); }
+.secres-category-chip--cloud        { color: #0f7a5c; background: color-mix(in srgb, #0f7a5c 9%, #ffffff); }
+.secres-category-chip--databases    { color: #b45309; background: color-mix(in srgb, #b45309 8%, #ffffff); }
+
+/* Mono cells (resource ID / identifier) */
+.secres-mono {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.7188rem;
+  color: var(--color-text-body, #2a1b38);
+  white-space: nowrap;
+}
+
+/* Plain text cells */
+.secres-cell-text {
+  font-size: 0.8125rem;
+  color: var(--color-text-body, #2a1b38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Owner cell */
+.secres-owner {
+  font-size: 0.7813rem;
+  color: var(--color-text-body, #2a1b38);
+  white-space: nowrap;
+}
+
+/* Access classification pill (green/amber/red semantics per classification) */
+.secres-access-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--radius-pill, 9999px);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.secres-access-badge--public       { color: #3556b8; background: color-mix(in srgb, #3556b8 9%, #ffffff); }
+.secres-access-badge--internal     { color: #6b3fa0; background: color-mix(in srgb, #6b3fa0 9%, #ffffff); }
+.secres-access-badge--restricted   { color: var(--color-danger-text, #b91c1c); background: var(--color-danger-bg, #fdf2f2); border: 1px solid var(--color-danger-border, #f8d7da); }
+.secres-access-badge--confidential { color: var(--color-warning-text, #b45309); background: var(--color-warning-bg, #fef7ed); border: 1px solid var(--color-warning-border, #fce7c9); }
+
+/* Status — dot + label (green / red / amber / grey) */
+.secres-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.secres-status-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.secres-status--active     { color: var(--color-success-text, #059669); }
+.secres-status--active .secres-status-dot { background: var(--color-success, #10b981); }
+
+.secres-status--restricted  { color: var(--color-danger-text, #b91c1c); }
+.secres-status--restricted .secres-status-dot { background: var(--color-danger, #ef4444); }
+
+.secres-status--pending    { color: var(--color-warning-text, #b45309); }
+.secres-status--pending .secres-status-dot { background: var(--color-warning, #f59e0b); }
+
+.secres-status--inactive   { color: var(--color-text-secondary, #6f5d6b); }
+.secres-status--inactive .secres-status-dot { background: #8a93a5; }
+
+/* Pill variants used inside the details modal */
+.secres-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-pill, 9999px);
+  font-size: 0.7188rem;
+  font-weight: 600;
+}
+
+.secres-status-pill--active     { color: var(--color-success-text, #059669); background: var(--color-success-bg, #ebf9f1); border: 1px solid var(--color-success-border, #d1f2de); }
+.secres-status-pill--restricted { color: var(--color-danger-text, #b91c1c); background: var(--color-danger-bg, #fdf2f2); border: 1px solid var(--color-danger-border, #f8d7da); }
+.secres-status-pill--pending    { color: var(--color-warning-text, #b45309); background: var(--color-warning-bg, #fef7ed); border: 1px solid var(--color-warning-border, #fce7c9); }
+.secres-status-pill--inactive   { color: var(--color-text-secondary, #6f5d6b); background: #f3eff2; border: 1px solid var(--color-border-subtle, #f0dfe6); }
+
+/* UPDATED cell */
+.secres-last-updated {
+  font-size: 0.7813rem;
+  color: var(--color-text-secondary, #6f5d6b);
+  white-space: nowrap;
+}
+
+/* ACTION — Review → */
+.secres-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  background: transparent;
+  padding: 0.25rem 0.1rem;
+  font: inherit;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  color: #5b6478;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0.4rem;
+}
+
+.secres-action-btn:hover { text-decoration: underline; }
+.secres-action-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus, #281a3c);
+  outline-offset: 2px;
+}
+
+/* Restriction note shown in the details modal for limited-access records
+   (reuses the token set of the danger family from the shared page CSS). */
+.secres-restriction-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--color-danger-bg, #fdf2f2);
+  border: 1px solid var(--color-danger-border, #f8d7da);
+  border-radius: var(--radius-md, 12px);
+  font-size: 0.7188rem;
+  line-height: 1.45;
+  color: var(--color-danger-text, #b91c1c);
+}
+
+.secres-restriction-box svg { flex-shrink: 0; margin-top: 0.08rem; }
+
+.secres-restriction-box--confidential {
+  background: var(--color-warning-bg, #fef7ed);
+  border-color: var(--color-warning-border, #fce7c9);
+  color: var(--color-warning-text, #b45309);
+}
+
+/* Mobile column minimums */
+@media (max-width: 680px) {
+  .secres-table { min-width: 68rem; }
+}

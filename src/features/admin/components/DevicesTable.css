@@ -1,0 +1,214 @@
+/* ============================================================
+   BrainMint Design System — Device Management · Table
+   src/features/admin/components/DevicesTable.css
+   Mirrors UsersTable styling (scoped to devices-*).
+   ============================================================ */
+
+.devices-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.devices-table {
+  width: 100%;
+  min-width: 60rem;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 0.81rem;
+  text-align: left;
+}
+
+.devices-table th:nth-child(1) { width: 20%; } /* Device      */
+.devices-table th:nth-child(2) { width: 12%; } /* Device ID   */
+.devices-table th:nth-child(3) { width: 17%; } /* Employee    */
+.devices-table th:nth-child(4) { width: 13%; } /* OS          */
+.devices-table th:nth-child(5) { width: 8%;  } /* Type        */
+.devices-table th:nth-child(6) { width: 13%; } /* Compliance  */
+.devices-table th:nth-child(7) { width: 10%; } /* Last Seen   */
+.devices-table th:nth-child(8) { width: 12%; } /* Actions     */
+
+.devices-table th {
+  height: 2.75rem;
+  padding: 0 1rem;
+  color: #4d526c;
+  background: #f8fafc;
+  font-size: 0.73rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.devices-table td {
+  height: 3.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f0edf1;
+  vertical-align: middle;
+}
+
+.devices-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Clickable rows */
+.devices-row {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.devices-row:hover { background: #f5edf5; }
+.devices-row:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: -2px;
+  background: #f5edf5;
+}
+
+/* Device cell */
+.devices-device-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.devices-type-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.55rem;
+  background: #f0e9fb;
+  color: #6b3d81;
+}
+
+.devices-device-meta {
+  min-width: 0;
+}
+
+.devices-device-name {
+  display: block;
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: #2a104b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Monospace device IDs */
+.devices-device-id {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.71rem;
+  color: #32154f;
+}
+
+.devices-employee-name {
+  font-size: 0.78rem;
+  color: #2a1b38;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.devices-os-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.devices-os-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2a104b;
+  white-space: nowrap;
+}
+
+.devices-os-version {
+  font-size: 0.66rem;
+  color: #6b5d70;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.devices-type-text {
+  font-size: 0.78rem;
+  color: #2a1b38;
+  white-space: nowrap;
+}
+
+/* Compliance badges — Compliant green / Non-Compliant red / Pending amber */
+.devices-compliance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.devices-compliance-badge--compliant     { color: #00834d; background: #ecfdf3; }
+.devices-compliance-badge--non-compliant { color: #b42318; background: #fef3f2; }
+.devices-compliance-badge--pending       { color: #b54708; background: #fffaeb; }
+
+.devices-compliance-dot {
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.devices-compliance-dot--compliant     { background: #10b981; }
+.devices-compliance-dot--non-compliant { background: #ef4444; }
+.devices-compliance-dot--pending       { background: #f59e0b; }
+
+/* Last seen */
+.devices-last-seen {
+  font-size: 0.73rem;
+  color: #6b5d70;
+  white-space: nowrap;
+}
+
+/* View details action */
+.devices-view-button {
+  height: 1.9rem;
+  padding: 0 0.8rem;
+  border: 1px solid #e3d7e9;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  color: #2a104b;
+  font: inherit;
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+
+.devices-view-button:hover {
+  background: #f7eeff;
+  border-color: #d7c3e6;
+}
+
+.devices-view-button:focus-visible {
+  outline: 2px solid #8455a2;
+  outline-offset: 2px;
+}
+
+/* Empty / loading states */
+.devices-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 13rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.devices-state h2 { margin: 0; font-size: 1.2rem; color: #2a104b; }
+.devices-state p  { margin: 0; font-size: 0.86rem; color: #6b5d70; }
+.devices-icon-muted { color: #72527f; }
+
+@media (max-width: 680px) {
+  .devices-table { min-width: 66rem; }
+  .devices-view-button { padding: 0 0.55rem; font-size: 0.66rem; }
+}

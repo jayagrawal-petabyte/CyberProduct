@@ -1,0 +1,43 @@
+/* BrainMint Approval History Styles - Matching New UI Design */
+
+.history-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.history-badge__dot {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.history-badge--approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.history-badge--rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.history-table-reason {
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.4;
+  max-width: 320px;
+}
+
+.history-table-time {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  font-weight: 500;
+}
