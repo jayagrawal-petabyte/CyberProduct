@@ -14,7 +14,15 @@ function createCategoryController(service) {
   }
 
   function handleError(res, error) {
-    if (error.code === "23505") {
+    // Log the actual database/service error for debugging.
+    console.error("[CategoryController] Operation failed:", {
+      message: error?.message,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint,
+    });
+
+    if (error?.code === "23505") {
       return sendError(
         res,
         409,
@@ -22,7 +30,7 @@ function createCategoryController(service) {
       );
     }
 
-    if (error.code === "23503") {
+    if (error?.code === "23503") {
       return sendError(
         res,
         400,
@@ -47,7 +55,11 @@ function createCategoryController(service) {
     const companyId = getCompanyId(req);
 
     if (!companyId) {
-      return sendError(res, 401, "Authenticated company context is required.");
+      return sendError(
+        res,
+        401,
+        "Authenticated company context is required."
+      );
     }
 
     try {
@@ -69,7 +81,11 @@ function createCategoryController(service) {
     const companyId = getCompanyId(req);
 
     if (!companyId) {
-      return sendError(res, 401, "Authenticated company context is required.");
+      return sendError(
+        res,
+        401,
+        "Authenticated company context is required."
+      );
     }
 
     try {
@@ -107,7 +123,11 @@ function createCategoryController(service) {
     const companyId = getCompanyId(req);
 
     if (!companyId) {
-      return sendError(res, 401, "Authenticated company context is required.");
+      return sendError(
+        res,
+        401,
+        "Authenticated company context is required."
+      );
     }
 
     try {
@@ -142,7 +162,11 @@ function createCategoryController(service) {
     const companyId = getCompanyId(req);
 
     if (!companyId) {
-      return sendError(res, 401, "Authenticated company context is required.");
+      return sendError(
+        res,
+        401,
+        "Authenticated company context is required."
+      );
     }
 
     try {

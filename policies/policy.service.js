@@ -1,4 +1,6 @@
 
+const logger = require("../config/logger");
+
 const POLICY_FIELDS = [
   "id",
   "company_id",
@@ -41,20 +43,10 @@ const ALLOWED_UPDATE_FIELDS = [...ALLOWED_CREATE_FIELDS];
 
 function createPolicyService({
   supabase,
-  auditService,
   departmentTable = "departments",
 }) {
-  if (!supabase) {
+  if (!supabase || typeof supabase.from !== "function") {
     throw new Error("Supabase client is required.");
-  }
-
-  if (
-    !auditService ||
-    typeof auditService.recordPolicyEvent !== "function"
-  ) {
-    throw new Error(
-      "An auditService with recordPolicyEvent() is required."
-    );
   }
 
   const policiesTable = "policies";
@@ -152,90 +144,31 @@ function createPolicyService({
     });
   }
 
-  // Increments companies.policy_version using optimistic locking.
-  async function incrementCompanyPolicyVersion(companyId) {
-    const maxAttempts = 5;
+  // The database trigger owns policy_version updates.
+  // This method only reads the resulting value for the API response.
+  async function getCompanyPolicyVersion(companyId) {
+    const { data, error } = await supabase
+      .from(companiesTable)
+      .select("policy_version")
+      .eq("id", companyId)
+      .maybeSingle();
 
-    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-      const { data: company, error: fetchError } = await supabase
-        .from(companiesTable)
-        .select("policy_version")
-        .eq("id", companyId)
-        .maybeSingle();
+    if (error) {
+      // The policy write has already succeeded. Keep the API response
+      // successful and log that this optional lookup was unavailable.
+      logger.warn(
+        "Could not read the company policy version after policy change.",
+        {
+          code: error.code,
+          message: error.message,
+          companyId,
+        }
+      );
 
-      if (fetchError) {
-        throw fetchError;
-      }
-
-      if (!company) {
-        throw createServiceError("Company not found.", 404);
-      }
-
-      const currentVersion = company.policy_version ?? 0;
-
-      if (
-        !Number.isSafeInteger(currentVersion) ||
-        currentVersion < 0
-      ) {
-        throw new Error("Company policy version is invalid.");
-      }
-
-      const nextVersion = currentVersion + 1;
-
-      let updateQuery = supabase
-        .from(companiesTable)
-        .update({
-          policy_version: nextVersion,
-        })
-        .eq("id", companyId);
-
-      // Handle NULL separately because SQL equality does not match NULL.
-      if (company.policy_version === null) {
-        updateQuery = updateQuery.is("policy_version", null);
-      } else {
-        updateQuery = updateQuery.eq(
-          "policy_version",
-          currentVersion
-        );
-      }
-
-      const { data: updatedCompany, error: updateError } =
-        await updateQuery
-          .select("policy_version")
-          .maybeSingle();
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      if (updatedCompany) {
-        return updatedCompany.policy_version;
-      }
+      return null;
     }
 
-    throw createServiceError(
-      "Could not update company policy version due to concurrent changes. Please retry.",
-      409
-    );
-  }
-
-  // Records a policy audit event.
-  async function recordAuditEvent({
-    eventType,
-    companyId,
-    actorId,
-    entityId,
-    before,
-    after,
-  }) {
-    await auditService.recordPolicyEvent({
-      eventType,
-      companyId,
-      actorId,
-      entityId,
-      before,
-      after,
-    });
+    return data?.policy_version ?? null;
   }
 
   // Creates a new policy.
@@ -250,7 +183,11 @@ function createPolicyService({
       );
     }
 
-    if (!policyData || typeof policyData !== "object") {
+    if (
+      !policyData ||
+      typeof policyData !== "object" ||
+      Array.isArray(policyData)
+    ) {
       throw createServiceError("Policy data is required.");
     }
 
@@ -297,16 +234,11 @@ function createPolicyService({
       departmentId: insertData.applies_to_department_id,
     });
 
-    const finalInsertData = {
-      ...insertData,
-      company_id: companyId,
-      created_by: actorId,
-      updated_by: actorId,
-    };
-
+    // The database derives company_id, created_by, updated_by
+    // and version through its existing triggers.
     const { data: policy, error } = await supabase
       .from(policiesTable)
-      .insert(finalInsertData)
+      .insert(insertData)
       .select(POLICY_FIELDS)
       .single();
 
@@ -315,16 +247,7 @@ function createPolicyService({
     }
 
     const companyPolicyVersion =
-      await incrementCompanyPolicyVersion(companyId);
-
-    await recordAuditEvent({
-      eventType: "policy.created",
-      companyId,
-      actorId,
-      entityId: policy.id,
-      before: null,
-      after: policy,
-    });
+      await getCompanyPolicyVersion(companyId);
 
     return {
       policy,
@@ -433,7 +356,7 @@ function createPolicyService({
     return data;
   }
 
-  // Updates an existing policy and increments its version.
+  // Updates an existing policy.
   async function update({
     companyId,
     policyId,
@@ -446,7 +369,11 @@ function createPolicyService({
       );
     }
 
-    if (!changes || typeof changes !== "object") {
+    if (
+      !changes ||
+      typeof changes !== "object" ||
+      Array.isArray(changes)
+    ) {
       throw createServiceError(
         "Policy update data is required."
       );
@@ -507,13 +434,15 @@ function createPolicyService({
       );
     }
 
-    const { data: existingPolicy, error: fetchError } =
-      await supabase
-        .from(policiesTable)
-        .select(POLICY_FIELDS)
-        .eq("company_id", companyId)
-        .eq("id", policyId)
-        .maybeSingle();
+    const {
+      data: existingPolicy,
+      error: fetchError,
+    } = await supabase
+      .from(policiesTable)
+      .select(POLICY_FIELDS)
+      .eq("company_id", companyId)
+      .eq("id", policyId)
+      .maybeSingle();
 
     if (fetchError) {
       throw fetchError;
@@ -544,18 +473,19 @@ function createPolicyService({
       throw new Error("Existing policy version is invalid.");
     }
 
-    updates.version = currentVersion + 1;
-    updates.updated_by = actorId;
-
-    const { data: updatedPolicy, error: updateError } =
-      await supabase
-        .from(policiesTable)
-        .update(updates)
-        .eq("company_id", companyId)
-        .eq("id", policyId)
-        .eq("version", currentVersion)
-        .select(POLICY_FIELDS)
-        .maybeSingle();
+    // Optimistic locking is retained.
+    // The database trigger increments version automatically.
+    const {
+      data: updatedPolicy,
+      error: updateError,
+    } = await supabase
+      .from(policiesTable)
+      .update(updates)
+      .eq("company_id", companyId)
+      .eq("id", policyId)
+      .eq("version", currentVersion)
+      .select(POLICY_FIELDS)
+      .maybeSingle();
 
     if (updateError) {
       throw updateError;
@@ -569,16 +499,7 @@ function createPolicyService({
     }
 
     const companyPolicyVersion =
-      await incrementCompanyPolicyVersion(companyId);
-
-    await recordAuditEvent({
-      eventType: "policy.updated",
-      companyId,
-      actorId,
-      entityId: policyId,
-      before: existingPolicy,
-      after: updatedPolicy,
-    });
+      await getCompanyPolicyVersion(companyId);
 
     return {
       policy: updatedPolicy,
