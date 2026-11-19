@@ -5,6 +5,9 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 
+// Company module.
+const companyRoutes = require("./config/company.routes");
+
 // Existing team modules.
 const accessRequestRoutes = require("./access-requests/accessRequest.routes");
 const approvalRoutes = require("./approvals/approval.routes");
@@ -58,17 +61,10 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Existing Access Requests API.
-app.use(
-  "/api/v1/access-requests",
-  accessRequestRoutes
-);
-
-// Existing Approvals API.
-app.use(
-  "/api/v1/approvals",
-  approvalRoutes
-);
+// Existing APIs.
+app.use("/api/v1/access-requests", accessRequestRoutes);
+app.use("/api/v1/companies", companyRoutes);
+app.use("/api/v1/approvals", approvalRoutes);
 
 // Initialize Resources module.
 const resourceController = createResourceController({
@@ -83,10 +79,7 @@ const resourceRoutes = createResourceRoutes({
 });
 
 // Mount Resources API.
-app.use(
-  "/api/v1/resources",
-  resourceRoutes
-);
+app.use("/api/v1/resources", resourceRoutes);
 
 // Initialize Resource Categories module.
 const categoryRoutes = createCategoryRouter({
@@ -96,10 +89,7 @@ const categoryRoutes = createCategoryRouter({
 });
 
 // Mount Resource Categories API.
-app.use(
-  "/api/v1/resource-categories",
-  categoryRoutes
-);
+app.use("/api/v1/resource-categories", categoryRoutes);
 
 // Initialize Policies module.
 const policyRoutes = createPolicyRoutes({
@@ -108,10 +98,7 @@ const policyRoutes = createPolicyRoutes({
 });
 
 // Mount Policies API.
-app.use(
-  "/api/v1/policies",
-  policyRoutes
-);
+app.use("/api/v1/policies", policyRoutes);
 
 // Start server.
 const PORT = process.env.PORT || 3000;

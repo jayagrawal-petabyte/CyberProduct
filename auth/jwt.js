@@ -175,18 +175,10 @@ function verifyHmacSignature(token, secret) {
  * @throws {AuthenticationError}
  */
 async function verifySupabaseToken(token, serviceSupabaseClient = null, jwtSecret = null) {
-  // 1. Structure check & pre-verification
   const { header, payload } = decodeJwt(token);
-
-  // 2. Validate expiration claim
   validateExpiration(payload);
 
-  // 3. Cryptographic signature verification when local secret is available
-  if (jwtSecret) {
-    if (header.alg !== "HS256") {
-      throw new AuthenticationError(`Unsupported algorithm: ${header.alg}`, "UNSUPPORTED_ALGORITHM");
-    }
-
+  if (jwtSecret && header.alg === "HS256") {
     const isValidSig = verifyHmacSignature(token, jwtSecret);
     if (!isValidSig) {
       logger.warn("JWT HMAC signature verification failed");
@@ -194,7 +186,6 @@ async function verifySupabaseToken(token, serviceSupabaseClient = null, jwtSecre
     }
   }
 
-  // 4. Verify authoritative Supabase Auth status when service client is provided
   if (serviceSupabaseClient?.auth?.getUser) {
     const { data, error } = await serviceSupabaseClient.auth.getUser(token);
 
@@ -212,7 +203,10 @@ async function verifySupabaseToken(token, serviceSupabaseClient = null, jwtSecre
     return data.user;
   }
 
-  // 5. If no auth.getUser service is available, return verified payload claims if HMAC succeeded
+  if (jwtSecret && header.alg !== "HS256") {
+    throw new AuthenticationError(`Unsupported algorithm: ${header.alg}`, "UNSUPPORTED_ALGORITHM");
+  }
+
   if (jwtSecret && payload.sub) {
     return {
       id: payload.sub,
