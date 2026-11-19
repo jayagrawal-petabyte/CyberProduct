@@ -83,6 +83,20 @@ describe("Audit: JWT & Cryptographic Validation", () => {
     await expect(verifySupabaseToken(rsToken, null, TEST_SECRET)).rejects.toThrow(/Unsupported algorithm/i);
   });
 
+  test("delegates asymmetric token verification to Supabase Auth", async () => {
+    const esToken = createJwt({ alg: "ES256", typ: "JWT" }, { sub: "u1" });
+    const authUser = { id: "u1", email: "u1@test.com" };
+    const authGetUser = jest.fn().mockResolvedValue({
+      data: { user: authUser },
+      error: null
+    });
+
+    await expect(
+      verifySupabaseToken(esToken, { auth: { getUser: authGetUser } }, TEST_SECRET)
+    ).resolves.toEqual(authUser);
+    expect(authGetUser).toHaveBeenCalledWith(esToken);
+  });
+
   test("rejects token missing subject claim when local fallback is used", async () => {
     const tokenWithoutSub = createJwt({ alg: "HS256", typ: "JWT" }, { email: "no-sub@test.com" });
     // Local verification without service client
