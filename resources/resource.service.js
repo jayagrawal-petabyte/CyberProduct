@@ -17,7 +17,6 @@ function createResourceService(supabase) {
     "updated_at",
   ].join(", ");
 
-  // Escape special characters used in PostgREST filter expressions.
   function escapeSearchTerm(value) {
     return value.replace(/[\\%_,().]/g, "\\$&");
   }
@@ -37,7 +36,6 @@ function createResourceService(supabase) {
       .select(RESOURCE_FIELDS, { count: "exact" })
       .eq("company_id", companyId);
 
-    // Restrict visible records when the caller supplies allowed statuses.
     if (Array.isArray(allowedStatuses)) {
       query = query.in("status", allowedStatuses);
     }
@@ -108,8 +106,6 @@ function createResourceService(supabase) {
   }
 
   async function create({
-    companyId,
-    createdBy,
     name,
     resource_type,
     identifier,
@@ -117,17 +113,18 @@ function createResourceService(supabase) {
     description,
     sensitivity,
   }) {
+    // company_id and created_by are assigned by database triggers.
+    // Only insert columns permitted by the authenticated role.
+
     const resourceData = {
-      company_id: companyId,
       name: name.trim(),
       resource_type,
       identifier: identifier.trim(),
-      created_by: createdBy ?? null,
       category_id: category_id ?? null,
       description: description ?? null,
     };
 
-    // Omit sensitivity when absent so the database default applies.
+    // Let the database apply its default when sensitivity is absent.
     if (sensitivity !== undefined) {
       resourceData.sensitivity = sensitivity;
     }

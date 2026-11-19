@@ -45,10 +45,15 @@ function createCategoryService(supabase) {
   }
 
   async function create({ companyId, name, description }) {
+    if (!companyId) {
+      throw new Error("Authenticated company context is required.");
+    }
+
+    // The database trigger assigns company_id from the session.
+    // Do not include company_id in this insert payload.
     const { data, error } = await supabase
       .from(table)
       .insert({
-        company_id: companyId,
         name: name.trim(),
         description: description ?? null,
       })
