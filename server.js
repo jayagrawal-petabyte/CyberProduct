@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
-
+const companyRoutes = require("./config/company.routes");
 // Existing team modules — keep these unchanged.
 const accessRequestRoutes = require("./access-requests/accessRequest.routes");
 const approvalRoutes = require("./approvals/approval.routes");
@@ -47,7 +47,7 @@ app.get("/health", (req, res) => {
 
 // Existing Access Requests API.
 app.use("/api/v1/access-requests", accessRequestRoutes);
-
+app.use("/api/v1/companies", companyRoutes);
 // Existing Approvals API.
 app.use("/api/v1/approvals", approvalRoutes);
 
