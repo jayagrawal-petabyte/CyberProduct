@@ -2,6 +2,18 @@
 const express = require("express");
 
 const {
+  createUserSupabaseClient,
+} = require("../config/supabase");
+
+const {
+  createPolicyService,
+} = require("./policy.service");
+
+const {
+  createPolicyController,
+} = require("./policy.controller");
+
+const {
   validateCreatePolicy,
   validateUpdatePolicy,
   validatePagination,
@@ -10,66 +22,92 @@ const {
 /**
  * Creates routes for security policy management.
  *
- * All policy routes require authentication.
- * Only security administrators can view, create, or update policies.
- *
- * @param {Object} dependencies
- * @param {Object} dependencies.policyController
- * @param {Function} dependencies.authenticate
- * @param {Function} dependencies.requireSecurityAdmin
- * @returns {import("express").Router}
+ * All routes require authentication and Security Admin access.
+ * Each request uses a user-scoped Supabase client.
  */
 function createPolicyRoutes({
-  policyController,
   authenticate,
   requireSecurityAdmin,
 }) {
-  if (!policyController) {
-    throw new Error("Policy controller is required.");
-  }
-
   if (typeof authenticate !== "function") {
-    throw new Error("Authentication middleware is required.");
+    throw new Error(
+      "Authentication middleware is required."
+    );
   }
 
   if (typeof requireSecurityAdmin !== "function") {
-    throw new Error("Security admin middleware is required.");
+    throw new Error(
+      "Security admin middleware is required."
+    );
   }
 
   const router = express.Router();
 
-  // Every policy endpoint requires an authenticated user.
+  // Initialize a request-scoped policy controller.
+  function withPolicyController(action) {
+    return (req, res, next) => {
+      try {
+        if (!req.accessToken) {
+          return res.status(401).json({
+            success: false,
+            message: "Authentication token is required.",
+          });
+        }
+
+        const supabase = createUserSupabaseClient(
+          req.accessToken
+        );
+
+        const policyService = createPolicyService({
+          supabase,
+        });
+
+        const policyController =
+          createPolicyController(policyService);
+
+        return policyController[action](
+          req,
+          res,
+          next
+        );
+      } catch (error) {
+        return next(error);
+      }
+    };
+  }
+
+  // All policy routes require authentication.
   router.use(authenticate);
 
-  // List policies (security administrators only).
+  // List policies.
   router.get(
     "/",
     requireSecurityAdmin,
     validatePagination,
-    policyController.list
+    withPolicyController("list")
   );
 
-  // Get a policy by ID (security administrators only).
+  // Get policy by ID.
   router.get(
     "/:id",
     requireSecurityAdmin,
-    policyController.getById
+    withPolicyController("getById")
   );
 
-  // Create a new policy.
+  // Create policy.
   router.post(
     "/",
     requireSecurityAdmin,
     validateCreatePolicy,
-    policyController.create
+    withPolicyController("create")
   );
 
-  // Update an existing policy.
+  // Update policy.
   router.patch(
     "/:id",
     requireSecurityAdmin,
     validateUpdatePolicy,
-    policyController.update
+    withPolicyController("update")
   );
 
   return router;

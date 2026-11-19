@@ -1,4 +1,6 @@
 
+const logger = require("../config/logger");
+
 const ALLOWED_EFFECTS = [
   "ALLOW",
   "BLOCK",
@@ -20,8 +22,7 @@ function createPolicyController(policyService) {
     return error;
   }
 
-  // Gets company and user information from authentication middleware.
-  // Never accepts company_id from the request body or query parameters.
+  // Identity and company information come only from authentication.
   function getUserContext(req) {
     const companyId = req.user?.company_id;
     const actorId = req.user?.id;
@@ -52,8 +53,8 @@ function createPolicyController(policyService) {
     }
   }
 
-  // Validates list filters before querying the database.
-  function validateListFilters(query) {
+  // Validates filters before querying the database.
+  function validateListFilters(query = {}) {
     const filters = {};
 
     if (query.status !== undefined) {
@@ -129,55 +130,58 @@ function createPolicyController(policyService) {
     return filters;
   }
 
-  // Handles errors and sends consistent responses.
-  function handleError(res, error) {
+  // Handles PostgreSQL errors and standard API responses.
+  function handleError(res, error, context = {}) {
     let statusCode = error.statusCode || 500;
 
-    // PostgreSQL unique constraint violation.
     if (error.code === "23505") {
       statusCode = 409;
     }
 
-    // PostgreSQL foreign key violation.
-    if (error.code === "23503") {
-      statusCode = 400;
-    }
-
-    // PostgreSQL check constraint violation.
-    if (error.code === "23514") {
-      statusCode = 400;
-    }
-
-    // PostgreSQL invalid text representation / enum value.
-    if (error.code === "22P02") {
+    if (
+      ["23503", "23514", "22P02"].includes(error.code)
+    ) {
       statusCode = 400;
     }
 
     if (statusCode >= 500) {
-      console.error(
-        "Policy management error:",
-        error
-      );
+      logger.error("Policy management error.", {
+        message: error.message,
+        code: error.code,
+        userId: context.actorId,
+        companyId: context.companyId,
+      });
     }
 
-    return res.status(statusCode).json({
+    const response = {
       success: false,
       message:
         statusCode >= 500
           ? "An internal server error occurred."
           : error.message,
-    });
+    };
+
+    if (Array.isArray(error.errors) && error.errors.length > 0) {
+      response.errors = error.errors;
+    }
+
+    if (error.code && statusCode < 500) {
+      response.code = error.code;
+    }
+
+    return res.status(statusCode).json(response);
   }
 
-  // POST /api/policies
+  // POST /api/v1/policies
   async function create(req, res) {
+    let context = {};
+
     try {
-      const { companyId, actorId } =
-        getUserContext(req);
+      context = getUserContext(req);
 
       const result = await policyService.create({
-        companyId,
-        actorId,
+        companyId: context.companyId,
+        actorId: context.actorId,
         policyData: req.body,
       });
 
@@ -185,19 +189,19 @@ function createPolicyController(policyService) {
         success: true,
         message: "Policy created successfully.",
         data: result.policy,
-        companyPolicyVersion:
-          result.companyPolicyVersion,
+        companyPolicyVersion: result.companyPolicyVersion,
       });
     } catch (error) {
-      return handleError(res, error);
+      return handleError(res, error, context);
     }
   }
 
-  // GET /api/policies
+  // GET /api/v1/policies
   async function list(req, res) {
+    let context = {};
+
     try {
-      const { companyId } =
-        getUserContext(req);
+      context = getUserContext(req);
 
       const { page, limit } = req.pagination || {
         page: 1,
@@ -207,7 +211,7 @@ function createPolicyController(policyService) {
       const filters = validateListFilters(req.query);
 
       const result = await policyService.list({
-        companyId,
+        companyId: context.companyId,
         page,
         limit,
         filters,
@@ -220,22 +224,23 @@ function createPolicyController(policyService) {
         pagination: result.pagination,
       });
     } catch (error) {
-      return handleError(res, error);
+      return handleError(res, error, context);
     }
   }
 
-  // GET /api/policies/:id
+  // GET /api/v1/policies/:id
   async function getById(req, res) {
+    let context = {};
+
     try {
-      const { companyId } =
-        getUserContext(req);
+      context = getUserContext(req);
 
       const policyId = req.params.id;
 
       validatePolicyId(policyId);
 
       const policy = await policyService.getById({
-        companyId,
+        companyId: context.companyId,
         policyId,
       });
 
@@ -252,24 +257,25 @@ function createPolicyController(policyService) {
         data: policy,
       });
     } catch (error) {
-      return handleError(res, error);
+      return handleError(res, error, context);
     }
   }
 
-  // PATCH /api/policies/:id
+  // PATCH /api/v1/policies/:id
   async function update(req, res) {
+    let context = {};
+
     try {
-      const { companyId, actorId } =
-        getUserContext(req);
+      context = getUserContext(req);
 
       const policyId = req.params.id;
 
       validatePolicyId(policyId);
 
       const result = await policyService.update({
-        companyId,
+        companyId: context.companyId,
         policyId,
-        actorId,
+        actorId: context.actorId,
         changes: req.body,
       });
 
@@ -277,11 +283,10 @@ function createPolicyController(policyService) {
         success: true,
         message: "Policy updated successfully.",
         data: result.policy,
-        companyPolicyVersion:
-          result.companyPolicyVersion,
+        companyPolicyVersion: result.companyPolicyVersion,
       });
     } catch (error) {
-      return handleError(res, error);
+      return handleError(res, error, context);
     }
   }
 

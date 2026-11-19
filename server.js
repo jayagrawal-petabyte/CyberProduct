@@ -4,16 +4,26 @@ require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+
+// Company module.
 const companyRoutes = require("./config/company.routes");
-// Existing team modules — keep these unchanged.
+
+// Existing team modules.
 const accessRequestRoutes = require("./access-requests/accessRequest.routes");
 const approvalRoutes = require("./approvals/approval.routes");
 
-// Resources module.
+// Shared Supabase configuration.
 const {
   createUserSupabaseClient,
 } = require("./config/supabase");
 
+// Authentication and authorization middleware.
+const {
+  authenticate,
+  requireSecurityAdmin,
+} = require("./auth/auth.middleware");
+
+// Resources module.
 const {
   createResourceService,
 } = require("./resources/resource.service");
@@ -26,13 +36,19 @@ const {
   createResourceRoutes,
 } = require("./resources/resource.routes");
 
+// Resource Categories module.
 const {
-  authenticate,
-  requireSecurityAdmin,
-} = require("./auth/auth.middleware");
+  createCategoryRouter,
+} = require("./resources/categories/category.routes");
+
+// Policies module.
+const {
+  createPolicyRoutes,
+} = require("./policies/policy.routes");
 
 const app = express();
 
+// Global middleware.
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -45,19 +61,17 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Existing Access Requests API.
+// Existing APIs.
 app.use("/api/v1/access-requests", accessRequestRoutes);
 app.use("/api/v1/companies", companyRoutes);
-// Existing Approvals API.
 app.use("/api/v1/approvals", approvalRoutes);
 
-// Initialize Resources controller with request-scoped Supabase clients.
+// Initialize Resources module.
 const resourceController = createResourceController({
   createUserSupabaseClient,
   createResourceService,
 });
 
-// Initialize Resources routes.
 const resourceRoutes = createResourceRoutes({
   resourceController,
   authenticate,
@@ -67,6 +81,26 @@ const resourceRoutes = createResourceRoutes({
 // Mount Resources API.
 app.use("/api/v1/resources", resourceRoutes);
 
+// Initialize Resource Categories module.
+const categoryRoutes = createCategoryRouter({
+  createUserSupabaseClient,
+  authenticate,
+  requireSecurityAdmin,
+});
+
+// Mount Resource Categories API.
+app.use("/api/v1/resource-categories", categoryRoutes);
+
+// Initialize Policies module.
+const policyRoutes = createPolicyRoutes({
+  authenticate,
+  requireSecurityAdmin,
+});
+
+// Mount Policies API.
+app.use("/api/v1/policies", policyRoutes);
+
+// Start server.
 const PORT = process.env.PORT || 3000;
 
 if (require.main === module) {
